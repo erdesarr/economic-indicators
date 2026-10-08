@@ -1,1 +1,12 @@
-{}
+{
+  "slug": "dolar_oficial_manana",
+  "date": "2026-10-08",
+  "value": 3218.75,
+  "value_published": null,
+  "unit": "COP",
+  "unit_as_published": "",
+  "status": "ok",
+  "base_gap": true,
+  "source_date": "2026-10-09",
+  "variation_pct": null
+}

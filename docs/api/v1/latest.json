@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T19:39:14.925136+00:00",
+  "generated_at": "2026-10-08T21:40:33.480243+00:00",
   "indicators": {
     "cafe_colombian_milds": {
       "slug": "cafe_colombian_milds",
@@ -25,7 +25,18 @@
       "source_date": "2026-10-08",
       "variation_pct": null
     },
-    "dolar_oficial_manana": null,
+    "dolar_oficial_manana": {
+      "slug": "dolar_oficial_manana",
+      "date": "2026-10-08",
+      "value": 3218.75,
+      "value_published": null,
+      "unit": "COP",
+      "unit_as_published": "",
+      "status": "ok",
+      "base_gap": true,
+      "source_date": "2026-10-09",
+      "variation_pct": null
+    },
     "dtf": {
       "slug": "dtf",
       "date": "2026-10-08",
@@ -41,19 +52,19 @@
     "euro": {
       "slug": "euro",
       "date": "2026-10-08",
-      "value": 3625.6,
+      "value": 3607.58,
       "value_published": null,
       "unit": "COP",
       "unit_as_published": "",
       "status": "ok",
       "base_gap": true,
-      "source_date": "2026-10-07",
+      "source_date": "2026-10-08",
       "variation_pct": null
     },
     "gas_henry_micro": {
       "slug": "gas_henry_micro",
       "date": "2026-10-08",
-      "value": 3.145,
+      "value": 3.139,
       "value_published": null,
       "unit": "USD/MMBtu",
       "unit_as_published": "Valores en USD",
@@ -149,7 +160,7 @@
     "msci_colcap": {
       "slug": "msci_colcap",
       "date": "2026-10-08",
-      "value": 2538.79,
+      "value": 2525.45,
       "value_published": null,
       "unit": "puntos",
       "unit_as_published": "",
@@ -161,25 +172,25 @@
     "petroleo_brent": {
       "slug": "petroleo_brent",
       "date": "2026-10-08",
-      "value": 101.13,
+      "value": 103.74,
       "value_published": null,
       "unit": "USD/bbl",
       "unit_as_published": "DÓLARES / BARRIL",
       "status": "ok",
       "base_gap": true,
-      "source_date": "2026-10-07",
+      "source_date": "2026-10-08",
       "variation_pct": null
     },
     "petroleo_wti": {
       "slug": "petroleo_wti",
       "date": "2026-10-08",
-      "value": 89.05,
+      "value": 91.01,
       "value_published": null,
       "unit": "USD/bbl",
       "unit_as_published": "DÓLARES / BARRIL",
       "status": "ok",
       "base_gap": true,
-      "source_date": "2026-10-07",
+      "source_date": "2026-10-08",
       "variation_pct": null
     },
     "usd_brl_compra": {

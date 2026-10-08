@@ -1,12 +1,12 @@
 {
   "slug": "petroleo_brent",
   "date": "2026-10-08",
-  "value": 101.13,
+  "value": 103.74,
   "value_published": null,
   "unit": "USD/bbl",
   "unit_as_published": "DÓLARES / BARRIL",
   "status": "ok",
   "base_gap": true,
-  "source_date": "2026-10-07",
+  "source_date": "2026-10-08",
   "variation_pct": null
 }

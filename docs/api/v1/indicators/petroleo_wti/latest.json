@@ -1,12 +1,12 @@
 {
   "slug": "petroleo_wti",
   "date": "2026-10-08",
-  "value": 89.05,
+  "value": 91.01,
   "value_published": null,
   "unit": "USD/bbl",
   "unit_as_published": "DÓLARES / BARRIL",
   "status": "ok",
   "base_gap": true,
-  "source_date": "2026-10-07",
+  "source_date": "2026-10-08",
   "variation_pct": null
 }
