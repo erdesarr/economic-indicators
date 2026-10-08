@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T19:30:41.832853+00:00",
+  "generated_at": "2026-10-08T19:39:14.925136+00:00",
   "indicators": [
     {
       "slug": "cafe_colombian_milds",
@@ -88,7 +88,7 @@
       "latest": {
         "slug": "gas_henry_micro",
         "date": "2026-10-08",
-        "value": 3.165,
+        "value": 3.145,
         "value_published": null,
         "unit": "USD/MMBtu",
         "unit_as_published": "Valores en USD",
@@ -232,7 +232,7 @@
       "latest": {
         "slug": "msci_colcap",
         "date": "2026-10-08",
-        "value": 2538.14,
+        "value": 2538.79,
         "value_published": null,
         "unit": "puntos",
         "unit_as_published": "",
