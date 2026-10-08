@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+artifacts
+docs/api
+tests
+data
+*.db
+*.db-wal
+*.db-shm
+.pytest_cache
+.mypy_cache
+.ruff_cache
+__pycache__
