@@ -1,14 +1,12 @@
 name: Scrape
 
 on:
-  # SCHEDULE PROHIBITED until the owner approves a full `make validate`
-  # (18/18 live), a visible Healthchecks test ping and a green post-15:00
-  # Bogota dispatch with DOLAR OFICIAL MANANA in ok. Do not uncomment.
-  #
-  # schedule:
-  #   # 0 2 * * * UTC = 21:00 America/Bogota.
-  #   # Colombia does not observe DST, so the local time is stable all year.
-  #   - cron: "0 2 * * *"
+  # Schedule ACTIVE since 2026-10-08 after the owner approved the 18/18 live
+  # run and the Healthchecks pings (see docs/APPROVALS.md).
+  schedule:
+    # 0 2 * * * UTC = 21:00 America/Bogota.
+    # Colombia does not observe DST, so the local time is stable all year.
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -105,9 +103,8 @@ jobs:
           echo "push failed after retries" >&2
           exit 1
 
-      - name: Live smoke test (17/18 until MANANA is verified live)
+      - name: Live smoke test (18/18, in-range, coherent units)
         id: smoke
-        continue-on-error: true
         run: python scripts/test_live.py
 
       - name: Healthchecks crash ping
@@ -118,7 +115,8 @@ jobs:
             "install:${{ steps.install.outcome }}" \
             "playwright:${{ steps.browser_install.outcome }}" \
             "etl:${{ steps.etl.outcome }}" \
-            "commit:${{ steps.commit.outcome }}"; do
+            "commit:${{ steps.commit.outcome }}" \
+            "smoke:${{ steps.smoke.outcome }}"; do
             name="${pair%%:*}"
             outcome="${pair#*:}"
             if [ "$outcome" = "failure" ]; then
