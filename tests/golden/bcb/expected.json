@@ -1,0 +1,15 @@
+{
+  "source": "bcb",
+  "captured_at": "2026-10-08T13:20:00+00:00",
+  "indicators": {
+    "usd_brl_compra": {
+      "label": "Compra (R$)",
+      "value": 5.0113,
+      "unit": "BRL por USD",
+      "unit_as_published": "R$",
+      "raw_text": "08/10/2026 (PTAX) 5.0113",
+      "value_published": null,
+      "source_date": "2026-10-08"
+    }
+  }
+}

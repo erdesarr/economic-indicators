@@ -1,0 +1,51 @@
+{
+  "source": "banrep",
+  "captured_at": "2026-10-08T13:20:00+00:00",
+  "indicators": {
+    "ibr_overnight": {
+      "label": "Indicador Bancario de Referencia (IBR) overnight, nominal",
+      "value": 11.407,
+      "unit": "% nominal anual",
+      "unit_as_published": "%",
+      "raw_text": "08/10/2026 11.407",
+      "value_published": 12.259,
+      "source_date": "2026-10-08"
+    },
+    "ibr_1_mes": {
+      "label": "Indicador Bancario de Referencia (IBR) a 1 mes, nominal",
+      "value": 11.495,
+      "unit": "% nominal anual",
+      "unit_as_published": "%",
+      "raw_text": "08/10/2026 11.495",
+      "value_published": 12.295,
+      "source_date": "2026-10-08"
+    },
+    "ibr_3_meses": {
+      "label": "Indicador Bancario de Referencia (IBR) a 3 meses, nominal",
+      "value": 11.714,
+      "unit": "% nominal anual",
+      "unit_as_published": "%",
+      "raw_text": "08/10/2026 11.714",
+      "value_published": 12.415,
+      "source_date": "2026-10-08"
+    },
+    "ibr_6_meses": {
+      "label": "Indicador Bancario de Referencia (IBR) a 6 meses, nominal",
+      "value": 11.995,
+      "unit": "% nominal anual",
+      "unit_as_published": "%",
+      "raw_text": "08/10/2026 11.995",
+      "value_published": 12.532,
+      "source_date": "2026-10-08"
+    },
+    "ibr_12_meses": {
+      "label": "Indicador Bancario de Referencia (IBR) a 12 meses, nominal",
+      "value": 12.525,
+      "unit": "% nominal anual",
+      "unit_as_published": "%",
+      "raw_text": "08/10/2026 12.525",
+      "value_published": 12.699,
+      "source_date": "2026-10-08"
+    }
+  }
+}

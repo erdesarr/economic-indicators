@@ -1,0 +1,78 @@
+{
+  "source": "larepublica",
+  "captured_at": "2026-10-08T13:20:00+00:00",
+  "indicators": {
+    "dolar_oficial_hoy": {
+      "label": "DÓLAR OFICIAL HOY",
+      "value": 3238.88,
+      "unit": "COP",
+      "unit_as_published": "",
+      "raw_text": "$ 3.238,88",
+      "value_published": null,
+      "source_date": "2026-10-08"
+    },
+    "euro": {
+      "label": "EURO",
+      "value": 3625.6,
+      "unit": "COP",
+      "unit_as_published": "",
+      "raw_text": "$ 3.625,60",
+      "value_published": null,
+      "source_date": "2026-10-07"
+    },
+    "cafe_colombian_milds": {
+      "label": "CAFÉ COLOMBIAN MILDS",
+      "value": 3.58,
+      "unit": "USD/lb",
+      "unit_as_published": "DÓLARES / LIBRA",
+      "raw_text": "US$ 3,58",
+      "value_published": null,
+      "source_date": "2026-10-07"
+    },
+    "uvr": {
+      "label": "UVR",
+      "value": 419.29,
+      "unit": "COP",
+      "unit_as_published": "",
+      "raw_text": "$ 419,29",
+      "value_published": null,
+      "source_date": "2026-10-08"
+    },
+    "petroleo_brent": {
+      "label": "PETRÓLEO BRENT",
+      "value": 101.13,
+      "unit": "USD/bbl",
+      "unit_as_published": "DÓLARES / BARRIL",
+      "raw_text": "US$ 101,13",
+      "value_published": null,
+      "source_date": "2026-10-07"
+    },
+    "petroleo_wti": {
+      "label": "PETRÓLEO WTI",
+      "value": 89.05,
+      "unit": "USD/bbl",
+      "unit_as_published": "DÓLARES / BARRIL",
+      "raw_text": "US$ 89,05",
+      "value_published": null,
+      "source_date": "2026-10-07"
+    },
+    "dtf": {
+      "label": "DTF",
+      "value": 10.19,
+      "unit": "% E.A.",
+      "unit_as_published": "%",
+      "raw_text": "10,19%",
+      "value_published": null,
+      "source_date": "2026-10-05"
+    },
+    "msci_colcap": {
+      "label": "MSCI COLCAP",
+      "value": 2525.49,
+      "unit": "puntos",
+      "unit_as_published": "",
+      "raw_text": "2.525,49",
+      "value_published": null,
+      "source_date": "2026-10-08"
+    }
+  }
+}

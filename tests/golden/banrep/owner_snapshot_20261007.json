@@ -1,0 +1,1342 @@
+[
+  {
+    "id": 241,
+    "nombre": "Indicador Bancario de Referencia (IBR) overnight, nominal",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa nominal, base 360",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) overnight, nominal",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) overnight, nominal",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "02 de enero  de  2008",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "overnight",
+    "fecha": "07/10/2026",
+    "valor": 11.411,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, nominal, tasa, tasas, tasa de interes, tasa de interes, tasa interes, tasa interes, interes, interes, indicador, bancario, referencia, overnight, plazo, cotizacion, cotizacion, cotizaciones, colocacion, captacion, costo del bancos, intereses , un dia, 1 dia, un dia, 1 dia, diaria, indicador bancario de referencia (ibr) - overnight, tasa oficial",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        11.411
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 241,
+          "nivel": "2",
+          "idNivel": "2.2.1.1",
+          "nombre": "Indicador Bancario de Referencia (IBR) overnight, nominal",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  },
+  {
+    "id": 242,
+    "nombre": "Indicador Bancario de Referencia (IBR) a 1 mes, nominal",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa nominal, base 360",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) a 1 mes, nominal",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) a 1 mes, nominal",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "01 de agosto  de  2012",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "1 mes",
+    "fecha": "07/10/2026",
+    "valor": 11.495,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, nominal, tasa, tasas, tasa de interes, tasa de interes, tasa interes, tasa interes, tasas de interes, interes, interes, indicador, bancario, referencia, plazo, 1 mes, un mes, , cotizacion, cotizacion, cotizaciones, indicador bancario de referencia, colocacion, captacion, costo del bancos, intereses, diaria, indicador bancario de referencia (ibr) - plazo 1 mes, tasa oficial",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        11.495
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 242,
+          "nivel": "2",
+          "idNivel": "2.2.1.2",
+          "nombre": "Indicador Bancario de Referencia (IBR) a 1 mes, nominal",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  },
+  {
+    "id": 243,
+    "nombre": "Indicador Bancario de Referencia (IBR) a 3 meses, nominal",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa nominal, base 360",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) a 3 meses, nominal",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) a 3 meses, nominal",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "01 de agosto  de  2012",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "3 meses",
+    "fecha": "07/10/2026",
+    "valor": 11.735,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, nominal, tasa, tasas, tasa de interes, tasa de interes, tasa de interes, tasas de interes, tasa interes, tasa interes, tasas interes, tasas interes, tasas de interes, tasa, tasas, tasa de interes, tasas de interes, tasa interes, tasa interes, tasas interes, tasas interes, tasas de interes, interes, interes, tasa de interes, tasa de interes, tasas de interes, tasa interes, tasa interes, tasas interes, tasas interes, tasas de interes, tasa, tasas, indicador, bancario, referencia, plazo, tres meses, 3 meses, cotizacion, cotizacion, cotizaciones, colocacion, captacion, costo del bancos, intereses , diaria, indicador bancario de referencia (ibr) - plazo 3 meses, tasa oficial",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        11.735
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 243,
+          "nivel": "2",
+          "idNivel": "2.2.1.3",
+          "nombre": "Indicador Bancario de Referencia (IBR) a 3 meses, nominal",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  },
+  {
+    "id": 15324,
+    "nombre": "Indicador Bancario de Referencia (IBR) overnight, efectiva",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa efectiva, base 365",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) overnight, efectiva",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) overnight, efectiva",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "02 de enero  de  2008",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "overnight",
+    "fecha": "07/10/2026",
+    "valor": 12.263,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, efectiva,  tasa, tasas, tasa de interes, tasa de interes, tasa interes, tasa interes, interes, interes, indicador, bancario, referencia, overnight, plazo, cotizacion, cotizacion, cotizaciones, colocacion, captacion, costo del bancos, intereses , un dia, 1 dia, un dia, 1 dia, diaria, indicador bancario de referencia (ibr) - overnight",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        12.263
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 15324,
+          "nivel": "2",
+          "idNivel": "2.2.1.4",
+          "nombre": "Indicador Bancario de Referencia (IBR) overnight, efectiva",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  },
+  {
+    "id": 15325,
+    "nombre": "Indicador Bancario de Referencia (IBR) a 1 mes, efectiva",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa efectiva, base 365",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) a 1 mes, efectiva",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) a 1 mes, efectiva",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "01 de agosto  de  2012",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "1 mes",
+    "fecha": "07/10/2026",
+    "valor": 12.292,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, efectiva,  tasa, tasas, tasa de interes, tasa de interes, tasa interes, tasa interes, tasas de interes, interes, interes, indicador, bancario, referencia, plazo, 1 mes, un mes, , cotizacion, cotizacion, cotizaciones, indicador bancario de referencia, colocacion, captacion, costo del bancos, intereses, diaria, indicador bancario de referencia (ibr) - plazo 1 mes",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        12.292
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 15325,
+          "nivel": "2",
+          "idNivel": "2.2.1.5",
+          "nombre": "Indicador Bancario de Referencia (IBR) a 1 mes, efectiva",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  },
+  {
+    "id": 15326,
+    "nombre": "Indicador Bancario de Referencia (IBR) a 3 meses, efectiva",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa efectiva, base 365",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) a 3 meses, efectiva",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) a 3 meses, efectiva",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "01 de agosto  de  2012",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "3 meses",
+    "fecha": "07/10/2026",
+    "valor": 12.438,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, efectiva,  tasa, tasas, tasa de interes, tasa de interes, tasa de interes, tasas de interes, tasa interes, tasa interes, tasas interes, tasas interes, tasas de interes, tasa, tasas, tasa de interes, tasas de interes, tasa interes, tasa interes, tasas interes, tasas interes, tasas de interes, interes, interes, tasa de interes, tasa de interes, tasas de interes, tasa interes, tasa interes, tasas interes, tasas interes, tasas de interes, tasa, tasas, indicador, bancario, referencia, plazo, tres meses, 3 meses, cotizacion, cotizacion, cotizaciones, colocacion, captacion, costo del bancos, intereses , diaria, indicador bancario de referencia (ibr) - plazo 3 meses",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        12.438
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 15326,
+          "nivel": "2",
+          "idNivel": "2.2.1.6",
+          "nombre": "Indicador Bancario de Referencia (IBR) a 3 meses, efectiva",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  },
+  {
+    "id": 16560,
+    "nombre": "Indicador Bancario de Referencia (IBR) a 6 meses, nominal",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa nominal, base 360",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) a 6 meses, nominal",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) a 6 meses, nominal",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "23 de mayo  de  2016",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "6 meses",
+    "fecha": "07/10/2026",
+    "valor": 12.033,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, indicador bancario de referencia (ibr) - overnight, nominal, tasa, tasas, tasa de interes, tasa de interes, tasa interes, tasa interes, interes, interes, indicador, bancario, referencia, overnight, plazo, cotizacion, cotizacion, cotizaciones, colocacion, captacion, costo del bancos, intereses , un dia, 1 dia, un dia, 1 dia, diaria, tasa oficial",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        12.033
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 16560,
+          "nivel": "2",
+          "idNivel": "2.2.1.7",
+          "nombre": "Indicador Bancario de Referencia (IBR) a 6 meses, nominal",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  },
+  {
+    "id": 16561,
+    "nombre": "Indicador Bancario de Referencia (IBR) a 6 meses, efectiva",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa efectiva, base 365",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) a 6 meses, efectiva",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) a 6 meses, efectiva",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "23 de mayo  de  2016",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "6 meses",
+    "fecha": "07/10/2026",
+    "valor": 12.573,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, efectiva,  tasa, tasas, tasa de interes, tasa de interes, tasa interes, tasa interes, interes, interes, indicador, bancario, referencia, overnight, plazo, cotizacion, cotizacion, cotizaciones, colocacion, captacion, costo del bancos, intereses , un dia, 1 dia, un dia, 1 dia, diaria, indicador bancario de referencia (ibr) - overnight",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        12.573
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 16561,
+          "nivel": "2",
+          "idNivel": "2.2.1.8",
+          "nombre": "Indicador Bancario de Referencia (IBR) a 6 meses, efectiva",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  },
+  {
+    "id": 16562,
+    "nombre": "Indicador Bancario de Referencia (IBR) a 12 meses, nominal",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa nominal, base 360",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) a 12 meses, nominal",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) a 12 meses, nominal",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "13 de junio  de  2022",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "12 meses",
+    "fecha": "07/10/2026",
+    "valor": 12.571,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, indicador bancario de referencia (ibr) - overnight, nominal, tasa, tasas, tasa de interes, tasa de interes, tasa interes, tasa interes, interes, interes, indicador, bancario, referencia, overnight, plazo, cotizacion, cotizacion, cotizaciones, colocacion, captacion, costo del bancos, intereses , un dia, 1 dia, un dia, 1 dia, diaria, tasa oficial",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        12.571
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 16562,
+          "nivel": "2",
+          "idNivel": "2.2.1.9",
+          "nombre": "Indicador Bancario de Referencia (IBR) a 12 meses, nominal",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  },
+  {
+    "id": 16563,
+    "nombre": "Indicador Bancario de Referencia (IBR) a 12 meses, efectiva",
+    "categoria": "Tasas de interés",
+    "subcategoria": "Indicador Bancario de Referencia (IBR)",
+    "unidad": "Tasa efectiva, base 365",
+    "unidadCorta": "%",
+    "idPeriodicidad": 1,
+    "descripcionPeriodicidad": "Diaria",
+    "idPlan": "IBR",
+    "categoriaNivel1": "Tasas de interés y sector financiero",
+    "categoriaNivel2": "Tasas de interés",
+    "categoriaNivel3": "Tasas de interés del mercado interbancario",
+    "ajusteEstacional": "",
+    "base": "",
+    "descripcion": "Indicador Bancario de Referencia (IBR) a 12 meses, efectiva",
+    "descripcionCorta": "Indicador Bancario de Referencia (IBR) a 12 meses, efectiva",
+    "fichaTecnica": [
+      "https://www.asobancaria.com/ibr/"
+    ],
+    "fuente": "Banco de la República",
+    "fechaInicial": "13 de junio  de  2022",
+    "fechaFinal": "08 de octubre  de  2026",
+    "notas": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "fechaUltimoCargue": "08 de octubre de 2026",
+    "geografia": "Nacional",
+    "precio": "*",
+    "periodoReferencia": "12 meses",
+    "fecha": "07/10/2026",
+    "valor": 12.746,
+    "numeroDecimales": 3,
+    "feErratas": "-",
+    "definicion": "En enero de 2008 comenzó a funcionar el esquema de formación del IBR, con el objetivo de reflejar la liquidez del mercado monetario colombiano. El IBR es una tasa de interés de referencia de corto plazo denominada en pesos colombianos, que refleja el precio al que los bancos están dispuestos a ofrecer o a captar recursos en el mercado monetario. El IBR overnight se calcula desde el 2 de enero del año 2008. Posteriormente, el Esquema ha ido ampliando los plazos en los que se reciben las cotizaciones, así: i) el 1 de agosto de 2012 se reemplazó el plazo mensual (28 días) por el plazo a un (1) mes y se incluyó el plazo de tres (3) meses, ii) el 23 de mayo de 2016 inició el cálculo del IBR a seis (6) meses, y iii) el 13 de junio de 2022 inició el cálculo del IBR a doce (12) meses.",
+    "tipoVisualizacion": "line",
+    "palabrasClave": "ibr, efectiva,  tasa, tasas, tasa de interes, tasa de interes, tasa interes, tasa interes, interes, interes, indicador, bancario, referencia, overnight, plazo, cotizacion, cotizacion, cotizaciones, colocacion, captacion, costo del bancos, intereses , un dia, 1 dia, un dia, 1 dia, diaria, indicador bancario de referencia (ibr) - overnight",
+    "isSerie": "SI",
+    "tieneHijos": "NO",
+    "data": [
+      [
+        1791349200000,
+        12.746
+      ]
+    ],
+    "metadataNotas": {
+      "idSerie": 920030,
+      "nivel": "1",
+      "idNivel": "2.2.1",
+      "nombre": "Indicador Bancario de Referencia - IBR",
+      "notas": [
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, es posible que, entre el 29 de octubre y el 18 de noviembre de 2025, la información de la columna \"tasa efectiva %\" del reporte de tablas preconstruidas del Indicador Bancario de Referencia (IBR) - \"Según plazo\", no haya sido correspondiente con la tasa efectiva (base 365) al plazo real, para algunas fechas y plazos del indicador",
+          "fechaNotaDesde": "2025-11-19",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 23 de marzo del 2018 entre las 11:05 a.m. y 11:38 a.m. no era la correcta. Los datos fueron corregidos el mismo 23 de marzo de 2018 a las 11.38 a.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Se informa que, debido a inconvenientes técnicos, la información de los resultados y cotizaciones del Indicador Bancario de Referencia (IBR) para todos los plazos autorizados (overnight, 1 mes, 3 meses y 6 meses) publicados el día 1 de octubre del 2018 entre las 11:05 a.m. y 12:46 p.m. .no era la correcta.  Los datos fueron corregidos el mismo 1 de octubre de 2018 a las 12.46 p.m. COT.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "FE_ERRATA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Desde enero de 2008 y hasta el 31 de julio de 2012 el Indicador Bancario de Referencia (IBR) fue calculado para los plazos de un (1) día y un (1) mes.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "A partir del 1 de agosto de 2012 se implementó una nueva metodología de cálculo del IBR para el plazo de 1 mes y se introdujo un plazo adicional (3 meses). Adicionalmente, se realizaron modificaciones en la operatividad general del esquema. El IBR overnight continuó operando de la misma forma, es decir, los participantes se otorgan créditos interbancarios a la tasa mediana calculada por el Banco de la República.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "Por su parte, el IBR para los plazos de un (1) mes y tres (3) meses está fundamentado en la cotización de swaps de tasa de interés (Overnight Index Swap - OIS), en donde se intercambian los flujos de una tasa fija por una variable. La tasa fija para cada plazo es la mediana que resulte del proceso de cotización y es equivalente al IBR del plazo correspondiente, mientras que la tasa variable corresponde a la tasa de interés compuesta del IBR overnight durante el periodo de vigencia del swap. Con esta misma metodología, se calcula el IBR a seis (6) meses a partir del 23 de mayo del 2016.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La columna de Tipo de aprobación, que aparece en las tablas preconstruidas, corresponde a dos opciones: i) Normal, y ii) Excepción. Para mayor detalle de los tipos de aprobaciones, consultar el Reglamento del IBR en el apartado correspondiente de la página de Asobancaria (https://www.asobancaria.com/ibr/)",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "En caso de que una o más entidades no presenten sus cotizaciones para la formación del Esquema del IBR, la columna \"Número de entidades que no cotizaron\" reflejará dicha información diariamente en la tabla preconstruida \"Según plazo y agente\". Para el cálculo diario de dicha columna (\"Número de entidades que no cotizaron\"), se considera que una entidad no cotizó si se identifica al menos una ausencia de cotización en alguno de los plazos del IBR (overnight, 1, 3, 6 o 12 meses). Por otro lado, en dicha tabla de \"Según plazo y agente\", un valor de \"0,000\" en las cotizaciones por plazo indica que la entidad no cotizó.",
+          "fechaNotaDesde": "2023-01-01",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        },
+        {
+          "idNota": 0,
+          "descripcion": "La tabla preconstruida \"Indicador Bancario de Referencia (IBR). Tasas de imputación según plazo y agente\" expone las tasas asignadas a la(s) entidad(es) que no haya(n) enviado su(s) cotizaciones para el Esquema de Formación del IBR en el horario establecido, según lo que se estipula en el Reglamento del IBR. Cabe señalar que: i) únicamente se presenta la información de los días y plazos del IBR en que una o más entidades no cotizaron, y ii) si la tasa imputada es igual a 0, significa que no se pudo determinar la cotización más alejada del IBR; por lo cual, el Banco de la República designa la(s) postura(s) de la(s) entidad(es) participante(s) que no cotizó(cotizaron) conforme a lo establecido en el Reglamento del IBR vigente para cada fecha.",
+          "fechaNotaDesde": "2026-01-06",
+          "fechaNotaHasta": "",
+          "tipo": "NOTA_ACLARATORIA",
+          "estado": "ACTIVO"
+        }
+      ],
+      "seriesHijas": [
+        {
+          "idSerie": 16563,
+          "nivel": "2",
+          "idNivel": "2.2.1.10",
+          "nombre": "Indicador Bancario de Referencia (IBR) a 12 meses, efectiva",
+          "notas": [],
+          "seriesHijas": []
+        }
+      ]
+    }
+  }
+]
