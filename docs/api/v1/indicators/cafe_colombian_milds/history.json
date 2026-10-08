@@ -1,0 +1,20 @@
+{
+  "slug": "cafe_colombian_milds",
+  "unit": "USD/lb",
+  "from_date": "2026-09-08",
+  "to_date": "2026-10-08",
+  "readings": [
+    {
+      "slug": "cafe_colombian_milds",
+      "date": "2026-10-08",
+      "value": 3.58,
+      "value_published": null,
+      "unit": "USD/lb",
+      "unit_as_published": "DÓLARES / LIBRA",
+      "status": "ok",
+      "base_gap": true,
+      "source_date": "2026-10-07",
+      "variation_pct": null
+    }
+  ]
+}

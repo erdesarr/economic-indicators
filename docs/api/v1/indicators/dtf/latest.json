@@ -1,0 +1,12 @@
+{
+  "slug": "dtf",
+  "date": "2026-10-08",
+  "value": 10.19,
+  "value_published": null,
+  "unit": "% E.A.",
+  "unit_as_published": "%",
+  "status": "ok",
+  "base_gap": true,
+  "source_date": "2026-10-05",
+  "variation_pct": null
+}

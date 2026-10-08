@@ -1,0 +1,20 @@
+{
+  "slug": "dolar_oficial_hoy",
+  "unit": "COP",
+  "from_date": "2026-09-08",
+  "to_date": "2026-10-08",
+  "readings": [
+    {
+      "slug": "dolar_oficial_hoy",
+      "date": "2026-10-08",
+      "value": 3238.88,
+      "value_published": null,
+      "unit": "COP",
+      "unit_as_published": "",
+      "status": "ok",
+      "base_gap": true,
+      "source_date": "2026-10-08",
+      "variation_pct": null
+    }
+  ]
+}

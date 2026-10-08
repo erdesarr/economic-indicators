@@ -1,0 +1,12 @@
+{
+  "slug": "ibr_1_mes",
+  "date": "2026-10-08",
+  "value": 11.495,
+  "value_published": 12.295,
+  "unit": "% nominal anual",
+  "unit_as_published": "%",
+  "status": "ok",
+  "base_gap": true,
+  "source_date": "2026-10-08",
+  "variation_pct": null
+}

@@ -1,0 +1,318 @@
+{
+  "generated_at": "2026-10-08T19:30:41.832853+00:00",
+  "indicators": [
+    {
+      "slug": "cafe_colombian_milds",
+      "source_url": "https://www.larepublica.co/indicadores-economicos",
+      "visible_label": "CAFÉ COLOMBIAN MILDS",
+      "unit": "USD/lb",
+      "latest": {
+        "slug": "cafe_colombian_milds",
+        "date": "2026-10-08",
+        "value": 3.58,
+        "value_published": null,
+        "unit": "USD/lb",
+        "unit_as_published": "DÓLARES / LIBRA",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-07",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "dolar_oficial_hoy",
+      "source_url": "https://www.larepublica.co/indicadores-economicos",
+      "visible_label": "DÓLAR OFICIAL HOY",
+      "unit": "COP",
+      "latest": {
+        "slug": "dolar_oficial_hoy",
+        "date": "2026-10-08",
+        "value": 3238.88,
+        "value_published": null,
+        "unit": "COP",
+        "unit_as_published": "",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "dolar_oficial_manana",
+      "source_url": "https://www.larepublica.co/indicadores-economicos",
+      "visible_label": "DÓLAR OFICIAL MAÑANA",
+      "unit": "COP",
+      "latest": null
+    },
+    {
+      "slug": "dtf",
+      "source_url": "https://www.larepublica.co/indicadores-economicos/bancos/dtf",
+      "visible_label": "DTF",
+      "unit": "% E.A.",
+      "latest": {
+        "slug": "dtf",
+        "date": "2026-10-08",
+        "value": 10.19,
+        "value_published": null,
+        "unit": "% E.A.",
+        "unit_as_published": "%",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-05",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "euro",
+      "source_url": "https://www.larepublica.co/indicadores-economicos",
+      "visible_label": "EURO",
+      "unit": "COP",
+      "latest": {
+        "slug": "euro",
+        "date": "2026-10-08",
+        "value": 3625.6,
+        "value_published": null,
+        "unit": "COP",
+        "unit_as_published": "",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-07",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "gas_henry_micro",
+      "source_url": "https://es.investing.com/commodities/micro-henry-hub-natural-gas-c1-futures",
+      "visible_label": "MNDc1",
+      "unit": "USD/MMBtu",
+      "latest": {
+        "slug": "gas_henry_micro",
+        "date": "2026-10-08",
+        "value": 3.165,
+        "value_published": null,
+        "unit": "USD/MMBtu",
+        "unit_as_published": "Valores en USD",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "gas_ttf_nl",
+      "source_url": "https://es.investing.com/commodities/dutch-ttf-gas-c1-futures",
+      "visible_label": "TFAc1",
+      "unit": "EUR/MWh",
+      "latest": {
+        "slug": "gas_ttf_nl",
+        "date": "2026-10-08",
+        "value": 77.205,
+        "value_published": null,
+        "unit": "EUR/MWh",
+        "unit_as_published": "Valores en EUR",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "ibr_12_meses",
+      "source_url": "https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563",
+      "visible_label": "Doce meses",
+      "unit": "% nominal anual",
+      "latest": {
+        "slug": "ibr_12_meses",
+        "date": "2026-10-08",
+        "value": 12.525,
+        "value_published": 12.699,
+        "unit": "% nominal anual",
+        "unit_as_published": "%",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "ibr_1_mes",
+      "source_url": "https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563",
+      "visible_label": "Un mes",
+      "unit": "% nominal anual",
+      "latest": {
+        "slug": "ibr_1_mes",
+        "date": "2026-10-08",
+        "value": 11.495,
+        "value_published": 12.295,
+        "unit": "% nominal anual",
+        "unit_as_published": "%",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "ibr_3_meses",
+      "source_url": "https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563",
+      "visible_label": "Tres meses",
+      "unit": "% nominal anual",
+      "latest": {
+        "slug": "ibr_3_meses",
+        "date": "2026-10-08",
+        "value": 11.714,
+        "value_published": 12.415,
+        "unit": "% nominal anual",
+        "unit_as_published": "%",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "ibr_6_meses",
+      "source_url": "https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563",
+      "visible_label": "Seis meses",
+      "unit": "% nominal anual",
+      "latest": {
+        "slug": "ibr_6_meses",
+        "date": "2026-10-08",
+        "value": 11.995,
+        "value_published": 12.532,
+        "unit": "% nominal anual",
+        "unit_as_published": "%",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "ibr_overnight",
+      "source_url": "https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563",
+      "visible_label": "Overnight",
+      "unit": "% nominal anual",
+      "latest": {
+        "slug": "ibr_overnight",
+        "date": "2026-10-08",
+        "value": 11.407,
+        "value_published": 12.259,
+        "unit": "% nominal anual",
+        "unit_as_published": "%",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "lng_jkm",
+      "source_url": "https://es.investing.com/commodities/lng-japan-korea-marker-platts-futures",
+      "visible_label": "JKMc1",
+      "unit": "USD/MMBtu",
+      "latest": {
+        "slug": "lng_jkm",
+        "date": "2026-10-08",
+        "value": 25.955,
+        "value_published": null,
+        "unit": "USD/MMBtu",
+        "unit_as_published": "Valores en USD",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "msci_colcap",
+      "source_url": "https://www.larepublica.co/indicadores-economicos/movimiento-accionario/igbc-cap",
+      "visible_label": "MSCI COLCAP",
+      "unit": "puntos",
+      "latest": {
+        "slug": "msci_colcap",
+        "date": "2026-10-08",
+        "value": 2538.14,
+        "value_published": null,
+        "unit": "puntos",
+        "unit_as_published": "",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "petroleo_brent",
+      "source_url": "https://www.larepublica.co/indicadores-economicos",
+      "visible_label": "PETRÓLEO BRENT",
+      "unit": "USD/bbl",
+      "latest": {
+        "slug": "petroleo_brent",
+        "date": "2026-10-08",
+        "value": 101.13,
+        "value_published": null,
+        "unit": "USD/bbl",
+        "unit_as_published": "DÓLARES / BARRIL",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-07",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "petroleo_wti",
+      "source_url": "https://www.larepublica.co/indicadores-economicos",
+      "visible_label": "PETRÓLEO WTI",
+      "unit": "USD/bbl",
+      "latest": {
+        "slug": "petroleo_wti",
+        "date": "2026-10-08",
+        "value": 89.05,
+        "value_published": null,
+        "unit": "USD/bbl",
+        "unit_as_published": "DÓLARES / BARRIL",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-07",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "usd_brl_compra",
+      "source_url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.10813/dados?formato=json",
+      "visible_label": "Compra (R$)",
+      "unit": "BRL por USD",
+      "latest": {
+        "slug": "usd_brl_compra",
+        "date": "2026-10-08",
+        "value": 5.0113,
+        "value_published": null,
+        "unit": "BRL por USD",
+        "unit_as_published": "R$",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    },
+    {
+      "slug": "uvr",
+      "source_url": "https://www.larepublica.co/indicadores-economicos",
+      "visible_label": "UVR",
+      "unit": "COP",
+      "latest": {
+        "slug": "uvr",
+        "date": "2026-10-08",
+        "value": 419.29,
+        "value_published": null,
+        "unit": "COP",
+        "unit_as_published": "",
+        "status": "ok",
+        "base_gap": true,
+        "source_date": "2026-10-08",
+        "variation_pct": null
+      }
+    }
+  ]
+}

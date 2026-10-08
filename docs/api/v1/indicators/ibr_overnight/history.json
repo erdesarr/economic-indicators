@@ -1,0 +1,20 @@
+{
+  "slug": "ibr_overnight",
+  "unit": "% nominal anual",
+  "from_date": "2026-09-08",
+  "to_date": "2026-10-08",
+  "readings": [
+    {
+      "slug": "ibr_overnight",
+      "date": "2026-10-08",
+      "value": 11.407,
+      "value_published": 12.259,
+      "unit": "% nominal anual",
+      "unit_as_published": "%",
+      "status": "ok",
+      "base_gap": true,
+      "source_date": "2026-10-08",
+      "variation_pct": null
+    }
+  ]
+}

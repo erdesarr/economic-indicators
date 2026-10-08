@@ -1,0 +1,20 @@
+{
+  "slug": "ibr_12_meses",
+  "unit": "% nominal anual",
+  "from_date": "2026-09-08",
+  "to_date": "2026-10-08",
+  "readings": [
+    {
+      "slug": "ibr_12_meses",
+      "date": "2026-10-08",
+      "value": 12.525,
+      "value_published": 12.699,
+      "unit": "% nominal anual",
+      "unit_as_published": "%",
+      "status": "ok",
+      "base_gap": true,
+      "source_date": "2026-10-08",
+      "variation_pct": null
+    }
+  ]
+}

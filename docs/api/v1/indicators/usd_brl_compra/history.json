@@ -1,0 +1,20 @@
+{
+  "slug": "usd_brl_compra",
+  "unit": "BRL por USD",
+  "from_date": "2026-09-08",
+  "to_date": "2026-10-08",
+  "readings": [
+    {
+      "slug": "usd_brl_compra",
+      "date": "2026-10-08",
+      "value": 5.0113,
+      "value_published": null,
+      "unit": "BRL por USD",
+      "unit_as_published": "R$",
+      "status": "ok",
+      "base_gap": true,
+      "source_date": "2026-10-08",
+      "variation_pct": null
+    }
+  ]
+}
