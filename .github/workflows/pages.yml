@@ -41,7 +41,8 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/api
+          # docs/api/v1/... must be reachable at /api/v1/... on the site root.
+          path: docs
 
   deploy:
     needs: build

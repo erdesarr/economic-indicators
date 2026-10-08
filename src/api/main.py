@@ -12,7 +12,8 @@ from __future__ import annotations
 import os
 import sqlite3
 from collections.abc import Iterator
-from datetime import UTC, date as Date, datetime
+from datetime import UTC, datetime
+from datetime import date as Date
 from pathlib import Path
 from typing import Annotated
 
