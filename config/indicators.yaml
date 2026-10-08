@@ -1,0 +1,230 @@
+# Declarative configuration for the daily economic indicators ETL.
+# Adding a new indicator = edit only this file (plus nothing else).
+settings:
+  timezone: America/Bogota
+  history_days: 31
+  database: data/indicadores.db
+  max_gap_days: 7
+  politeness_seconds: 1.5
+  request_timeout: 30
+  artifacts_dir: artifacts
+  user_agents:
+    - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+    - "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+
+# Shared per-source extraction settings. `number_format` drives the numeric
+# normalizer: es-CO (dot thousands, comma decimal), es-ES (same convention on
+# investing.com) or json-dot (plain JSON floats).
+sources:
+  larepublica_main:
+    method: html
+    number_format: es-CO
+    retries: 3
+  larepublica_dtf:
+    method: html
+    number_format: es-CO
+    retries: 3
+  larepublica_igbc:
+    method: html
+    number_format: es-CO
+    retries: 3
+  banrep:
+    method: api
+    number_format: json-dot
+    retries: 3
+  bcb:
+    method: api
+    number_format: json-dot
+    retries: 3
+  investing:
+    method: browser
+    number_format: es-ES
+    retries: 3
+    warmup_url: https://es.investing.com/
+
+indicators:
+  - slug: dolar_oficial_hoy
+    source: larepublica_main
+    url: https://www.larepublica.co/indicadores-economicos
+    visible_label: DÓLAR OFICIAL HOY
+    unit: COP
+    unit_published: COP
+    plausible_range: [2800.0, 4000.0]
+    stale_check: true
+
+  - slug: dolar_oficial_manana
+    source: larepublica_main
+    url: https://www.larepublica.co/indicadores-economicos
+    visible_label: DÓLAR OFICIAL MAÑANA
+    unit: COP
+    unit_published: COP
+    plausible_range: [2800.0, 4000.0]
+    stale_check: true
+    # Hipótesis verificada en estructura (P1): bloque gemelo de `trm-today`
+    # (mismo patrón de markup, label-driven). Se publica ~15:00 America/Bogota.
+    # Pendiente de captura viva: el primer run de 21:00 o un `make validate`
+    # posterior lo confirmarán y regenerarán el golden real (18/18).
+    verification: pending_live
+
+  - slug: euro
+    source: larepublica_main
+    url: https://www.larepublica.co/indicadores-economicos
+    visible_label: EURO
+    unit: COP
+    unit_published: COP
+    plausible_range: [3000.0, 4500.0]
+    stale_check: false
+
+  - slug: cafe_colombian_milds
+    source: larepublica_main
+    url: https://www.larepublica.co/indicadores-economicos
+    visible_label: CAFÉ COLOMBIAN MILDS
+    unit: USD/lb
+    unit_published: DÓLARES / LIBRA
+    plausible_range: [1.5, 6.0]
+    stale_check: false
+
+  - slug: uvr
+    source: larepublica_main
+    url: https://www.larepublica.co/indicadores-economicos
+    visible_label: UVR
+    unit: COP
+    unit_published: COP
+    plausible_range: [250.0, 500.0]
+    stale_check: true
+
+  - slug: petroleo_brent
+    source: larepublica_main
+    url: https://www.larepublica.co/indicadores-economicos
+    visible_label: PETRÓLEO BRENT
+    unit: USD/bbl
+    unit_published: DÓLARES / BARRIL
+    plausible_range: [40.0, 150.0]
+    stale_check: false
+
+  - slug: petroleo_wti
+    source: larepublica_main
+    url: https://www.larepublica.co/indicadores-economicos
+    visible_label: PETRÓLEO WTI
+    unit: USD/bbl
+    unit_published: DÓLARES / BARRIL
+    plausible_range: [30.0, 140.0]
+    stale_check: false
+
+  - slug: dtf
+    source: larepublica_dtf
+    url: https://www.larepublica.co/indicadores-economicos/bancos/dtf
+    visible_label: DTF
+    unit: "% E.A."
+    unit_published: "%"
+    plausible_range: [0.0, 25.0]
+    stale_check: false
+
+  - slug: msci_colcap
+    source: larepublica_igbc
+    url: https://www.larepublica.co/indicadores-economicos/movimiento-accionario/igbc-cap
+    visible_label: MSCI COLCAP
+    unit: puntos
+    unit_published: puntos
+    plausible_range: [800.0, 3000.0]
+    stale_check: true
+
+  # IBR: `value` is the NOMINAL series exactly as published (owner decision).
+  # `value_published` keeps the EFFECTIVE bar (% E.A.) for reference only.
+  # No conversion is ever applied between the two.
+  - slug: ibr_overnight
+    source: banrep
+    url: https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563
+    visible_label: Overnight
+    unit: "% nominal anual"
+    unit_published: "% E.A."
+    plausible_range: [5.0, 20.0]
+    stale_check: true
+    source_series:
+      nominal: 241
+      published: 15324
+
+  - slug: ibr_1_mes
+    source: banrep
+    url: https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563
+    visible_label: Un mes
+    unit: "% nominal anual"
+    unit_published: "% E.A."
+    plausible_range: [5.0, 20.0]
+    stale_check: true
+    source_series:
+      nominal: 242
+      published: 15325
+
+  - slug: ibr_3_meses
+    source: banrep
+    url: https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563
+    visible_label: Tres meses
+    unit: "% nominal anual"
+    unit_published: "% E.A."
+    plausible_range: [5.0, 20.0]
+    stale_check: true
+    source_series:
+      nominal: 243
+      published: 15326
+
+  - slug: ibr_6_meses
+    source: banrep
+    url: https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563
+    visible_label: Seis meses
+    unit: "% nominal anual"
+    unit_published: "% E.A."
+    plausible_range: [5.0, 20.0]
+    stale_check: true
+    source_series:
+      nominal: 16560
+      published: 16561
+
+  - slug: ibr_12_meses
+    source: banrep
+    url: https://suameca.banrep.gov.co/estadisticas-economicas-back/rest/estadisticaEconomicaRestService/consultaInformacionSerie?idSerie=241,15324,242,15325,243,15326,16560,16561,16562,16563
+    visible_label: Doce meses
+    unit: "% nominal anual"
+    unit_published: "% E.A."
+    plausible_range: [5.0, 20.0]
+    stale_check: true
+    source_series:
+      nominal: 16562
+      published: 16563
+
+  - slug: usd_brl_compra
+    source: bcb
+    url: https://api.bcb.gov.br/dados/serie/bcdata.sgs.10813/dados?formato=json
+    visible_label: Compra (R$)
+    unit: BRL por USD
+    unit_published: R$
+    plausible_range: [3.0, 8.0]
+    stale_check: true
+
+  - slug: gas_ttf_nl
+    source: investing
+    url: https://es.investing.com/commodities/dutch-ttf-gas-c1-futures
+    visible_label: TFAc1
+    unit: EUR/MWh
+    unit_published: Valores en EUR
+    plausible_range: [5.0, 200.0]
+    stale_check: true
+
+  - slug: gas_henry_micro
+    source: investing
+    url: https://es.investing.com/commodities/micro-henry-hub-natural-gas-c1-futures
+    visible_label: MNDc1
+    unit: USD/MMBtu
+    unit_published: Valores en USD
+    plausible_range: [0.5, 15.0]
+    stale_check: true
+
+  - slug: lng_jkm
+    source: investing
+    url: https://es.investing.com/commodities/lng-japan-korea-marker-platts-futures
+    visible_label: JKMc1
+    unit: USD/MMBtu
+    unit_published: Valores en USD
+    plausible_range: [2.0, 80.0]
+    stale_check: true
