@@ -50,7 +50,7 @@ indicators:
     visible_label: DÓLAR OFICIAL HOY
     unit: COP
     unit_published: COP
-    plausible_range: [2800.0, 4000.0]
+    plausible_range: [2915.0, 3563.0]
     stale_check: true
 
   - slug: dolar_oficial_manana
@@ -59,13 +59,12 @@ indicators:
     visible_label: DÓLAR OFICIAL MAÑANA
     unit: COP
     unit_published: COP
-    plausible_range: [2800.0, 4000.0]
+    plausible_range: [2897.0, 3541.0]
     stale_check: true
-    # Hipótesis verificada en estructura (P1): bloque gemelo de `trm-today`
-    # (mismo patrón de markup, label-driven). Se publica ~15:00 America/Bogota.
-    # Pendiente de captura viva: el primer run de 21:00 o un `make validate`
-    # posterior lo confirmarán y regenerarán el golden real (18/18).
-    verification: pending_live
+    # Capturado y aprobado en vivo el 2026-10-08 (run 37846703655);
+    # el golden real reemplazó al sintético. Bloque gemelo de `trm-today`,
+    # label-driven.
+    verification: verified_live
 
   - slug: euro
     source: larepublica_main
@@ -73,7 +72,7 @@ indicators:
     visible_label: EURO
     unit: COP
     unit_published: COP
-    plausible_range: [3000.0, 4500.0]
+    plausible_range: [3247.0, 3968.0]
     stale_check: false
 
   - slug: cafe_colombian_milds
@@ -82,7 +81,7 @@ indicators:
     visible_label: CAFÉ COLOMBIAN MILDS
     unit: USD/lb
     unit_published: DÓLARES / LIBRA
-    plausible_range: [1.5, 6.0]
+    plausible_range: [2.864, 4.296]
     stale_check: false
 
   - slug: uvr
@@ -91,7 +90,7 @@ indicators:
     visible_label: UVR
     unit: COP
     unit_published: COP
-    plausible_range: [250.0, 500.0]
+    plausible_range: [377.0, 461.0]
     stale_check: true
 
   - slug: petroleo_brent
@@ -100,7 +99,7 @@ indicators:
     visible_label: PETRÓLEO BRENT
     unit: USD/bbl
     unit_published: DÓLARES / BARRIL
-    plausible_range: [40.0, 150.0]
+    plausible_range: [82.992, 124.488]
     stale_check: false
 
   - slug: petroleo_wti
@@ -109,7 +108,7 @@ indicators:
     visible_label: PETRÓLEO WTI
     unit: USD/bbl
     unit_published: DÓLARES / BARRIL
-    plausible_range: [30.0, 140.0]
+    plausible_range: [72.808, 109.212]
     stale_check: false
 
   - slug: dtf
@@ -118,7 +117,7 @@ indicators:
     visible_label: DTF
     unit: "% E.A."
     unit_published: "%"
-    plausible_range: [0.0, 25.0]
+    plausible_range: [8.19, 12.19]
     stale_check: false
 
   - slug: msci_colcap
@@ -127,7 +126,7 @@ indicators:
     visible_label: MSCI COLCAP
     unit: puntos
     unit_published: puntos
-    plausible_range: [800.0, 3000.0]
+    plausible_range: [2020.0, 3031.0]
     stale_check: true
 
   # IBR: `value` is the NOMINAL series exactly as published (owner decision).
@@ -139,7 +138,7 @@ indicators:
     visible_label: Overnight
     unit: "% nominal anual"
     unit_published: "% E.A."
-    plausible_range: [5.0, 20.0]
+    plausible_range: [9.407, 13.407]
     stale_check: true
     source_series:
       nominal: 241
@@ -151,7 +150,7 @@ indicators:
     visible_label: Un mes
     unit: "% nominal anual"
     unit_published: "% E.A."
-    plausible_range: [5.0, 20.0]
+    plausible_range: [9.495, 13.495]
     stale_check: true
     source_series:
       nominal: 242
@@ -163,7 +162,7 @@ indicators:
     visible_label: Tres meses
     unit: "% nominal anual"
     unit_published: "% E.A."
-    plausible_range: [5.0, 20.0]
+    plausible_range: [9.714, 13.714]
     stale_check: true
     source_series:
       nominal: 243
@@ -175,7 +174,7 @@ indicators:
     visible_label: Seis meses
     unit: "% nominal anual"
     unit_published: "% E.A."
-    plausible_range: [5.0, 20.0]
+    plausible_range: [9.995, 13.995]
     stale_check: true
     source_series:
       nominal: 16560
@@ -187,7 +186,7 @@ indicators:
     visible_label: Doce meses
     unit: "% nominal anual"
     unit_published: "% E.A."
-    plausible_range: [5.0, 20.0]
+    plausible_range: [10.525, 14.525]
     stale_check: true
     source_series:
       nominal: 16562
@@ -199,7 +198,7 @@ indicators:
     visible_label: Compra (R$)
     unit: BRL por USD
     unit_published: R$
-    plausible_range: [3.0, 8.0]
+    plausible_range: [4.2596, 5.763]
     stale_check: true
 
   - slug: gas_ttf_nl
@@ -208,7 +207,7 @@ indicators:
     visible_label: TFAc1
     unit: EUR/MWh
     unit_published: Valores en EUR
-    plausible_range: [5.0, 200.0]
+    plausible_range: [54.0435, 100.3665]
     stale_check: true
 
   - slug: gas_henry_micro
@@ -217,7 +216,7 @@ indicators:
     visible_label: MNDc1
     unit: USD/MMBtu
     unit_published: Valores en USD
-    plausible_range: [0.5, 15.0]
+    plausible_range: [2.1973, 4.0807]
     stale_check: true
 
   - slug: lng_jkm
@@ -226,5 +225,5 @@ indicators:
     visible_label: JKMc1
     unit: USD/MMBtu
     unit_published: Valores en USD
-    plausible_range: [2.0, 80.0]
+    plausible_range: [18.1685, 33.7415]
     stale_check: true

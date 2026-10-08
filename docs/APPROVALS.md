@@ -41,11 +41,42 @@ e5d410a51425b92602fa299055e40ae52e113e7016e91a76e8af295ac7079ed7  tests/golden/b
 - Sin `HEALTHCHECKS_URL` el ETL continúa (warning en log), igual que la
   política anterior con SMTP.
 
-## Gate del cron (vigente)
+## Gate del cron (2026-10-08: cumplido → activado)
 
-El `schedule` de `scrape.yml` sigue **comentado** hasta cumplir las tres
-condiciones:
+- (a) 18/18 aprobado con golden real de `DÓLAR OFICIAL MAÑANA` — **cumplido**
+  (run `37846703655`, valor real 3218.75 COP, `source_date=2026-10-09`).
+- (b) ping de prueba visible en Healthchecks (start+success) — **cumplido**
+  (scrape #3 y #4: `healthchecks start: sent=True`, `report: sent=True`).
+- (c) dispatch post-15:00 America/Bogota verde con mañana en `ok` — **cumplido**
+  (scrape #4: `ok=18 failures=0`, smoke 18/18).
 
-- (a) 18/18 aprobado con golden real de `DOLAR OFICIAL MAÑANA` (post-15:00).
-- (b) ping de prueba visible en Healthchecks (start+success) en un dispatch manual.
-- (c) dispatch post-15:00 America/Bogota verde con mañana en `ok`.
+Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
+`schedule` (`0 2 * * *` UTC = 21:00 America/Bogota) queda **activo**.
+
+## 2026-10-08 — validación en vivo aprobada
+
+- Aprobado por: dueño del proyecto
+- Configuración: `config/indicators.yaml`
+- Indicadores aprobados: 18
+- Hashes SHA-256 de fixtures esperados:
+  - `tests/golden/larepublica/expected.json` — `6d5e09eea10e6043f7d360c481e5ecea6482ff33466c821aaab2699cd5af9c61`
+  - `tests/golden/banrep/expected.json` — `e606458d70666bd39d2891780327d4e448e17b36306c7a8c27310ad897859820`
+  - `tests/golden/bcb/expected.json` — `d4da652e7b1f41a18f691de768fc090646ee6982bfe140387cf342d2e1cc99e1`
+  - `tests/golden/investing/expected.json` — `e59d468585dc27967d129fbefbeb3c5442a63b8b5ff93fd70096b25b04ec7be8`
+
+## 2026-10-08 — Aprobación 18/18 (bloque real de DÓLAR OFICIAL MAÑANA)
+
+- Aprobado por: dueño del proyecto.
+- GitHub Actions run: `37846703655` (workflow_dispatch, Scrape #4).
+- ETL `run_id`: `20261008T212630Z-b04b7b82`, fecha `2026-10-08`.
+- `dolar_oficial_manana`: valor real **3218.75 COP**, `raw_text` `$ 3.218,75`,
+  `source_date 2026-10-09`. El golden sintético
+  (`main_with_manana_synthetic.html`) fue **retirado** y reemplazado por la
+  captura real (`tests/golden/larepublica/main.html`).
+- `make validate` recalibró los `plausible_range` de los 18 indicadores
+  (valor aprobado ± tolerancia por unidad) manteniendo los comentarios.
+- Hashes SHA-256 de esta aprobación:
+  - `tests/golden/larepublica/expected.json` — `6d5e09eea10e6043f7d360c481e5ecea6482ff33466c821aaab2699cd5af9c61`
+  - `tests/golden/banrep/expected.json` — `e606458d70666bd39d2891780327d4e448e17b36306c7a8c27310ad897859820`
+  - `tests/golden/bcb/expected.json` — `d4da652e7b1f41a18f691de768fc090646ee6982bfe140387cf342d2e1cc99e1`
+  - `tests/golden/investing/expected.json` — `e59d468585dc27967d129fbefbeb3c5442a63b8b5ff93fd70096b25b04ec7be8`
