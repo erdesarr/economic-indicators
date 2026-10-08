@@ -1,6 +1,6 @@
 {
   "source": "banrep",
-  "captured_at": "2026-10-08T13:20:00+00:00",
+  "captured_at": "2026-10-08T21:36:52.764515+00:00",
   "indicators": {
     "ibr_overnight": {
       "label": "Indicador Bancario de Referencia (IBR) overnight, nominal",

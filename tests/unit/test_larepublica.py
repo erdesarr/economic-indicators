@@ -55,24 +55,23 @@ def test_manana_block_missing_is_controlled_error(config: AppConfig) -> None:
     assert "label not found" in (result.error or "")
 
 
-def test_manana_block_present_is_parsed(config: AppConfig) -> None:
-    """Synthetic golden fixture: twin block built on the real trm-today markup.
+def test_manana_block_present_real_golden(config: AppConfig) -> None:
+    """The real captured page (post-15:00) parses the DÓLAR OFICIAL MAÑANA block.
 
-    `main_with_manana_synthetic.html` = captured main page (without the block)
-    + an exact `trm-today` twin (class `trm-tomorrow`, same nesting/classes).
-    This keeps the pending_live adapter tested offline.
+    The synthetic twin fixture was retired on 2026-10-08 when the owner
+    approved the real capture (run 37846703655).
     """
 
     indicator = config.by_slug("dolar_oficial_manana")
-    html = load_text("larepublica", "main_with_manana_synthetic.html")
-    assert 'class="trm-tomorrow"' in html
+    html = load_text("larepublica", "main.html")
+    assert "DÓLAR OFICIAL MAÑANA" in html
     result = parse_indicator(html, indicator)
+    body = load_expected("larepublica")["indicators"]["dolar_oficial_manana"]
     assert result.ok, result.error
-    assert result.value == pytest.approx(3250.10)
-    assert result.raw_text == "$ 3.250,10"
-    assert result.source_date is not None
-    assert result.source_date.isoformat() == "2026-10-09"
+    assert result.value == pytest.approx(body["value"])
+    assert result.raw_text == body["raw_text"]
     assert result.raw_label == "DÓLAR OFICIAL MAÑANA"
+    assert result.source_date is not None
 
 
 def test_ambiguous_label_is_error(config: AppConfig) -> None:

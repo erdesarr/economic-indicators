@@ -13,7 +13,7 @@ from etl.sources.banrep import BanrepAdapter
 from etl.sources.bcb import BcbAdapter, build_query_url
 from etl.sources.investing import InvestingAdapter
 from etl.sources.larepublica import LaRepublicaAdapter
-from tests.conftest import load_json, load_text
+from tests.conftest import load_expected, load_json, load_text
 
 
 def settings() -> Settings:
@@ -264,10 +264,11 @@ def test_investing_fetch_full_flow(
         user_agents=local_settings.user_agents,
     )
     results = InvestingAdapter().fetch(indicators, source, local_settings, FakeClient())  # type: ignore[arg-type]
+    expected = load_expected("investing")["indicators"]
     assert len(results) == 3
     assert all(result.ok for result in results.values())
-    assert results["gas_ttf_nl"].value == pytest.approx(77.205)
-    assert results["gas_henry_micro"].value == pytest.approx(3.143)
+    assert results["gas_ttf_nl"].value == pytest.approx(expected["gas_ttf_nl"]["value"])
+    assert results["gas_henry_micro"].value == pytest.approx(expected["gas_henry_micro"]["value"])
 
 
 class _Ctx:

@@ -1,6 +1,6 @@
 {
   "source": "larepublica",
-  "captured_at": "2026-10-08T13:20:00+00:00",
+  "captured_at": "2026-10-08T21:36:52.762009+00:00",
   "indicators": {
     "dolar_oficial_hoy": {
       "label": "DÓLAR OFICIAL HOY",
@@ -11,14 +11,23 @@
       "value_published": null,
       "source_date": "2026-10-08"
     },
-    "euro": {
-      "label": "EURO",
-      "value": 3625.6,
+    "dolar_oficial_manana": {
+      "label": "DÓLAR OFICIAL MAÑANA",
+      "value": 3218.75,
       "unit": "COP",
       "unit_as_published": "",
-      "raw_text": "$ 3.625,60",
+      "raw_text": "$ 3.218,75",
       "value_published": null,
-      "source_date": "2026-10-07"
+      "source_date": "2026-10-09"
+    },
+    "euro": {
+      "label": "EURO",
+      "value": 3607.58,
+      "unit": "COP",
+      "unit_as_published": "",
+      "raw_text": "$ 3.607,58",
+      "value_published": null,
+      "source_date": "2026-10-08"
     },
     "cafe_colombian_milds": {
       "label": "CAFÉ COLOMBIAN MILDS",
@@ -40,21 +49,21 @@
     },
     "petroleo_brent": {
       "label": "PETRÓLEO BRENT",
-      "value": 101.13,
+      "value": 103.74,
       "unit": "USD/bbl",
       "unit_as_published": "DÓLARES / BARRIL",
-      "raw_text": "US$ 101,13",
+      "raw_text": "US$ 103,74",
       "value_published": null,
-      "source_date": "2026-10-07"
+      "source_date": "2026-10-08"
     },
     "petroleo_wti": {
       "label": "PETRÓLEO WTI",
-      "value": 89.05,
+      "value": 91.01,
       "unit": "USD/bbl",
       "unit_as_published": "DÓLARES / BARRIL",
-      "raw_text": "US$ 89,05",
+      "raw_text": "US$ 91,01",
       "value_published": null,
-      "source_date": "2026-10-07"
+      "source_date": "2026-10-08"
     },
     "dtf": {
       "label": "DTF",
@@ -67,10 +76,10 @@
     },
     "msci_colcap": {
       "label": "MSCI COLCAP",
-      "value": 2525.49,
+      "value": 2525.45,
       "unit": "puntos",
       "unit_as_published": "",
-      "raw_text": "2.525,49",
+      "raw_text": "2.525,45",
       "value_published": null,
       "source_date": "2026-10-08"
     }

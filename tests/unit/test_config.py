@@ -61,8 +61,8 @@ def test_number_format_per_source(config: AppConfig) -> None:
     assert config.sources["bcb"].number_format == "json-dot"
 
 
-def test_pending_live_verification_flag(config: AppConfig) -> None:
-    assert config.by_slug("dolar_oficial_manana").verification == "pending_live"
+def test_verified_live_flag(config: AppConfig) -> None:
+    assert config.by_slug("dolar_oficial_manana").verification == "verified_live"
     assert config.by_slug("dolar_oficial_hoy").verification is None
 
 

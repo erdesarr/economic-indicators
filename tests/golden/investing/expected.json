@@ -1,6 +1,6 @@
 {
   "source": "investing",
-  "captured_at": "2026-10-08T13:20:00+00:00",
+  "captured_at": "2026-10-08T21:36:52.852374+00:00",
   "indicators": {
     "gas_ttf_nl": {
       "label": "Dutch TTF Natural Gas Futures - Nov 2026 (TFAc1)",
@@ -13,19 +13,19 @@
     },
     "gas_henry_micro": {
       "label": "Micro Henry Hub Natural Gas Futures - Nov 2026 (MNDc1)",
-      "value": 3.143,
+      "value": 3.139,
       "unit": "USD/MMBtu",
       "unit_as_published": "Valores en USD",
-      "raw_text": "3,143",
+      "raw_text": "3,139",
       "value_published": null,
       "source_date": "2026-10-08"
     },
     "lng_jkm": {
       "label": "LNG Japan/Korea Marker PLATTS Future - Nov 2026 (JKMc1)",
-      "value": 25.875,
+      "value": 25.955,
       "unit": "USD/MMBtu",
       "unit_as_published": "Valores en USD",
-      "raw_text": "25,875",
+      "raw_text": "25,955",
       "value_published": null,
       "source_date": "2026-10-08"
     }

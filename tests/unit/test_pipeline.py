@@ -225,7 +225,7 @@ def test_variation_between_consecutive_runs(tmp_path: Path, config: AppConfig) -
     run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
 
     changed = dict(values)
-    changed["uvr"] = values["uvr"] * 1.10
+    changed["uvr"] = values["uvr"] * 1.05
     run_etl(config, deps=make_deps(config, changed), run_date=date(2026, 10, 9), db_path=db)
 
     conn = connect(db)
