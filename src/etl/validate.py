@@ -198,6 +198,13 @@ def _trim_banrep(payload: Any, keep: int = 10) -> Any:
     return trimmed
 
 
+def _payload_by_host(recorder: RecordingClient, host_fragment: str) -> Any | None:
+    for url, payload in recorder.jsons.items():
+        if host_fragment in url:
+            return payload
+    return None
+
+
 def save_fixtures(
     config: AppConfig,
     results: Mapping[str, SourceResult],
@@ -247,7 +254,8 @@ def save_fixtures(
                         written.append(path)
                         seen_files.add(path)
             elif indicator.source == "banrep":
-                for payload in recorder.jsons.values():
+                payload = _payload_by_host(recorder, "banrep.gov.co")
+                if payload is not None:
                     path = source_dir / "series.json"
                     if path not in seen_files:
                         path.write_text(
@@ -257,7 +265,8 @@ def save_fixtures(
                         written.append(path)
                         seen_files.add(path)
             elif indicator.source == "bcb":
-                for payload in recorder.jsons.values():
+                payload = _payload_by_host(recorder, "bcb.gov.br")
+                if payload is not None:
                     path = source_dir / "sgs_10813.json"
                     if path not in seen_files:
                         path.write_text(
