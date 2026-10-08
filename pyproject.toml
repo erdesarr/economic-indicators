@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "economic-indicators"
+version = "0.1.0"
+description = "Daily ETL for Colombian economic indicators with 31-day history, REST API and email alerting"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "beautifulsoup4>=4.12",
+    "lxml>=5.2",
+    "PyYAML>=6.0",
+    "requests>=2.32",
+    "rich>=13.7",
+    "playwright>=1.45",
+    "truststore>=0.9",
+    "tzdata>=2024.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "types-requests",
+    "types-PyYAML",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests", "scripts"]
+extend-exclude = ["tests/golden"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4", "PT"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PT011", "PT012"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src/etl", "scripts"]
+exclude = ["tests/golden"]
+
+[[tool.mypy.overrides]]
+module = ["yaml.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "live: tests that hit the real network (not run in CI)",
+]
+
+[tool.coverage.run]
+source = ["src/etl"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
