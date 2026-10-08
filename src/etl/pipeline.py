@@ -179,9 +179,7 @@ def run_etl(
                         date.fromisoformat(str(previous["date"])) if previous else None,
                         settings.max_gap_days,
                     )
-                    source_date_iso = (
-                        result.source_date.isoformat() if result.source_date else None
-                    )
+                    source_date_iso = result.source_date.isoformat() if result.source_date else None
                     stale = bool(
                         indicator.stale_check
                         and previous is not None
@@ -246,9 +244,7 @@ def run_etl(
                             )
                         )
                     else:
-                        no_history_reason = (
-                            f"{reason} — sin histórico para forward-fill"
-                        )
+                        no_history_reason = f"{reason} — sin histórico para forward-fill"
                         failures.append(
                             FailureItem(
                                 slug=indicator.slug,

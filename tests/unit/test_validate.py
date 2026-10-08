@@ -98,14 +98,10 @@ def test_save_fixtures_writes_all_sources(tmp_path: Path, config: AppConfig) -> 
 
     recorder = RecordingClient(tmp_cfg.settings)
     igbc_url = next(
-        indicator.url
-        for indicator in config.indicators
-        if indicator.source == "larepublica_igbc"
+        indicator.url for indicator in config.indicators if indicator.source == "larepublica_igbc"
     )
     recorder.texts = {
-        "https://www.larepublica.co/indicadores-economicos": load_text(
-            "larepublica", "main.html"
-        ),
+        "https://www.larepublica.co/indicadores-economicos": load_text("larepublica", "main.html"),
         "https://www.larepublica.co/indicadores-economicos/bancos/dtf": load_text(
             "larepublica", "dtf.html"
         ),

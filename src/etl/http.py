@@ -56,9 +56,7 @@ class HttpClient:
                 if response.status_code >= 500:
                     raise FetchError(f"server error {response.status_code} for {url}")
                 if response.status_code >= 400:
-                    raise PermanentFetchError(
-                        f"client error {response.status_code} for {url}"
-                    )
+                    raise PermanentFetchError(f"client error {response.status_code} for {url}")
                 response.raise_for_status()
                 return response
             except PermanentFetchError:

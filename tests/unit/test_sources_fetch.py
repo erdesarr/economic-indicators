@@ -61,7 +61,10 @@ def test_larepublica_adapter_groups_by_url(config: AppConfig) -> None:
     client = FakeClient(texts={url: load_text("larepublica", "main.html")})
     source = SourceConfig("larepublica_main", "html", "es-CO", 1)
     results = LaRepublicaAdapter("larepublica_main").fetch(
-        indicators, source, settings(), client  # type: ignore[arg-type]
+        indicators,
+        source,
+        settings(),
+        client,  # type: ignore[arg-type]
     )
     assert len(results) == len(indicators)
     assert results["euro"].ok
@@ -73,7 +76,10 @@ def test_larepublica_adapter_fetch_error(config: AppConfig) -> None:
     client = FakeClient()
     source = SourceConfig("larepublica_main", "html", "es-CO", 1)
     results = LaRepublicaAdapter("larepublica_main").fetch(
-        indicators, source, settings(), client  # type: ignore[arg-type]
+        indicators,
+        source,
+        settings(),
+        client,  # type: ignore[arg-type]
     )
     assert all(not result.ok for result in results.values())
 
@@ -213,9 +219,7 @@ def test_investing_fetch_one_success(config: AppConfig, tmp_path: Path) -> None:
     indicator = config.by_slug("gas_ttf_nl")
     source = SourceConfig("investing", "browser", "es-ES", 1, "https://es.investing.com/")
     page = FakePage(load_text("investing", "gas_ttf_nl.html"))
-    result = InvestingAdapter()._fetch_one(
-        page, indicator, source, settings(), tmp_path
-    )
+    result = InvestingAdapter()._fetch_one(page, indicator, source, settings(), tmp_path)
     assert result.ok
     assert result.value == pytest.approx(77.205)
     assert (tmp_path / "gas_ttf_nl.html").exists()

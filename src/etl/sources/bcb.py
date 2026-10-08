@@ -43,9 +43,7 @@ class BcbAdapter:
         results: dict[str, SourceResult] = {}
         for indicator in indicators:
             try:
-                payload = client.get_json(
-                    build_query_url(indicator.url), retries=source.retries
-                )
+                payload = client.get_json(build_query_url(indicator.url), retries=source.retries)
             except FetchError as exc:
                 results[indicator.slug] = SourceResult(slug=indicator.slug, error=str(exc))
                 continue
