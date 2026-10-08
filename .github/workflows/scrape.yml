@@ -2,7 +2,8 @@ name: Scrape
 
 on:
   # SCHEDULE PROHIBITED until the owner approves a full `make validate`
-  # (18/18 live) and a manual workflow_dispatch run. Do not uncomment.
+  # (18/18 live), a visible Healthchecks test ping and a green post-15:00
+  # Bogota dispatch with DOLAR OFICIAL MANANA in ok. Do not uncomment.
   #
   # schedule:
   #   # 0 2 * * * UTC = 21:00 America/Bogota.
@@ -16,6 +17,11 @@ concurrency:
 
 permissions:
   contents: write
+
+env:
+  # Healthchecks.io ping URL (full UUID). Created by the owner; missing secret
+  # disables alerting gracefully (warning in logs, ETL keeps running).
+  HEALTHCHECKS_URL: ${{ secrets.HEALTHCHECKS_URL }}
 
 jobs:
   scrape:
@@ -33,7 +39,11 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install
+        id: install
         run: pip install .
+
+      - name: Healthchecks start ping
+        run: python scripts/hc_ping.py start
 
       - name: Detect browser sources
         id: browser
@@ -50,18 +60,19 @@ jobs:
           fi
 
       - name: Install Playwright Chromium (browser sources only)
+        id: browser_install
         if: steps.browser.outputs.needed == 'true'
         run: python -m playwright install --with-deps chromium
 
       - name: Run ETL
-        env:
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
-          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        id: etl
         run: python scripts/run_etl.py
+
+      # Runs when the ETL step succeeded: /fail if failures > 0 (forward-fill
+      # applied), /success otherwise. Stale warnings without failures are a
+      # SUCCESS ping with the warning in the body.
+      - name: Healthchecks report ping
+        run: python scripts/hc_ping.py report
 
       - name: Upload raw artifacts (HTML + screenshots)
         if: always()
@@ -73,6 +84,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Commit and push data
+        id: commit
         run: |
           set -e
           git config user.name "github-actions[bot]"
@@ -94,5 +106,23 @@ jobs:
           exit 1
 
       - name: Live smoke test (17/18 until MANANA is verified live)
+        id: smoke
         continue-on-error: true
         run: python scripts/test_live.py
+
+      - name: Healthchecks crash ping
+        if: failure()
+        run: |
+          FAILED="unknown"
+          for pair in \
+            "install:${{ steps.install.outcome }}" \
+            "playwright:${{ steps.browser_install.outcome }}" \
+            "etl:${{ steps.etl.outcome }}" \
+            "commit:${{ steps.commit.outcome }}"; do
+            name="${pair%%:*}"
+            outcome="${pair#*:}"
+            if [ "$outcome" = "failure" ]; then
+              FAILED="$name"
+            fi
+          done
+          python scripts/hc_ping.py crash --step "$FAILED"

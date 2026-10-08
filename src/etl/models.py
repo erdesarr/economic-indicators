@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date as Date
 
+from etl.alerts.summary import FailureItem
+
 
 @dataclass(frozen=True)
 class SeriesMapping:
@@ -132,7 +134,8 @@ class RunReport:
     run_id: str
     run_date: Date
     results: list[IndicatorRun] = field(default_factory=list)
-    email_sent: bool = False
+    failures_detail: list[FailureItem] = field(default_factory=list)
+    stale_detail: list[FailureItem] = field(default_factory=list)
     pruned_rows: int = 0
 
     @property

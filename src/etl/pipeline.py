@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from zoneinfo import ZoneInfo
 
-from etl.alerts import FailureItem, Sender, SmtpConfig, maybe_send_alert, send_email
+from etl.alerts import FailureItem
 from etl.http import HttpClient
 from etl.models import (
     AppConfig,
@@ -42,8 +42,6 @@ logger = logging.getLogger(__name__)
 class PipelineDeps:
     adapters: Mapping[str, SourceAdapter] | None = None
     client: HttpClient | None = None
-    smtp: SmtpConfig | None = None
-    sender: Sender | None = None
 
 
 def local_run_date(settings: Settings, now: datetime | None = None) -> date:
@@ -135,8 +133,6 @@ def run_etl(
     run_date: date | None = None,
     db_path: str | None = None,
     run_id: str | None = None,
-    run_url: str | None = None,
-    send_alerts: bool = True,
 ) -> RunReport:
     """Execute one ETL run and return the report (exit code included)."""
 
@@ -266,18 +262,46 @@ def run_etl(
                         )
 
         report.pruned_rows = prune(conn, settings.history_days, run_day)
-        if send_alerts:
-            report.email_sent = maybe_send_alert(
-                run_day,
-                failures,
-                stale_warnings,
-                run_url=run_url,
-                smtp=deps.smtp,
-                sender=deps.sender or send_email,
-            )
+        report.failures_detail = failures
+        report.stale_detail = stale_warnings
         return report
     finally:
         conn.close()
+
+
+def report_to_dict(report: RunReport) -> dict[str, object]:
+    """Serialize the run report for the Healthchecks notification step."""
+
+    def item_to_dict(item: FailureItem) -> dict[str, object]:
+        return {
+            "slug": item.slug,
+            "source": item.source,
+            "error": item.error,
+            "forward_filled_value": item.forward_filled_value,
+            "status": item.status,
+            "stale_warning": item.stale_warning,
+        }
+
+    return {
+        "run_id": report.run_id,
+        "run_date": report.run_date.isoformat(),
+        "ok": report.ok_count,
+        "failures": [item_to_dict(item) for item in report.failures_detail],
+        "stale_warnings": [item_to_dict(item) for item in report.stale_detail],
+        "pruned_rows": report.pruned_rows,
+        "results": [
+            {
+                "slug": result.slug,
+                "source": result.source,
+                "status": result.status,
+                "value": result.value,
+                "value_published": result.value_published,
+                "error": result.error,
+                "stale_warning": result.stale_warning,
+            }
+            for result in report.results
+        ],
+    }
 
 
 def format_report(report: RunReport) -> str:

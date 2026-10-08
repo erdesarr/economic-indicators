@@ -9,7 +9,6 @@ from pathlib import Path
 
 import pytest
 
-from etl.alerts import SmtpConfig
 from etl.models import (
     AppConfig,
     IndicatorConfig,
@@ -17,7 +16,7 @@ from etl.models import (
     SourceConfig,
     SourceResult,
 )
-from etl.pipeline import PipelineDeps, run_etl
+from etl.pipeline import PipelineDeps, report_to_dict, run_etl
 from etl.storage import connect, indicator_id
 from tests.conftest import live_values
 
@@ -65,33 +64,19 @@ def make_deps(
     values: dict[str, float],
     errors: dict[str, str] | None = None,
     source_dates: dict[str, date] | None = None,
-) -> tuple[PipelineDeps, list[object]]:
+) -> PipelineDeps:
     adapter = FakeAdapter(values, errors, source_dates)
-    sent: list[object] = []
-    smtp = SmtpConfig(
-        host="smtp.test",
-        port=2525,
-        user="u",
-        password="p",
-        sender="etl@test",
-        recipients=("owner@test",),
-    )
-    deps = PipelineDeps(
-        adapters=dict.fromkeys(config.sources, adapter),
-        smtp=smtp,
-        sender=lambda message, smtp: sent.append(message),
-    )
-    return deps, sent
+    return PipelineDeps(adapters=dict.fromkeys(config.sources, adapter))
 
 
 def test_full_run_persists_all_ok(tmp_path: Path, config: AppConfig) -> None:
     values = live_values(config)
     values["dolar_oficial_manana"] = 3250.0
-    deps, sent = make_deps(config, values)
+    deps = make_deps(config, values)
     report = run_etl(config, deps=deps, run_date=date(2026, 10, 8), db_path=str(tmp_path / "t.db"))
     assert report.ok_count == len(config.indicators)
     assert report.exit_code == 0
-    assert sent == []
+    assert report.failures_detail == []
     conn = connect(tmp_path / "t.db")
     try:
         rows = conn.execute("SELECT COUNT(*) AS n FROM reading WHERE status = 'ok'").fetchone()
@@ -105,14 +90,14 @@ def test_forward_fill_on_failure(tmp_path: Path, config: AppConfig) -> None:
     values = live_values(config)
     values["dolar_oficial_manana"] = 3250.0
 
-    deps, sent = make_deps(config, values)
-    run_etl(config, deps=deps, run_date=date(2026, 10, 8), db_path=db)
+    run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
 
     failing = make_deps(config, values, errors={"euro": "timeout"})
-    report = run_etl(config, deps=failing[0], run_date=date(2026, 10, 9), db_path=db)
+    report = run_etl(config, deps=failing, run_date=date(2026, 10, 9), db_path=db)
     assert len(report.failures) == 1
     assert report.failures[0].slug == "euro"
-    assert len(failing[1]) == 1  # one summary email
+    assert len(report.failures_detail) == 1
+    assert report.failures_detail[0].status == "forward_filled"
 
     conn = connect(db)
     try:
@@ -133,39 +118,53 @@ def test_out_of_range_is_forward_filled(tmp_path: Path, config: AppConfig) -> No
     db = str(tmp_path / "t.db")
     values = live_values(config)
     values["dolar_oficial_manana"] = 3250.0
-    deps, _ = make_deps(config, values)
-    run_etl(config, deps=deps, run_date=date(2026, 10, 8), db_path=db)
+    run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
 
     bad_values = dict(values)
     bad_values["uvr"] = 99999.0
-    bad_deps, sent = make_deps(config, bad_values)
-    report = run_etl(config, deps=bad_deps, run_date=date(2026, 10, 9), db_path=db)
+    report = run_etl(
+        config,
+        deps=make_deps(config, bad_values),
+        run_date=date(2026, 10, 9),
+        db_path=db,
+    )
     assert any(r.slug == "uvr" and r.status == "forward_filled" for r in report.results)
-    assert sent  # email sent
+    assert any(item.slug == "uvr" for item in report.failures_detail)
 
 
 def test_all_failures_without_previous_exits_1(tmp_path: Path, config: AppConfig) -> None:
     errors = {indicator.slug: "boom" for indicator in config.indicators}
-    deps, sent = make_deps(config, {}, errors=errors)
-    report = run_etl(config, deps=deps, run_date=date(2026, 10, 8), db_path=str(tmp_path / "t.db"))
+    report = run_etl(
+        config,
+        deps=make_deps(config, {}, errors=errors),
+        run_date=date(2026, 10, 8),
+        db_path=str(tmp_path / "t.db"),
+    )
     assert report.exit_code == 1
     assert all(r.status == "failed" for r in report.results)
-    assert sent  # alert email still sent
-    html = sent[0].get_body(preferencelist=("html",)).get_content()  # type: ignore[union-attr]
-    assert "sin histórico para forward-fill" in html
+    assert all("sin histórico para forward-fill" in (r.error or "") for r in report.results)
 
 
 def test_stale_source_date_warning(tmp_path: Path, config: AppConfig) -> None:
     db = str(tmp_path / "t.db")
     values = live_values(config)
     values["dolar_oficial_manana"] = 3250.0
-    first = make_deps(config, values, source_dates={"uvr": date(2026, 10, 6)})
-    run_etl(config, deps=first[0], run_date=date(2026, 10, 8), db_path=db)
+    run_etl(
+        config,
+        deps=make_deps(config, values, source_dates={"uvr": date(2026, 10, 6)}),
+        run_date=date(2026, 10, 8),
+        db_path=db,
+    )
 
-    second = make_deps(config, values, source_dates={"uvr": date(2026, 10, 6)})
-    report = run_etl(config, deps=second[0], run_date=date(2026, 10, 9), db_path=db)
+    report = run_etl(
+        config,
+        deps=make_deps(config, values, source_dates={"uvr": date(2026, 10, 6)}),
+        run_date=date(2026, 10, 9),
+        db_path=db,
+    )
     stale = [r for r in report.results if r.stale_warning]
     assert [r.slug for r in stale] == ["uvr"]
+    assert [item.slug for item in report.stale_detail] == ["uvr"]
 
 
 def test_manana_missing_block_forward_fills(tmp_path: Path, config: AppConfig) -> None:
@@ -174,11 +173,10 @@ def test_manana_missing_block_forward_fills(tmp_path: Path, config: AppConfig) -
     db = str(tmp_path / "t.db")
     values = live_values(config)
     values["dolar_oficial_manana"] = 3250.0
-    deps, _ = make_deps(config, values)
-    run_etl(config, deps=deps, run_date=date(2026, 10, 8), db_path=db)
+    run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
 
     missing = make_deps(config, values, errors={"dolar_oficial_manana": "label not found in page"})
-    report = run_etl(config, deps=missing[0], run_date=date(2026, 10, 9), db_path=db)
+    report = run_etl(config, deps=missing, run_date=date(2026, 10, 9), db_path=db)
     assert any(
         r.slug == "dolar_oficial_manana" and r.status == "forward_filled" for r in report.results
     )
@@ -199,8 +197,7 @@ def test_prune_runs_on_successful_run(tmp_path: Path, config: AppConfig) -> None
     db = str(tmp_path / "t.db")
     values = live_values(config)
     values["dolar_oficial_manana"] = 3250.0
-    deps, _ = make_deps(config, values)
-    report = run_etl(config, deps=deps, run_date=date(2026, 10, 8), db_path=db)
+    report = run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
     assert report.pruned_rows == 0
 
     conn = connect(db)
@@ -215,8 +212,9 @@ def test_prune_runs_on_successful_run(tmp_path: Path, config: AppConfig) -> None
     finally:
         conn.close()
 
-    deps2, _ = make_deps(config, values)
-    report2 = run_etl(config, deps=deps2, run_date=date(2026, 10, 9), db_path=db)
+    report2 = run_etl(
+        config, deps=make_deps(config, values), run_date=date(2026, 10, 9), db_path=db
+    )
     assert report2.pruned_rows == 1
 
 
@@ -224,13 +222,11 @@ def test_variation_between_consecutive_runs(tmp_path: Path, config: AppConfig) -
     db = str(tmp_path / "t.db")
     values = live_values(config)
     values["dolar_oficial_manana"] = 3250.0
-    deps, _ = make_deps(config, values)
-    run_etl(config, deps=deps, run_date=date(2026, 10, 8), db_path=db)
+    run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
 
     changed = dict(values)
     changed["uvr"] = values["uvr"] * 1.10
-    deps2, _ = make_deps(config, changed)
-    run_etl(config, deps=deps2, run_date=date(2026, 10, 9), db_path=db)
+    run_etl(config, deps=make_deps(config, changed), run_date=date(2026, 10, 9), db_path=db)
 
     conn = connect(db)
     try:
@@ -245,10 +241,34 @@ def test_variation_between_consecutive_runs(tmp_path: Path, config: AppConfig) -
 
 def test_run_report_failures_property(tmp_path: Path, config: AppConfig) -> None:
     errors = {i.slug: "x" for i in config.indicators}
-    deps, _ = make_deps(config, {}, errors=errors)
-    report = run_etl(config, deps=deps, run_date=date(2026, 10, 8), db_path=str(tmp_path / "t.db"))
+    report = run_etl(
+        config,
+        deps=make_deps(config, {}, errors=errors),
+        run_date=date(2026, 10, 8),
+        db_path=str(tmp_path / "t.db"),
+    )
     assert len(report.failures) == len(config.indicators)
     assert isinstance(connect(str(tmp_path / "t.db")), sqlite3.Connection)
+
+
+def test_report_to_dict_shape(tmp_path: Path, config: AppConfig) -> None:
+    values = live_values(config)
+    values["dolar_oficial_manana"] = 3250.0
+    report = run_etl(
+        config,
+        deps=make_deps(config, values, errors={"euro": "timeout"}),
+        run_date=date(2026, 10, 8),
+        db_path=str(tmp_path / "t.db"),
+    )
+    payload = report_to_dict(report)
+    assert payload["ok"] == 17
+    assert payload["run_date"] == "2026-10-08"
+    failures = payload["failures"]
+    assert isinstance(failures, list)
+    assert len(failures) == 1
+    assert failures[0]["slug"] == "euro"
+    assert failures[0]["forward_filled_value"] is None  # no previous reading
+    assert "results" in payload
 
 
 def test_source_exception_is_contained(tmp_path: Path, config: AppConfig) -> None:
@@ -269,10 +289,9 @@ def test_format_report_contains_run_id(tmp_path: Path, config: AppConfig) -> Non
 
     values = live_values(config)
     values["dolar_oficial_manana"] = 3250.0
-    deps, _ = make_deps(config, values)
     report = run_etl(
         config,
-        deps=deps,
+        deps=make_deps(config, values),
         run_date=date(2026, 10, 8),
         db_path=str(tmp_path / "t.db"),
         run_id="fixed-run-id",
