@@ -41,10 +41,18 @@ class FakeSession:
         self.responses = responses
         self.calls = 0
         self.last_headers: dict[str, str] = {}
+        self.last_verify: str | None = None
 
-    def get(self, url: str, headers: dict[str, str], timeout: int) -> object:
+    def get(
+        self,
+        url: str,
+        headers: dict[str, str],
+        timeout: int,
+        verify: str | None = None,
+    ) -> object:
         self.calls += 1
         self.last_headers = headers
+        self.last_verify = verify
         response = self.responses.pop(0)
         if isinstance(response, Exception):
             raise response
@@ -124,3 +132,29 @@ def test_sleep_politeness(monkeypatch: pytest.MonkeyPatch) -> None:
     client = HttpClient(settings())
     client.sleep_politeness()
     assert slept == [0.01]
+
+
+def test_extra_ca_bundle_for_banrep() -> None:
+    from pathlib import Path
+
+    from etl.http import extra_ca_bundle
+
+    bundle = extra_ca_bundle("suameca.banrep.gov.co")
+    assert bundle is not None
+    content = Path(bundle).read_text(encoding="utf-8")
+    assert "BEGIN CERTIFICATE" in content
+    assert "GeoTrust EV RSA CA G2" in content or "BEGIN CERTIFICATE" in content
+    assert extra_ca_bundle("example.com") is None
+    assert extra_ca_bundle(None) is None
+
+
+def test_get_passes_extra_bundle_only_for_known_host(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    session = FakeSession([FakeResponse(200, "ok")])
+    client = HttpClient(settings(), session=session)  # type: ignore[arg-type]
+    client.get_text("https://suameca.banrep.gov.co/serie")
+    assert session.last_verify is not None
+    session2 = FakeSession([FakeResponse(200, "ok")])
+    client2 = HttpClient(settings(), session=session2)  # type: ignore[arg-type]
+    client2.get_text("https://example.com/")
+    assert session2.last_verify is None

@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
+import functools
 import logging
 import random
+import tempfile
 import time
+from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
+import certifi
 import requests
-import truststore
 
 from etl.models import Settings
 
@@ -16,10 +20,32 @@ logger = logging.getLogger(__name__)
 
 RETRY_BASE_SECONDS = 1.0
 
-# Some sources (e.g. suameca.banrep.gov.co) serve an incomplete certificate
-# chain that browsers/curl resolve via the OS trust store. Python/OpenSSL does
-# not do AIA fetching, so we use the OS trust store through truststore.
-truststore.inject_into_ssl()
+# Some servers send an incomplete TLS chain. suameca.banrep.gov.co sends the
+# leaf + root but omits the intermediate "GeoTrust EV RSA CA G2" (published in
+# the leaf's AIA extension), which browsers resolve via the OS cache. We pin
+# the intermediate explicitly and combine it with certifi's roots.
+EXTRA_CA_HOSTS: dict[str, str] = {
+    "suameca.banrep.gov.co": "config/certs/geotrust_ev_rsa_ca_g2.pem",
+}
+
+
+@functools.lru_cache(maxsize=8)
+def extra_ca_bundle(host: str | None) -> str | None:
+    """Return a CA bundle path for hosts with an incomplete chain."""
+
+    if host is None:
+        return None
+    relative = EXTRA_CA_HOSTS.get(host)
+    if relative is None:
+        return None
+    intermediate = Path(relative)
+    if not intermediate.exists():
+        logger.warning("extra CA file missing for %s: %s", host, intermediate)
+        return None
+    roots = Path(certifi.where()).read_text(encoding="utf-8")
+    bundle = Path(tempfile.gettempdir()) / f"etl_ca_bundle_{host}.pem"
+    bundle.write_text(roots + "\n" + intermediate.read_text(encoding="utf-8"), encoding="utf-8")
+    return str(bundle)
 
 
 class FetchError(RuntimeError):
@@ -48,10 +74,14 @@ class HttpClient:
         if accept:
             headers["Accept"] = accept
         last_error: Exception | None = None
+        verify = extra_ca_bundle(urlsplit(url).hostname)
         for attempt in range(1, retries + 1):
             try:
                 response = self._session.get(
-                    url, headers=headers, timeout=self._settings.request_timeout
+                    url,
+                    headers=headers,
+                    timeout=self._settings.request_timeout,
+                    verify=verify,
                 )
                 if response.status_code >= 500:
                     raise FetchError(f"server error {response.status_code} for {url}")

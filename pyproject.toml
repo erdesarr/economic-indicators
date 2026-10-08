@@ -11,12 +11,12 @@ requires-python = ">=3.12"
 license = { text = "MIT" }
 dependencies = [
     "beautifulsoup4>=4.12",
+    "certifi>=2024.2",
     "lxml>=5.2",
     "PyYAML>=6.0",
     "requests>=2.32",
     "rich>=13.7",
     "playwright>=1.45",
-    "truststore>=0.9",
     "tzdata>=2024.1",
 ]
 
