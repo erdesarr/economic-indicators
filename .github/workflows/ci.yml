@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Ruff (lint)
+        run: ruff check src tests scripts
+
+      - name: Ruff (format)
+        run: ruff format --check src tests scripts
+
+      - name: Mypy
+        run: mypy
+
+      # Offline: golden fixtures only, no network access.
+      - name: Pytest (unit + contract, coverage >= 80%)
+        run: pytest tests/unit tests/contract -m "not live" --cov --cov-report=term-missing
