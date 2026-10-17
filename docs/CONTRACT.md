@@ -1,5 +1,7 @@
 # API contract — indicators JSON
 
+**English | [Español](CONTRACT.es.md)**
+
 Two read modes expose the **same model**:
 
 1. **FastAPI** (`src/api/main.py`), read-only SQLite, OpenAPI at `/docs`.

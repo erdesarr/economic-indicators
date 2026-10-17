@@ -1,5 +1,7 @@
 # economic-indicators
 
+**English | [Español](README.es.md)**
+
 Daily ETL for 18 Colombian/global economic indicators with a rolling 31-day
 history, day-over-day variation, a read-only REST API (FastAPI), a static JSON
 contract on GitHub Pages and Healthchecks.io alerting. Runs on GitHub Actions.
@@ -139,6 +141,50 @@ Edit `config/indicators.yaml` only: `slug`, `source`, `url`, `visible_label`,
 `unit`, `plausible_range`, optional `source_series`/`stale_check`. The catalog,
 pipeline, API and Pages contract pick it up automatically. Then run
 `make validate` to approve the values and recalibrate the range.
+
+## Form updater (Google Sheet → public web form)
+
+A separate module (`src/form_updater/`) updates the GlobalNews "Indicadores"
+form from the latest ETL data. The book is edited by 3 people in Google Sheets
+and shared as **Anyone with the link → Reader**; Sheets **version history** is
+the safety net against accidental edits (both tabs are covered by the same
+permissions).
+
+Two tabs:
+
+- `indicators_config` — 8 columns: `indicador`, `prefijo`, `sufijo`,
+  `mostrar_variacion`, `simbolo_variacion`, `fallback`, `id_indicador`,
+  `activo` (+ optional 9th `umbral_variacion_pct` per-row override).
+- `ajustes` — key/value: `horario_etl`, `horario_updater`,
+  `umbral_variacion_pct` (searched by `clave`, order-proof).
+
+Key semantics:
+
+- **Formatter:** `prefijo + numero_es_CO(value) + sufijo`; when enabled,
+  ` +/−{symbol}{abs(variation):2dec}%` is appended (always one space). Numbers
+  use dot thousands and comma decimals; values keep up to 4 decimals.
+  `simbolo_variacion` is `UP|DOWN` (pipe U+007C); a single token means up-token
+  and `-`; empty means `+|−`. Prefix/suffix are literal (spaces preserved; one
+  outer backtick is stripped).
+- **Resilience chain:** `primary → fallback → forward_fill`. A fresh candidate
+  is discarded when `|variation_pct| > umbral_variacion_pct` (per-row override
+  or global); forward_fill is never discarded. The displayed variation always
+  belongs to the variable whose value was used.
+- **Inactive rows** (`activo=FALSE`) pause writing only; the variable remains
+  available as a fallback for other rows.
+- **Scheduler:** a fixed `*/5` UTC workflow reads the committed snapshot and
+  runs `scrape.yml` / `form_update.yml` when the sheet-defined cron matches the
+  current America/Bogota window. Workflow YAML is never rewritten.
+- **Safety:** the updater never writes stale data (freshness check with
+  raw.githubusercontent fallback), verifies the record `Nombre` against
+  `tests/golden/webform/records.json`, and re-reads the form after the postback.
+- **Activation gate:** scheduler/form_update crons stay disabled until the owner
+  approves the live 3-record write, the golden records and the dry-run (see
+  `docs/APPROVALS.md`).
+
+Full details: [docs/FORM_UPDATER.md](docs/FORM_UPDATER.md) ·
+Operations: [docs/RUNBOOK.md](docs/RUNBOOK.md) ·
+Contract: [docs/CONTRACT.md](docs/CONTRACT.md).
 
 ## API
 
