@@ -162,16 +162,67 @@ class WebFormClient:
             return str(fallback)
 
     def _click_update(self) -> None:
-        candidates = self._page.locator("input[type='submit'], button")
+        candidates = self._page.locator("input, button, a")
+        seen: list[str] = []
         for index in range(candidates.count()):
             element = candidates.nth(index)
-            label = (element.get_attribute("value") or element.inner_text() or "").lower()
-            if "actualizar" in label:
+            try:
+                label = element.get_attribute("value") or ""
+                if not label:
+                    label = element.inner_text() or ""
+            except Exception:  # noqa: BLE001 - some elements are not readable
+                continue
+            title = element.get_attribute("title") or ""
+            name = element.get_attribute("name") or ""
+            seen.append(f"{name or title or label!r}")
+            haystack = f"{label} {title} {name}".lower()
+            if "actualizar" in haystack:
                 element.click()
                 self._page.wait_for_load_state("domcontentloaded")
                 self._page.wait_for_timeout(1000)
                 return
-        raise WebFormError("'Actualizar' button not found")
+        raise WebFormError("'Actualizar' button not found; candidates=" + ", ".join(seen[:15]))
+
+    def probe(self, id_indicador: int) -> dict[str, Any]:
+        """Diagnostic dump of the record page (no writes)."""
+
+        self._goto(id_indicador)
+        inputs: list[dict[str, Any]] = []
+        for index in range(self._page.locator("input, textarea, select").count()):
+            element = self._page.locator("input, textarea, select").nth(index)
+            inputs.append(
+                {
+                    "tag": element.evaluate("el => el.tagName"),
+                    "name": element.get_attribute("name"),
+                    "type": element.get_attribute("type"),
+                    "id": element.get_attribute("id"),
+                    "value": (element.get_attribute("value") or "")[:80],
+                }
+            )
+        clickables: list[dict[str, Any]] = []
+        for index in range(self._page.locator("input, button, a").count()):
+            element = self._page.locator("input, button, a").nth(index)
+            clickables.append(
+                {
+                    "tag": element.evaluate("el => el.tagName"),
+                    "name": element.get_attribute("name"),
+                    "id": element.get_attribute("id"),
+                    "value": element.get_attribute("value"),
+                    "title": element.get_attribute("title"),
+                    "href": (element.get_attribute("href") or "")[:80],
+                    "text": (element.inner_text() or "")[:60],
+                }
+            )
+        return {
+            "id": id_indicador,
+            "url": self._page.url,
+            "title": self._page.title(),
+            "inputs": inputs,
+            "clickables": clickables,
+        }
+
+    def page_html(self) -> str:
+        return str(self._page.content())
 
     def capture_names(self, ids: list[int]) -> dict[str, str]:
         records: dict[str, str] = {}

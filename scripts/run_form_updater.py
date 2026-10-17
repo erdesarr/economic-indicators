@@ -68,7 +68,9 @@ def _fail(message: str) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Update the web form from the ETL")
-    parser.add_argument("--mode", choices=["dry-run", "write", "capture"], default="dry-run")
+    parser.add_argument(
+        "--mode", choices=["dry-run", "write", "capture", "probe"], default="dry-run"
+    )
     parser.add_argument("--slugs", default=None, help="comma-separated record ids or slugs")
     parser.add_argument("--contract", default="artifacts/contract")
     parser.add_argument("--records", default=str(RECORDS_PATH))
@@ -104,6 +106,21 @@ def main() -> int:
         print(f"captured {len(records)} records into {path}")
         for key, value in sorted(records.items(), key=lambda item: int(item[0])):
             print(f"  {key} -> {value!r}")
+        return 0
+
+    if args.mode == "probe":
+        if not form_url:
+            return _fail("FORM_URL is not configured")
+        ids = [row.id_indicador for row in rows_for_selection][:1] or [1]
+        with WebFormClient(form_url, {}, artifacts_dir=Path(args.artifacts)) as client:
+            info = client.probe(ids[0])
+            html_path = Path(args.artifacts) / f"probe_{ids[0]}.html"
+            html_path.parent.mkdir(parents=True, exist_ok=True)
+            html_path.write_text(client.page_html(), encoding="utf-8")
+        import json as _json
+
+        print(_json.dumps(info, ensure_ascii=False, indent=2))
+        print(f"probe html: {html_path}")
         return 0
 
     data = load_variable_data(contract_dir)
