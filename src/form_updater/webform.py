@@ -134,6 +134,12 @@ class WebFormClient:
     def _url(self, id_indicador: int) -> str:
         return f"{self.base_url}?IndicadorID={id_indicador}"
 
+    def _pause(self, milliseconds: int) -> None:
+        if self._page is not None:
+            self._page.wait_for_timeout(milliseconds)
+        else:
+            time.sleep(milliseconds / 1000)
+
     def _goto(self, id_indicador: int) -> None:
         self._page.goto(self._url(id_indicador), wait_until="domcontentloaded")
         self._page.wait_for_timeout(1000)
@@ -292,7 +298,7 @@ class WebFormClient:
         self._click_update()
         # ASP.NET redirects to List.aspx after a successful update; navigate
         # back to the record and re-read the persisted value.
-        self._page.wait_for_timeout(1000)
+        self._pause(1000)
         self._goto(id_indicador)
         new_value = self.read_value()
         ok = new_value == expected_value

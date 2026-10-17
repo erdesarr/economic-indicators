@@ -69,6 +69,9 @@ class StubClient(WebFormClient):
     def _goto(self, id_indicador: int) -> None:
         self.gotos.append(id_indicador)
 
+    def _pause(self, milliseconds: int) -> None:
+        return None
+
     def read_nombre(self) -> str:
         return self.nombre
 
