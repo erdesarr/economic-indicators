@@ -290,6 +290,10 @@ class WebFormClient:
         previous = self.read_value()
         self._fill_value(expected_value)
         self._click_update()
+        # ASP.NET redirects to List.aspx after a successful update; navigate
+        # back to the record and re-read the persisted value.
+        self._page.wait_for_timeout(1000)
+        self._goto(id_indicador)
         new_value = self.read_value()
         ok = new_value == expected_value
         error = (
