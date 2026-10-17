@@ -125,15 +125,23 @@ def forced_decision(
     )
 
 
-def trigger_workflow(workflow: str, ref: str = "main", timeout: float = 60.0) -> None:
+def trigger_workflow(
+    workflow: str,
+    ref: str = "main",
+    timeout: float = 60.0,
+    inputs: dict[str, str] | None = None,
+) -> None:
     """Dispatch a workflow with the gh CLI (GH_TOKEN required)."""
 
     env = os.environ.copy()
     token = env.get("GH_TOKEN") or env.get("GITHUB_TOKEN")
     if token:
         env["GH_TOKEN"] = token
+    command = ["gh", "workflow", "run", workflow, "--ref", ref]
+    for key, value in (inputs or {}).items():
+        command += ["-f", f"{key}={value}"]
     subprocess.run(
-        ["gh", "workflow", "run", workflow, "--ref", ref],
+        command,
         check=True,
         env=env,
         timeout=timeout,

@@ -97,7 +97,11 @@ def main() -> int:
                     f"(key={decision.key}, occurrence={decision.occurrence.isoformat()})"
                 )
                 continue
-            trigger_workflow(decision.workflow, ref=ref)
+            trigger_workflow(
+                decision.workflow,
+                ref=ref,
+                inputs={"mode": "write"} if decision.key == "updater" else None,
+            )
             dispatched.append(decision.workflow)
             print(
                 f"triggered {decision.workflow} (key={decision.key}, "

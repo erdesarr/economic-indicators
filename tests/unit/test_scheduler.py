@@ -104,6 +104,29 @@ def test_trigger_workflow_uses_gh_and_token(monkeypatch: pytest.MonkeyPatch) -> 
     assert env["GH_TOKEN"] == "token-123"
 
 
+def test_trigger_workflow_passes_write_mode_for_updater(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        captured["command"] = command
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr("subprocess.run", fake_run)
+    trigger_workflow("form_update.yml", ref="main", inputs={"mode": "write"})
+    assert captured["command"] == [
+        "gh",
+        "workflow",
+        "run",
+        "form_update.yml",
+        "--ref",
+        "main",
+        "-f",
+        "mode=write",
+    ]
+
+
 def test_load_settings_reads_snapshot(tmp_path) -> None:  # type: ignore[no-untyped-def]
     from form_updater.sheet import write_snapshot
 
