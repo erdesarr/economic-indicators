@@ -120,12 +120,14 @@ def parse_indicator(html: str, indicator: IndicatorConfig) -> SourceResult:
     """Parse a single indicator from a La República HTML page."""
 
     soup = BeautifulSoup(html, "lxml")
-    target = normalize_text(indicator.visible_label)
-    matches = [node for node in soup.find_all(string=True) if normalize_text(str(node)) == target]
+    labels = (indicator.visible_label, *indicator.visible_label_alternatives)
+    targets = {normalize_text(label) for label in labels}
+    matches = [node for node in soup.find_all(string=True) if normalize_text(str(node)) in targets]
     if not matches:
+        tried = " / ".join(repr(label) for label in labels)
         return SourceResult(
             slug=indicator.slug,
-            error=f"label not found in page: {indicator.visible_label!r}",
+            error=f"label not found in page: {tried}",
         )
 
     candidates: list[tuple[int, Tag, str, Tag, NavigableString]] = []
@@ -138,9 +140,10 @@ def parse_indicator(html: str, indicator: IndicatorConfig) -> SourceResult:
                 break
 
     if not candidates:
+        tried = " / ".join(repr(label) for label in labels)
         return SourceResult(
             slug=indicator.slug,
-            error=f"no price-like value near label: {indicator.visible_label!r}",
+            error=f"no price-like value near label: {tried}",
         )
 
     candidates.sort(key=lambda item: item[0])

@@ -110,6 +110,9 @@ def _parse_indicators(
                 stale_check=bool(body.get("stale_check", False)),
                 source_series=_parse_series(body.get("source_series"), slug),
                 verification=body.get("verification"),
+                visible_label_alternatives=tuple(
+                    str(label) for label in body.get("visible_label_alternatives", [])
+                ),
             )
         )
     return tuple(indicators)

@@ -55,6 +55,38 @@ def test_manana_block_missing_is_controlled_error(config: AppConfig) -> None:
     assert "label not found" in (result.error or "")
 
 
+def test_hoy_evening_label_variant(config: AppConfig) -> None:
+    """After ~15:00 the site drops 'HOY' from the today card label."""
+
+    indicator = config.by_slug("dolar_oficial_hoy")
+    html = load_text("larepublica", "main_without_manana.html").replace(
+        "DÓLAR OFICIAL HOY", "DÓLAR OFICIAL"
+    )
+    assert "DÓLAR OFICIAL HOY" not in html
+    result = parse_indicator(html, indicator)
+    assert result.ok, result.error
+    assert result.value == pytest.approx(3238.88)
+    assert result.raw_label == "DÓLAR OFICIAL"
+
+
+def test_alternative_label_does_not_match_manana(config: AppConfig) -> None:
+    """Exact-text matching: 'DÓLAR OFICIAL' must not capture the MAÑANA card."""
+
+    indicator = config.by_slug("dolar_oficial_hoy")
+    html = """
+    <html><body>
+      <h3 class="labelCasasCambio"><a>DÓLAR OFICIAL MAÑANA</a>
+        <span class="date">17/10/2026</span></h3>
+      <div><span class="priceIndicator">$ 3.174,67</span></div>
+    </body></html>
+    """
+    result = parse_indicator(html, indicator)
+    assert not result.ok
+    assert "label not found" in (result.error or "")
+    assert "DÓLAR OFICIAL HOY" in (result.error or "")
+    assert "DÓLAR OFICIAL'" in (result.error or "")
+
+
 def test_manana_block_present_real_golden(config: AppConfig) -> None:
     """The real captured page (post-15:00) parses the DÓLAR OFICIAL MAÑANA block.
 

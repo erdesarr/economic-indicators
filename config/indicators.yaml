@@ -48,6 +48,11 @@ indicators:
     source: larepublica_main
     url: https://www.larepublica.co/indicadores-economicos
     visible_label: DÓLAR OFICIAL HOY
+    # Evening variant: after the next-day TRM publication the site drops "HOY"
+    # from the label ("DÓLAR OFICIAL", date = today). Both variants map to the
+    # same card (`trm-today`); exact-text matching keeps "MAÑANA" unaffected.
+    visible_label_alternatives:
+      - DÓLAR OFICIAL
     unit: COP
     unit_published: COP
     plausible_range: [2915.0, 3563.0]

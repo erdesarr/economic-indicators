@@ -66,6 +66,13 @@ def test_verified_live_flag(config: AppConfig) -> None:
     assert config.by_slug("dolar_oficial_hoy").verification is None
 
 
+def test_hoy_evening_label_alternative(config: AppConfig) -> None:
+    indicator = config.by_slug("dolar_oficial_hoy")
+    assert indicator.visible_label == "DÓLAR OFICIAL HOY"
+    assert indicator.visible_label_alternatives == ("DÓLAR OFICIAL",)
+    assert config.by_slug("dolar_oficial_manana").visible_label_alternatives == ()
+
+
 def test_unknown_source_rejected(tmp_path: Path) -> None:
     path = tmp_path / "bad.yaml"
     path.write_text(

@@ -31,6 +31,7 @@ class IndicatorConfig:
     stale_check: bool = False
     source_series: SeriesMapping | None = None
     verification: str | None = None
+    visible_label_alternatives: tuple[str, ...] = ()
 
     def in_range(self, value: float) -> bool:
         low, high = self.plausible_range
