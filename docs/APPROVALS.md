@@ -123,3 +123,20 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
 - Pending owner action: create `HEALTHCHECKS_URL_FORM_UPDATER` (full ping URL);
   the write run logged it as empty, so the form-updater check received no pings
   (graceful degradation, as designed).
+
+## 2026-10-16 — Full autonomy activated (scheduler cron)
+
+- Approved by: project owner (end-to-end chain + cron activation order).
+- Chain evidence:
+  - scheduler run `38998097481` (21:00 Bogota window) → triggered `scrape.yml`;
+  - scrape run `38998117274`: `ok=18 failures=0`, smoke 18/18, Healthchecks
+    start/report `sent=True`;
+  - scheduler run `38998248948` (21:30 Bogota window) → triggered
+    `form_update.yml` with `mode=write`;
+  - form updater run `38998268446`: `written=18 failed=0 omitted=0`,
+    Healthchecks form-updater success `sent=True`.
+- `scheduler.yml`: `schedule: */5 * * * *` enabled.
+- `scrape.yml`: own cron disabled; the scheduler is the single automatic trigger
+  (avoids double runs). Manual `workflow_dispatch` remains.
+- GitHub may delay crons; the scheduler tolerates a 5-minute window and the
+  scrape smoke validates `artifacts/run_report.json` (valid forward-fill passes).

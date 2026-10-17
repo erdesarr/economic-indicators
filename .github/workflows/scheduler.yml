@@ -1,11 +1,10 @@
 name: Scheduler
 
 on:
-  # SCHEDULE GATED: activate only after gate 13 conditions are approved by the
-  # owner (see docs/APPROVALS.md). Do not uncomment before that.
-  #
-  # schedule:
-  #   - cron: "*/5 * * * *"
+  # ACTIVE since 2026-10-16 after the owner-approved end-to-end chain
+  # (scheduler -> scrape 18/18 -> scheduler -> form-updater 18 writes).
+  schedule:
+    - cron: "*/5 * * * *"
   workflow_dispatch:
     inputs:
       force:

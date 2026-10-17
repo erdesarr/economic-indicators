@@ -1,12 +1,12 @@
 name: Scrape
 
 on:
-  # Schedule ACTIVE since 2026-10-08 after the owner approved the 18/18 live
-  # run and the Healthchecks pings (see docs/APPROVALS.md).
-  schedule:
-    # 0 2 * * * UTC = 21:00 America/Bogota.
-    # Colombia does not observe DST, so the local time is stable all year.
-    - cron: "0 2 * * *"
+  # The schedule is intentionally disabled: scrape.yml is now triggered ONLY by
+  # scheduler.yml (dynamic schedule from the Sheet `ajustes` tab) and by manual
+  # workflow_dispatch. Do not re-enable a cron here (would double-run).
+  #
+  # schedule:
+  #   - cron: "0 2 * * *"
   workflow_dispatch:
 
 concurrency:
