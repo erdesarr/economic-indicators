@@ -1,0 +1,61 @@
+name: Scheduler
+
+on:
+  # SCHEDULE GATED: activate only after gate 13 conditions are approved by the
+  # owner (see docs/APPROVALS.md). Do not uncomment before that.
+  #
+  # schedule:
+  #   - cron: "*/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Test aid: trigger a workflow regardless of the window"
+        type: choice
+        options: [none, etl, updater]
+        default: none
+      now:
+        description: "Test aid: override current UTC time (ISO8601)"
+        required: false
+        default: ""
+
+concurrency:
+  group: scheduler
+  cancel-in-progress: false
+
+permissions:
+  actions: write
+  contents: read
+
+env:
+  HEALTHCHECKS_URL_SCHEDULER: ${{ secrets.HEALTHCHECKS_URL_SCHEDULER }}
+  HEALTHCHECKS_URL_SYNC: ${{ secrets.HEALTHCHECKS_URL_SYNC }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_REPO: ${{ github.repository }}
+
+jobs:
+  scheduler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: pip install .
+
+      - name: Run scheduler
+        run: |
+          ARGS=""
+          if [ "${{ inputs.force }}" != "" ] && [ "${{ inputs.force }}" != "none" ]; then
+            ARGS="$ARGS --force ${{ inputs.force }}"
+          fi
+          if [ -n "${{ inputs.now }}" ]; then
+            ARGS="$ARGS --now '${{ inputs.now }}'"
+          fi
+          echo "python scripts/scheduler.py $ARGS"
+          eval python scripts/scheduler.py $ARGS
