@@ -103,7 +103,7 @@ jobs:
           echo "push failed after retries" >&2
           exit 1
 
-      - name: Live smoke test (18/18, in-range, coherent units)
+      - name: Smoke validate ETL run report (18/18 presence)
         id: smoke
         run: python scripts/test_live.py
 

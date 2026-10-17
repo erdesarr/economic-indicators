@@ -105,6 +105,12 @@ Per run, `scrape.yml` sends:
 
 ## Runbook
 
+- **Smoke validates the ETL output, not a re-scrape:** the post-ETL step reads
+  `artifacts/run_report.json` (same run) and checks that all 18 indicators are
+  present with `ok`/`forward_filled`/`manual`. This avoids false negatives when
+  GitHub delays the cron and the run lands after midnight, when the site no
+  longer publishes the "tomorrow" block. `make test-live` keeps the live
+  re-scrape for manual checks (`scripts/test_live.py --live`).
 - **Forward-fill:** a failed indicator copies the last stored reading with
   `status='forward_filled'`, `base_gap=1` and `reason`. If there is no previous
   reading, **no row is invented**: the indicator is reported as `failed` with

@@ -35,7 +35,7 @@ test:
 	$(VENV_PY) -m pytest tests/unit tests/contract -m "not live" --cov --cov-report=term-missing
 
 test-live:
-	$(VENV_PY) scripts/test_live.py
+	$(VENV_PY) scripts/test_live.py --live
 
 api:
 	$(VENV_PY) -m uvicorn api.main:app --app-dir src --reload
