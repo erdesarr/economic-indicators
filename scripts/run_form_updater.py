@@ -29,11 +29,11 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from etl.alerts.healthchecks import HealthchecksClient  # noqa: E402
 from form_updater.updater import (  # noqa: E402
+    StaleDataError,
     build_plan,
     format_plan_lines,
-    freshness_error,
     load_active_rows,
-    load_variable_data,
+    resolve_variable_data,
 )
 from form_updater.webform import (  # noqa: E402
     RECORDS_PATH,
@@ -123,11 +123,13 @@ def main() -> int:
         print(f"probe html: {html_path}")
         return 0
 
-    data = load_variable_data(contract_dir)
     today = datetime.now(BOGOTA).date()
-    stale = freshness_error(contract_dir, today)
-    if stale is not None:
-        return _fail(stale)
+    try:
+        data_source = resolve_variable_data(contract_dir, today)
+    except StaleDataError as exc:
+        return _fail(str(exc))
+    print(f"data source: {data_source.origin} (as of {today.isoformat()})")
+    data = data_source.data
 
     plan = build_plan(rows_for_selection, data, slugs=None)
     for line in format_plan_lines(plan):

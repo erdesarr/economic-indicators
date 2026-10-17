@@ -6,15 +6,18 @@ import json
 from datetime import date
 from pathlib import Path
 
+import httpx
 import pytest
 
 from form_updater.sheet import IndicatorRow, write_snapshot
 from form_updater.updater import (
+    StaleDataError,
     build_plan,
     format_plan_lines,
     freshness_error,
     load_active_rows,
     load_variable_data,
+    resolve_variable_data,
 )
 
 TODAY = date(2026, 10, 16)
@@ -218,3 +221,88 @@ def test_freshness_check(tmp_path: Path) -> None:
     stale = freshness_error(contract, date(2026, 10, 17))
     assert stale is not None
     assert "stale" in stale
+
+
+def _raw_contract_transport(
+    newest_date: date,
+) -> httpx.MockTransport:
+    def handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        if url.endswith("/latest.json"):
+            return httpx.Response(
+                200,
+                json={
+                    "indicators": {
+                        "euro": {
+                            "slug": "euro",
+                            "date": newest_date.isoformat(),
+                            "value": 3600.0,
+                            "variation_pct": 0.5,
+                            "status": "ok",
+                        }
+                    }
+                },
+            )
+        if url.endswith("/history.json"):
+            return httpx.Response(
+                200,
+                json={
+                    "readings": [
+                        {"date": "2026-10-15", "value": 3590.0, "variation_pct": 0.2},
+                        {
+                            "date": newest_date.isoformat(),
+                            "value": 3600.0,
+                            "variation_pct": 0.5,
+                        },
+                    ]
+                },
+            )
+        return httpx.Response(404)
+
+    return httpx.MockTransport(handler)
+
+
+def test_stale_local_falls_back_to_fresh_raw(tmp_path: Path) -> None:
+    local = tmp_path / "contract"
+    write_contract(
+        local,
+        {"euro": {"value": 3000.0, "variation": 1.0, "previous": 2990.0, "date": "2026-10-15"}},
+    )
+    assert freshness_error(local, TODAY) is not None
+    client = httpx.Client(transport=_raw_contract_transport(TODAY))
+    source = resolve_variable_data(
+        local, TODAY, raw_base_url="https://raw.test/docs/api/v1", client=client
+    )
+    assert source.origin == "raw.githubusercontent.com"
+    assert source.data["euro"].value == pytest.approx(3600.0)
+    assert source.data["euro"].previous_value == pytest.approx(3590.0)
+
+
+def test_stale_local_and_stale_raw_fails(tmp_path: Path) -> None:
+    local = tmp_path / "contract"
+    write_contract(
+        local,
+        {"euro": {"value": 3000.0, "variation": 1.0, "previous": 2990.0, "date": "2026-10-15"}},
+    )
+    client = httpx.Client(transport=_raw_contract_transport(date(2026, 10, 15)))
+    with pytest.raises(StaleDataError) as excinfo:
+        resolve_variable_data(
+            local, TODAY, raw_base_url="https://raw.test/docs/api/v1", client=client
+        )
+    assert "refusing to write old data" in str(excinfo.value)
+    assert "raw.githubusercontent fallback failed" in str(excinfo.value)
+
+
+def test_fresh_local_does_not_call_remote(tmp_path: Path) -> None:
+    local = tmp_path / "contract"
+    write_contract(local, {"euro": {"value": 3607.58, "variation": 0.1, "previous": 3600.0}})
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError(f"unexpected remote call: {request.url}")
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    source = resolve_variable_data(
+        local, TODAY, raw_base_url="https://raw.test/docs/api/v1", client=client
+    )
+    assert source.origin == "local"
+    assert source.data["euro"].value == pytest.approx(3607.58)
