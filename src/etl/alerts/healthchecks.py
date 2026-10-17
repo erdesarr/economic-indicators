@@ -29,6 +29,16 @@ DEFAULT_TIMEOUT_SECONDS = 10.0
 DEFAULT_RETRIES = 3
 RETRY_BASE_SECONDS = 1.0
 
+# One Healthchecks.io check per pipeline stage. The scrape check keeps the
+# legacy env var; the others use suffixed names. Missing vars disable only
+# that check (graceful, warning in logs).
+CHECK_ENV_VARS = {
+    "scrape": "HEALTHCHECKS_URL",
+    "sync": "HEALTHCHECKS_URL_SYNC",
+    "scheduler": "HEALTHCHECKS_URL_SCHEDULER",
+    "form-updater": "HEALTHCHECKS_URL_FORM_UPDATER",
+}
+
 
 class HealthchecksError(RuntimeError):
     """Retryable Healthchecks transport/server error."""
@@ -54,6 +64,20 @@ class HealthchecksClient:
         url = os.environ.get("HEALTHCHECKS_URL")
         if not url:
             logger.warning("HEALTHCHECKS_URL is not configured; Healthchecks alerts disabled")
+            return None
+        return cls(url)
+
+    @classmethod
+    def from_env_for(cls, check: str) -> HealthchecksClient | None:
+        """Build the client for a named check (scrape/sync/scheduler/...)."""
+
+        try:
+            env_var = CHECK_ENV_VARS[check]
+        except KeyError as exc:
+            raise KeyError(f"unknown Healthchecks check: {check!r}") from exc
+        url = os.environ.get(env_var)
+        if not url:
+            logger.warning("%s is not configured; Healthchecks check '%s' disabled", env_var, check)
             return None
         return cls(url)
 

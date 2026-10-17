@@ -85,6 +85,17 @@ def test_from_env_reads_url(monkeypatch: pytest.MonkeyPatch) -> None:
     assert client.url == UUID_URL
 
 
+def test_from_env_for_named_checks(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("HEALTHCHECKS_URL_SYNC", "https://hc-ping.com/sync-uuid")
+    monkeypatch.delenv("HEALTHCHECKS_URL_SCHEDULER", raising=False)
+    sync_client = HealthchecksClient.from_env_for("sync")
+    assert sync_client is not None
+    assert sync_client.url == "https://hc-ping.com/sync-uuid"
+    assert HealthchecksClient.from_env_for("scheduler") is None
+    with pytest.raises(KeyError):
+        HealthchecksClient.from_env_for("nope")
+
+
 def test_notify_report_with_failures_pings_fail(tmp_path: Path) -> None:
     report = {
         "run_id": "r1",
