@@ -101,3 +101,25 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
   `umbral_variacion_pct=30` sits as an extra column of `indicators_config`
   instead of a key in `ajustes`. Sync warns once and uses the bootstrap default
   30.0 (critical -> /fail on the sync check). Spec-canonical location is `ajustes`.
+
+## 2026-10-16 — Form updater: golden records, dry-run and real write approved
+
+- Approved by: project owner (selected "Apruebo: write real 40,35,41").
+- Golden `tests/golden/webform/records.json` captured live from the form (18
+  active records; id 1 inactive, ids 2/34 both active with distinct names).
+  SHA-256: `a0afb7151e67fe79977f4bbf9b100c9c4deb0502d7e45383260a75b4c15629ed`.
+- Dry-run reviewed (run `38995934459`): 3 planned rows, 0 omitted:
+  `35 IBR Overnight 11,409%`, `40 USD/BRL R$ 5,082 +0,76%`,
+  `41 HH US$ 3,118 /MMBtu -4,09%` (all source=primary).
+- Real write verified live (run `38997093851`): 3/3 ok, previous == new ==
+  expected; screenshot artifact `form-updater-38997093851` shows the form with
+  Nombre `USD/BRL`, Formato `{0}` untouched and valor `R$ 5,082 +0,76%`.
+  Note: run `38996938801` also persisted the values but its post-write check
+  was a false negative (ASP.NET redirects to `List.aspx` after update); the
+  updater now re-navigates to the record to verify. Confirmed by the next run.
+- Form details discovered live: "Actualizar" is an `<a>` with
+  `WebForm_DoPostBackWithOptions`; the fixed value input is
+  `...$ctl04$ctl02$__valor$TextBox1`; date validation and Formato `{0}` intact.
+- Pending owner action: create `HEALTHCHECKS_URL_FORM_UPDATER` (full ping URL);
+  the write run logged it as empty, so the form-updater check received no pings
+  (graceful degradation, as designed).
