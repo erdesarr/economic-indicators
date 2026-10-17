@@ -141,25 +141,30 @@ class WebFormClient:
 
     def _find_named_input(self, token: str, exclude: str | None = None) -> Any:
         inputs = self._page.locator("input[name]")
+        names: list[str] = []
         for index in range(inputs.count()):
             element = inputs.nth(index)
             name = (element.get_attribute("name") or "").lower()
+            names.append(name)
             if token.lower() in name and (exclude is None or exclude.lower() not in name):
                 return element
-        raise WebFormError(f"input containing {token!r} not found")
+        raise WebFormError(
+            f"input containing {token!r} not found; "
+            f"url={self._page.url} title={self._page.title()!r} inputs={names[:20]}"
+        )
 
     def read_nombre(self) -> str:
-        value = self._find_named_input("nombre", exclude="__valor").input_value()
+        value = self._find_named_input("__nombre").input_value()
         return str(value)
 
     def read_value(self) -> str:
         try:
-            value = self._page.locator(f'input[name="{VALUE_INPUT_NAME}"]').input_value()
+            return str(self._find_named_input("__valor").input_value())
+        except WebFormError:
+            value = self._page.locator(f'input[name="{VALUE_INPUT_NAME}"]').input_value(
+                timeout=3000
+            )
             return str(value)
-        except Exception as exc:  # noqa: BLE001 - fallback by suffix
-            logger.warning("fixed value input not found by exact name (%s); using suffix", exc)
-            fallback = self._find_named_input("__valor").input_value()
-            return str(fallback)
 
     def _click_update(self) -> None:
         candidates = self._page.locator("input, button, a")
@@ -235,6 +240,7 @@ class WebFormClient:
     def write_record(self, id_indicador: int, expected_value: str) -> WriteOutcome:
         self._goto(id_indicador)
         nombre = self.read_nombre().strip()
+        logger.info("record %s: url=%s nombre=%r", id_indicador, self._page.url, nombre)
         mismatch = record_error(id_indicador, nombre, self.records)
         if mismatch is not None:
             return WriteOutcome(

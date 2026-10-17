@@ -167,8 +167,7 @@ def main() -> int:
                     expected_value=item.formatted,
                     ok=False,
                     error=f"write crashed: {exc}",
-                )
-            outcomes.append(outcome)
+                )            outcomes.append(outcome)
             print(
                 f"record {outcome.id_indicador} ({outcome.nombre}): "
                 f"{outcome.previous_value!r} -> {outcome.new_value!r} "
