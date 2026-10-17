@@ -80,3 +80,24 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
   - `tests/golden/banrep/expected.json` — `e606458d70666bd39d2891780327d4e448e17b36306c7a8c27310ad897859820`
   - `tests/golden/bcb/expected.json` — `d4da652e7b1f41a18f691de768fc090646ee6982bfe140387cf342d2e1cc99e1`
   - `tests/golden/investing/expected.json` — `e59d468585dc27967d129fbefbeb3c5442a63b8b5ff93fd70096b25b04ec7be8`
+
+## 2026-10-16 — Form updater governance approved (fallbacks + sync rules)
+
+- Approved by: project owner.
+- Book shared as "Anyone with the link -> Reader"; 3 editors by email; Sheets
+  version history is the safety net against accidental edits.
+- Sync rules approved: canonical header `id_indicador` (legacy alias
+  `numero_control`), one leading/trailing backtick stripped from prefix/suffix,
+  bilingual booleans, symbol pair parsed on pipe U+007C (single token -> up +
+  "-" with warning, empty -> "+|-"), invalid rows skipped, unknown columns/keys
+  warned, missing settings key -> last committed snapshot then bootstrap default
+  with a /fail ping.
+- Fallbacks (conservative table): only `dolar_oficial_manana -> dolar_oficial_hoy`
+  is configured in the sheet. No fallbacks where no trustworthy level substitute
+  exists (labeled forward-fill is the default net).
+- `activo=FALSE` pauses WRITING that row only; the variable stays available as a
+  fallback for other rows (the resolver reads latest.json, not the sheet).
+- Open finding (owner to fix or approve): in the live sheet
+  `umbral_variacion_pct=30` sits as an extra column of `indicators_config`
+  instead of a key in `ajustes`. Sync warns once and uses the bootstrap default
+  30.0 (critical -> /fail on the sync check). Spec-canonical location is `ajustes`.
