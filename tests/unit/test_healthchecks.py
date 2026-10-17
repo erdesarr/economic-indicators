@@ -96,6 +96,21 @@ def test_from_env_for_named_checks(monkeypatch: pytest.MonkeyPatch) -> None:
         HealthchecksClient.from_env_for("nope")
 
 
+def test_url_is_sanitized(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Secrets are commonly pasted with a trailing newline.
+    monkeypatch.setenv("HEALTHCHECKS_URL_SYNC", "https://hc-ping.com/sync-uuid\n")
+    client = HealthchecksClient.from_env_for("sync")
+    assert client is not None
+    assert client.url == "https://hc-ping.com/sync-uuid"
+
+
+def test_invalid_url_is_graceful(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    client = HealthchecksClient("not-a-url")
+    assert client.ping_success("x") is False
+    assert client.ping_fail("x") is False
+
+
 def test_notify_report_with_failures_pings_fail(tmp_path: Path) -> None:
     report = {
         "run_id": "r1",

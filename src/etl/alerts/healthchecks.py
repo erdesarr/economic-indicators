@@ -54,7 +54,9 @@ class HealthchecksClient:
         retries: int = DEFAULT_RETRIES,
         client: httpx.Client | None = None,
     ) -> None:
-        self.url = url.rstrip("/")
+        # Secrets pasted with trailing whitespace/newlines are common; httpx
+        # raises InvalidURL for non-printable characters, so sanitize here.
+        self.url = url.strip().rstrip("/")
         self.timeout = timeout
         self.retries = retries
         self._client = client or httpx.Client()
@@ -102,7 +104,7 @@ class HealthchecksClient:
                     )
                     return False
                 return True
-            except (httpx.HTTPError, HealthchecksError) as exc:
+            except (httpx.HTTPError, httpx.InvalidURL, HealthchecksError) as exc:
                 last_error = exc
                 logger.warning(
                     "healthchecks ping failed (attempt %s/%s) url=%s error=%s",
