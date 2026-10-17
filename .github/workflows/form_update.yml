@@ -66,6 +66,15 @@ jobs:
           echo "python scripts/run_form_updater.py $ARGS"
           python scripts/run_form_updater.py $ARGS
 
+      - name: Upload form screenshots (evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: form-updater-${{ github.run_id }}
+          path: artifacts/
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: Commit captured golden records (capture mode only)
         if: ${{ inputs.mode == 'capture' }}
         run: |
