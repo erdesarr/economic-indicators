@@ -137,6 +137,12 @@ class WebFormClient:
     def _goto(self, id_indicador: int) -> None:
         self._page.goto(self._url(id_indicador), wait_until="domcontentloaded")
         self._page.wait_for_timeout(1000)
+        try:
+            # The FormView may re-render via an ASP.NET UpdatePanel async
+            # postback; wait for the TextBox controls before reading them.
+            self._page.wait_for_selector('input[name$="TextBox1"]', timeout=15000)
+        except Exception as exc:  # noqa: BLE001 - capture/probe will report inputs
+            logger.warning("form inputs not found within timeout: %s", exc)
         time.sleep(self.courtesy_seconds)
 
     def _find_named_input(self, token: str, exclude: str | None = None) -> Any:
@@ -240,7 +246,8 @@ class WebFormClient:
     def write_record(self, id_indicador: int, expected_value: str) -> WriteOutcome:
         self._goto(id_indicador)
         nombre = self.read_nombre().strip()
-        logger.info("record %s: url=%s nombre=%r", id_indicador, self._page.url, nombre)
+        page_url = getattr(self._page, "url", None)
+        logger.info("record %s: url=%s nombre=%r", id_indicador, page_url, nombre)
         mismatch = record_error(id_indicador, nombre, self.records)
         if mismatch is not None:
             return WriteOutcome(
