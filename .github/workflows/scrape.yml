@@ -124,3 +124,14 @@ jobs:
             fi
           done
           python scripts/hc_ping.py crash --step "$FAILED"
+
+  pages:
+    # Deploy the static contract in the SAME run. `workflow_run` does not fire
+    # for scrapes dispatched by the scheduler with GITHUB_TOKEN, so Pages is
+    # called as a reusable workflow after a successful scrape (data committed).
+    needs: scrape
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
