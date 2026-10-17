@@ -72,12 +72,25 @@ make pages       # generate docs/api/v1 static contract
 
 | Secret | Required | Purpose |
 |---|---|---|
-| `HEALTHCHECKS_URL` | yes (owner-created) | full Healthchecks.io ping URL (`https://hc-ping.com/<uuid>`) |
+| `HEALTHCHECKS_URL` | yes (owner-created) | full ping URL of the `scrape` check |
+| `HEALTHCHECKS_URL_SYNC` | yes (owner-created) | full ping URL of the `sync` check |
+| `HEALTHCHECKS_URL_SCHEDULER` | yes (owner-created) | full ping URL of the `scheduler` check |
+| `HEALTHCHECKS_URL_FORM_UPDATER` | yes (owner-created) | full ping URL of the `form-updater` check |
+| `FORM_URL` | yes (owner-created) | web form base URL (no querystring) |
 
-SMTP secrets are **retired** (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
-`SMTP_PASSWORD`, `ALERT_EMAIL_TO`). If `HEALTHCHECKS_URL` is missing, alerting
-is disabled with a log warning and the ETL continues (graceful degradation,
-covered by `tests/contract/test_healthchecks_contract.py`).
+Each value must be the **complete ping URL** (`https://hc-ping.com/<uuid>` of
+that specific check), not a bare uuid. SMTP secrets are **retired**
+(`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `ALERT_EMAIL_TO`).
+If a check URL is missing, only that check is disabled with a log warning and
+the job keeps running (graceful degradation, covered by
+`tests/contract/test_healthchecks_contract.py`).
+
+**Check schedule rule:** the Healthchecks check period must mirror the
+success-ping frequency of its job (e.g. the sync job pings success hourly via
+cron `7 * * * *` UTC, so the `sync` check must be "hourly with ~60 min grace";
+the scrape job pings once per day at 21:00 America/Bogota, so its check is
+daily with grace). An explicit `/fail` (gviz down, invalid config) still raises
+an immediate alert regardless of the period.
 
 ## Alerting (Healthchecks.io)
 
