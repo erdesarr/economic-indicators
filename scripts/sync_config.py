@@ -27,6 +27,7 @@ from form_updater.sheet import (  # noqa: E402
     parse_indicators,
     parse_settings,
     read_snapshot,
+    resolve_thresholds,
     snapshot_text,
     write_snapshot,
 )
@@ -43,12 +44,14 @@ def main() -> int:
     catalog = {indicator.slug for indicator in load_config(args.indicators).indicators}
     healthchecks = HealthchecksClient.from_env_for("sync")
     if healthchecks is not None:
-        healthchecks.ping_start()
+        print(f"healthchecks sync start: sent={healthchecks.ping_start()}")
 
     def fail(reason: str) -> int:
         print(f"ERROR: {reason}")
         if healthchecks is not None:
-            healthchecks.ping_fail(f"sync failed: {reason}")
+            print(
+                f"healthchecks sync fail: sent={healthchecks.ping_fail(f'sync failed: {reason}')}"
+            )
         return 1
 
     try:
@@ -81,9 +84,17 @@ def main() -> int:
         parsed_settings.settings, form_config.settings_defaults, previous_settings, warnings
     )
 
+    global_threshold: float | None = None
+    if "umbral_variacion_pct" in finalized.settings:
+        try:
+            global_threshold = float(finalized.settings["umbral_variacion_pct"])
+        except ValueError:
+            global_threshold = None
+    rows = resolve_thresholds(parsed_indicators.rows, global_threshold)
+
     changed = write_snapshot(
         form_config.csv_path,
-        parsed_indicators.rows,
+        rows,
         finalized.settings,
         form_config.indicators_tab,
         form_config.settings_tab,
@@ -91,13 +102,12 @@ def main() -> int:
 
     print(
         snapshot_text(
-            parsed_indicators.rows,
+            rows,
             finalized.settings,
             form_config.indicators_tab,
             form_config.settings_tab,
         )
     )
-    rows = parsed_indicators.rows
     summary = (
         f"sync summary: rows={len(rows)} active={len(parsed_indicators.active_rows)} "
         f"inactive={len(rows) - len(parsed_indicators.active_rows)} "
@@ -111,9 +121,9 @@ def main() -> int:
     body = summary + ("\n" + "\n".join(warnings) if warnings else "")
     if healthchecks is not None:
         if finalized.critical:
-            healthchecks.ping_fail(body)
+            print(f"healthchecks sync fail: sent={healthchecks.ping_fail(body)}")
         else:
-            healthchecks.ping_success(body)
+            print(f"healthchecks sync success: sent={healthchecks.ping_success(body)}")
     return 0
 
 

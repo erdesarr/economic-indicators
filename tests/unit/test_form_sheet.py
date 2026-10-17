@@ -18,6 +18,7 @@ from form_updater.sheet import (
     parse_settings,
     parse_symbol,
     read_snapshot,
+    resolve_thresholds,
     snapshot_text,
     strip_outer_backticks,
     validate_schedule,
@@ -149,16 +150,58 @@ def test_legacy_numero_control_alias() -> None:
     assert parsed.rows[0].id_indicador == 3
 
 
-def test_unknown_columns_are_reported() -> None:
+def test_umbral_override_column_is_parsed() -> None:
     fixture = "\n".join(
         [
             HEADER + ",umbral_variacion_pct",
-            "euro,,,,,,3,TRUE,30",
+            "euro,,,,,,3,TRUE,15",
+            "uvr,,,,,,5,TRUE,",
         ]
     )
     parsed = parse_indicators(fixture, CATALOG)
-    assert parsed.unknown_columns == ["umbral_variacion_pct"]
-    assert parsed.rows[0].id_indicador == 3
+    assert parsed.unknown_columns == []
+    assert parsed.rows[0].umbral_variacion_pct == 15.0
+    assert parsed.rows[1].umbral_variacion_pct is None
+
+
+def test_truly_unknown_columns_are_reported() -> None:
+    fixture = "\n".join(
+        [
+            HEADER + ",color",
+            "euro,,,,,,3,TRUE,azul",
+        ]
+    )
+    parsed = parse_indicators(fixture, CATALOG)
+    assert parsed.unknown_columns == ["color"]
+
+
+def test_invalid_umbral_override_warns_and_inherits() -> None:
+    fixture = "\n".join(
+        [
+            HEADER + ",umbral_variacion_pct",
+            "euro,,,,,,3,TRUE,abc",
+            "uvr,,,,,,5,TRUE,-5",
+        ]
+    )
+    parsed = parse_indicators(fixture, CATALOG)
+    assert all(row.umbral_variacion_pct is None for row in parsed.rows)
+    assert sum("override" in warning for warning in parsed.warnings) == 2
+
+
+def test_resolve_thresholds_override_beats_global() -> None:
+    fixture = "\n".join(
+        [
+            HEADER + ",umbral_variacion_pct",
+            "euro,,,,,,3,TRUE,15",
+            "uvr,,,,,,5,TRUE,",
+        ]
+    )
+    parsed = parse_indicators(fixture, CATALOG)
+    resolved = resolve_thresholds(parsed.rows, 30.0)
+    assert resolved[0].umbral_variacion_pct == 15.0  # override wins
+    assert resolved[1].umbral_variacion_pct == 30.0  # inherits global
+    without_global = resolve_thresholds(parsed.rows, None)
+    assert without_global[1].umbral_variacion_pct is None
 
 
 def test_missing_required_columns_raise() -> None:
@@ -257,27 +300,30 @@ def test_finalize_settings_invalid_cron_and_threshold() -> None:
 
 def test_snapshot_roundtrip_and_change_detection(tmp_path: Path) -> None:
     parsed = parse_indicators(FIXTURE, CATALOG)
+    rows = resolve_thresholds(parsed.rows, 30.0)
     settings = {"horario_etl": "0 21 * * *", "umbral_variacion_pct": "30"}
     path = tmp_path / "sheet_config.csv"
-    assert write_snapshot(path, parsed.rows, settings, "indicators_config", "ajustes") is True
-    rows, read_settings = read_snapshot(path)
+    assert write_snapshot(path, rows, settings, "indicators_config", "ajustes") is True
+    read_rows, read_settings = read_snapshot(path)
     assert read_settings == settings
-    assert [(row.indicador, row.id_indicador, row.activo) for row in rows] == [
-        (row.indicador, row.id_indicador, row.activo) for row in parsed.rows
+    assert [(row.indicador, row.id_indicador, row.activo) for row in read_rows] == [
+        (row.indicador, row.id_indicador, row.activo) for row in rows
     ]
-    assert rows[0].prefijo == "$ "
-    assert rows[1].fallback == "dolar_oficial_hoy"
-    assert rows[1].symbol == "+|-"
+    assert read_rows[0].prefijo == "$ "
+    assert read_rows[1].fallback == "dolar_oficial_hoy"
+    assert read_rows[1].symbol == "+|-"
+    assert all(row.umbral_variacion_pct == 30.0 for row in read_rows)  # resolved global
     # Idempotent: identical content -> changed False.
-    assert write_snapshot(path, parsed.rows, settings, "indicators_config", "ajustes") is False
+    assert write_snapshot(path, rows, settings, "indicators_config", "ajustes") is False
 
 
 def test_snapshot_text_contains_both_tabs() -> None:
     text = snapshot_text([], {"horario_etl": "0 21 * * *"}, "indicators_config", "ajustes")
     lines = text.splitlines()
     assert lines[0].startswith("tab,indicador,prefijo")
+    assert "umbral_variacion_pct" in lines[0]
     fields = lines[1].split(",")
-    assert len(fields) == 11
+    assert len(fields) == 12
     assert fields[0] == "ajustes"
     assert fields[-2:] == ["horario_etl", "0 21 * * *"]
 

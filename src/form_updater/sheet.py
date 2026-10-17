@@ -22,7 +22,7 @@ import io
 import logging
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +49,9 @@ INDICATOR_HEADERS = (
     "id_indicador",
     "activo",
 )
+# Optional per-row override: empty cell inherits the global setting from `ajustes`.
+OPTIONAL_INDICATOR_HEADERS = ("umbral_variacion_pct",)
+KNOWN_INDICATOR_HEADERS = INDICATOR_HEADERS + OPTIONAL_INDICATOR_HEADERS
 HEADER_ALIASES = {"numero_control": "id_indicador"}
 KNOWN_SETTINGS = ("horario_etl", "horario_updater", "umbral_variacion_pct")
 
@@ -62,6 +65,7 @@ SNAPSHOT_COLUMNS = (
     "fallback",
     "id_indicador",
     "activo",
+    "umbral_variacion_pct",
     "clave",
     "valor",
 )
@@ -86,6 +90,9 @@ class IndicatorRow:
     fallback: str
     id_indicador: int
     activo: bool
+    # Per-row override while parsing; resolved value (global fallback applied)
+    # when written to the snapshot.
+    umbral_variacion_pct: float | None = None
 
     @property
     def symbol(self) -> str:
@@ -206,20 +213,18 @@ def parse_indicators(text: str, catalog: set[str]) -> ParsedIndicators:
 
     normalized = [cell.strip().lower() for cell in header]
     mapped = [HEADER_ALIASES.get(name, name) for name in normalized]
-    unknown_columns = [name for name in mapped if name not in INDICATOR_HEADERS]
+    unknown_columns = [name for name in mapped if name not in KNOWN_INDICATOR_HEADERS]
     missing = [name for name in INDICATOR_HEADERS if name not in mapped]
     if missing:
         raise SheetError(f"missing required columns: {missing}")
-    index = {name: mapped.index(name) for name in INDICATOR_HEADERS}
+    index = {name: mapped.index(name) for name in KNOWN_INDICATOR_HEADERS if name in mapped}
 
     rows: list[IndicatorRow] = []
     warnings: list[str] = []
     for line_number, raw in enumerate(reader, start=2):
         if not any(cell.strip() for cell in raw):
             continue
-        cells = {
-            name: (raw[index[name]] if index[name] < len(raw) else "") for name in INDICATOR_HEADERS
-        }
+        cells = {name: (raw[index[name]] if index[name] < len(raw) else "") for name in index}
         slug = cells["indicador"].strip()
         if slug not in catalog:
             warnings.append(f"row {line_number}: unknown indicator slug {slug!r}; row skipped")
@@ -240,6 +245,7 @@ def parse_indicators(text: str, catalog: set[str]) -> ParsedIndicators:
         symbol_up, symbol_down = parse_symbol(
             cells["simbolo_variacion"], f"row {line_number} simbolo_variacion", warnings
         )
+        override = _parse_override(cells.get("umbral_variacion_pct", ""), line_number, warnings)
         rows.append(
             IndicatorRow(
                 indicador=slug,
@@ -253,9 +259,45 @@ def parse_indicators(text: str, catalog: set[str]) -> ParsedIndicators:
                 fallback=fallback,
                 id_indicador=id_value,
                 activo=parse_bool(cells["activo"], f"row {line_number} activo", warnings),
+                umbral_variacion_pct=override,
             )
         )
     return ParsedIndicators(rows=rows, warnings=warnings, unknown_columns=unknown_columns)
+
+
+def _parse_override(cell: str, line_number: int, warnings: list[str]) -> float | None:
+    """Per-row umbral override (empty cell = inherit the global setting)."""
+
+    text = cell.strip()
+    if not text:
+        return None
+    try:
+        value = float(text)
+    except ValueError:
+        warnings.append(
+            f"row {line_number}: invalid umbral_variacion_pct override {text!r}; inherits global"
+        )
+        return None
+    if value <= 0:
+        warnings.append(
+            f"row {line_number}: umbral_variacion_pct override must be > 0; inherits global"
+        )
+        return None
+    return value
+
+
+def resolve_thresholds(
+    rows: list[IndicatorRow], global_threshold: float | None
+) -> list[IndicatorRow]:
+    """Apply the global threshold to rows without a per-row override."""
+
+    resolved: list[IndicatorRow] = []
+    for row in rows:
+        value = (
+            row.umbral_variacion_pct if row.umbral_variacion_pct is not None else global_threshold
+        )
+        resolved.append(replace(row, umbral_variacion_pct=value))
+    return resolved
 
 
 def parse_settings(text: str) -> ParsedSettings:
@@ -402,6 +444,8 @@ def read_snapshot(path: Path) -> tuple[list[IndicatorRow], dict[str, str]]:
         if tab and record.get("indicador"):
             try:
                 symbol_up, symbol_down = _split_symbol(record.get("simbolo_variacion") or "")
+                umbral_raw = (record.get("umbral_variacion_pct") or "").strip()
+                umbral = float(umbral_raw) if umbral_raw else None
                 rows.append(
                     IndicatorRow(
                         indicador=(record.get("indicador") or "").strip(),
@@ -413,6 +457,7 @@ def read_snapshot(path: Path) -> tuple[list[IndicatorRow], dict[str, str]]:
                         fallback=(record.get("fallback") or "").strip(),
                         id_indicador=int(record.get("id_indicador") or 0),
                         activo=(record.get("activo") or "").lower() == "true",
+                        umbral_variacion_pct=umbral,
                     )
                 )
             except (TypeError, ValueError):
@@ -430,6 +475,7 @@ def snapshot_text(
     writer = csv.writer(buffer, lineterminator="\n")
     writer.writerow(SNAPSHOT_COLUMNS)
     for row in rows:
+        umbral = "" if row.umbral_variacion_pct is None else f"{row.umbral_variacion_pct:g}"
         writer.writerow(
             [
                 indicators_tab,
@@ -441,12 +487,13 @@ def snapshot_text(
                 row.fallback,
                 row.id_indicador,
                 str(row.activo).lower(),
+                umbral,
                 "",
                 "",
             ]
         )
     for key, value in settings.items():
-        writer.writerow([settings_tab, "", "", "", "", "", "", "", "", key, value])
+        writer.writerow([settings_tab, "", "", "", "", "", "", "", "", "", key, value])
     return buffer.getvalue()
 
 
