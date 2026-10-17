@@ -1,0 +1,23 @@
+tab,indicador,prefijo,sufijo,mostrar_variacion,simbolo_variacion,fallback,id_indicador,activo,clave,valor
+indicators_config,dolar_oficial_hoy,$ ,,false,+|-,,1,false,,
+indicators_config,dolar_oficial_manana,$ ,,false,+|-,dolar_oficial_hoy,2,true,,
+indicators_config,dolar_oficial_manana,$ ,,false,+|-,dolar_oficial_hoy,34,true,,
+indicators_config,euro,$ ,,false,+|-,,3,true,,
+indicators_config,cafe_colombian_milds,US$ , /lb,false,+|-,,4,true,,
+indicators_config,uvr,$ ,,false,+|-,,5,true,,
+indicators_config,petroleo_brent,US$ ,,false,+|-,,7,true,,
+indicators_config,petroleo_wti,US$ ,,false,+|-,,16,true,,
+indicators_config,dtf,, %,false,+|-,,6,true,,
+indicators_config,msci_colcap,,,false,+|-,,12,true,,
+indicators_config,ibr_overnight,,%,false,+|-,,35,true,,
+indicators_config,ibr_1_mes,,%,false,+|-,,36,true,,
+indicators_config,ibr_3_meses,,%,false,+|-,,37,true,,
+indicators_config,ibr_6_meses,,%,false,+|-,,38,true,,
+indicators_config,ibr_12_meses,,%,true,+|-,,39,true,,
+indicators_config,usd_brl_compra,R$ ,,true,+|-,,40,true,,
+indicators_config,gas_ttf_nl,EUR , /MWh,true,+|-,,42,true,,
+indicators_config,gas_henry_micro,US$ , /MMBtu,true,+|-,,41,true,,
+indicators_config,lng_jkm,US$ , /MMBtu,true,+|-,,43,true,,
+ajustes,,,,,,,,,horario_etl,0 21 * * *
+ajustes,,,,,,,,,horario_updater,30 21 * * *
+ajustes,,,,,,,,,umbral_variacion_pct,30.0

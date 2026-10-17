@@ -1,0 +1,61 @@
+name: Sync config
+
+on:
+  # Hourly fixed cron; the actual schedules (horario_etl / horario_updater) live
+  # in the public Google Sheet and are executed by scheduler.yml.
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: sync-config
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  # Healthchecks check for the sync stage (missing secret disables it).
+  HEALTHCHECKS_URL_SYNC: ${{ secrets.HEALTHCHECKS_URL_SYNC }}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: pip install .
+
+      - name: Sync public sheet into config/sheet_config.csv
+        run: python scripts/sync_config.py
+
+      - name: Commit and push snapshot
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/sheet_config.csv
+          if git diff --cached --quiet; then
+            echo "no snapshot changes to commit"
+            exit 0
+          fi
+          git commit -m "chore(config): sync sheet snapshot ${GITHUB_RUN_ID}"
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
+              echo "pushed on attempt ${attempt}"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "push failed after retries" >&2
+          exit 1
