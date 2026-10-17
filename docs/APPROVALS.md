@@ -140,3 +140,20 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
   (avoids double runs). Manual `workflow_dispatch` remains.
 - GitHub may delay crons; the scheduler tolerates a 5-minute window and the
   scrape smoke validates `artifacts/run_report.json` (valid forward-fill passes).
+
+## 2026-10-16 — Gate 13 closure (final chain including Pages)
+
+- Scheduler `39000869858` (force etl) → scrape `39000885286`:
+  `ok=18 failures=0`, smoke 18/18, scrape Healthchecks start/report `sent=True`;
+  the scrape run now includes the reusable Pages jobs (`pages / build`,
+  `pages / deploy`) and deployed a fresh contract
+  (`generated_at 2026-10-17T04:02:06Z`, CORS `*`).
+- Scheduler `39001066614` (force updater, after Pages) → form updater
+  `39001089496`: `data source: local (as of 2026-10-16)`,
+  `written=18 failed=0 omitted=0`, form-updater Healthchecks start/success
+  `sent=True`; screenshots artifact retained.
+- Root cause fixed: `workflow_run` does not fire when the scrape is dispatched
+  with `GITHUB_TOKEN` (scheduler). Pages is now a reusable `workflow_call` from
+  the scrape run (checkout of `main` after the data commit).
+- `scheduler.yml` cron `*/5 * * * *` UTC remains active; `scrape.yml` has no own
+  cron (single trigger). Manual `workflow_dispatch` remains for both.
