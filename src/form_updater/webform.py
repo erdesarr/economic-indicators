@@ -145,7 +145,9 @@ class WebFormClient:
             logger.warning("form inputs not found within timeout: %s", exc)
         time.sleep(self.courtesy_seconds)
 
-    def _find_named_input(self, token: str, exclude: str | None = None) -> Any:
+    def _try_find_named_input(
+        self, token: str, exclude: str | None = None
+    ) -> tuple[Any | None, list[str]]:
         inputs = self._page.locator("input[name]")
         names: list[str] = []
         for index in range(inputs.count()):
@@ -153,24 +155,50 @@ class WebFormClient:
             name = (element.get_attribute("name") or "").lower()
             names.append(name)
             if token.lower() in name and (exclude is None or exclude.lower() not in name):
-                return element
+                return element, names
+        return None, names
+
+    def _read_input(self, token: str, timeout_seconds: float = 10.0) -> str:
+        deadline = time.monotonic() + timeout_seconds
+        last_error: Exception | None = None
+        names: list[str] = []
+        while time.monotonic() < deadline:
+            element, names = self._try_find_named_input(token)
+            if element is not None:
+                try:
+                    return str(element.input_value())
+                except Exception as exc:  # noqa: BLE001 - panel re-render, retry
+                    last_error = exc
+            self._page.wait_for_timeout(200)
         raise WebFormError(
-            f"input containing {token!r} not found; "
-            f"url={self._page.url} title={self._page.title()!r} inputs={names[:20]}"
+            f"input {token!r} not readable within {timeout_seconds}s; "
+            f"url={self._page.url} title={self._page.title()!r} "
+            f"inputs={names[:20]} last_error={last_error}"
+        )
+
+    def _fill_value(self, value: str, timeout_seconds: float = 10.0) -> None:
+        deadline = time.monotonic() + timeout_seconds
+        last_error: Exception | None = None
+        names: list[str] = []
+        while time.monotonic() < deadline:
+            element, names = self._try_find_named_input("__valor")
+            if element is not None:
+                try:
+                    element.fill(value)
+                    return
+                except Exception as exc:  # noqa: BLE001 - panel re-render, retry
+                    last_error = exc
+            self._page.wait_for_timeout(200)
+        raise WebFormError(
+            f"could not fill __valor within {timeout_seconds}s; "
+            f"url={self._page.url} inputs={names[:20]} last_error={last_error}"
         )
 
     def read_nombre(self) -> str:
-        value = self._find_named_input("__nombre").input_value()
-        return str(value)
+        return self._read_input("__nombre")
 
     def read_value(self) -> str:
-        try:
-            return str(self._find_named_input("__valor").input_value())
-        except WebFormError:
-            value = self._page.locator(f'input[name="{VALUE_INPUT_NAME}"]').input_value(
-                timeout=3000
-            )
-            return str(value)
+        return self._read_input("__valor")
 
     def _click_update(self) -> None:
         candidates = self._page.locator("input, button, a")
@@ -260,7 +288,7 @@ class WebFormClient:
                 error=mismatch,
             )
         previous = self.read_value()
-        self._find_named_input("__valor").fill(expected_value)
+        self._fill_value(expected_value)
         self._click_update()
         new_value = self.read_value()
         ok = new_value == expected_value

@@ -75,11 +75,7 @@ class StubClient(WebFormClient):
     def read_value(self) -> str:
         return self.current
 
-    def _find_named_input(self, token: str, exclude: str | None = None) -> StubClient:
-        assert "__valor" in token
-        return self
-
-    def fill(self, value: str) -> None:
+    def _fill_value(self, value: str, timeout_seconds: float = 10.0) -> None:
         self.fills.append(value)
         self.current = value
 
