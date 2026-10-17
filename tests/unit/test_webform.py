@@ -101,7 +101,7 @@ def test_write_fills_and_verifies() -> None:
     assert outcome.previous_value == "$ 3.500,00"
     assert outcome.new_value == "$ 3.607,58 +0,15%"
     assert client.fills == ["$ 3.607,58 +0,15%"]
-    assert client.gotos == [3]
+    assert client.gotos == [3, 3]  # initial navigation + post-write verification
 
 
 def test_fixed_value_input_name_contract() -> None:
