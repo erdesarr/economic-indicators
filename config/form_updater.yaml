@@ -1,0 +1,25 @@
+# Public Google Sheet governance for the form updater.
+# The book is shared as "Anyone with the link -> Reader"; 3 people are editors
+# by email. Sheet ID is not sensitive. Version history is the safety net against
+# accidental edits (see README.es.md).
+sheet_id: 16oZctqumAPSrMfYBjrgWM5v15S5K7yTsu_IO7BkM0_w
+
+tabs:
+  indicators: indicators_config # 8 columns: indicador..activo
+  settings: ajustes             # key/value, searched by `clave` (order-proof)
+
+gviz:
+  timeout_seconds: 10
+  retries: 3
+
+# Normalized snapshot committed by the sync workflow (both tabs).
+csv_path: config/sheet_config.csv
+
+scheduler:
+  workflow_etl: scrape.yml
+  workflow_updater: form_update.yml
+
+# Bootstrap defaults used only when a setting key is missing from the book
+# (missing key still raises a warning + /fail ping; see sync_config.yml).
+settings_defaults:
+  umbral_variacion_pct: 30.0
