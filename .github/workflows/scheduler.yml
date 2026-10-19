@@ -1,8 +1,9 @@
 name: Scheduler
 
 on:
-  # ACTIVE since 2026-10-16 after the owner-approved end-to-end chain
-  # (scheduler -> scrape 18/18 -> scheduler -> form-updater 18 writes).
+  # ACTIVE. GitHub throttles high-frequency crons (observed runs every 2-5 h),
+  # so the scheduler uses a catch-up horizon + state dedup and chains the ETL
+  # into the updater sequentially (see src/form_updater/scheduler.py).
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
@@ -23,7 +24,7 @@ concurrency:
 
 permissions:
   actions: write
-  contents: read
+  contents: write
 
 env:
   HEALTHCHECKS_URL_SCHEDULER: ${{ secrets.HEALTHCHECKS_URL_SCHEDULER }}
@@ -34,9 +35,13 @@ env:
 jobs:
   scheduler:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The state file is committed by previous scheduler runs; scheduled
+          # events may carry an older SHA, so fetch the current branch tip.
+          ref: ${{ github.ref_name }}
 
       - uses: actions/setup-python@v7
         with:
@@ -58,3 +63,29 @@ jobs:
           fi
           echo "python scripts/scheduler.py $ARGS"
           eval python scripts/scheduler.py $ARGS
+
+      - name: Commit scheduler state
+        if: always()
+        run: |
+          set -e
+          if [ ! -f config/scheduler_state.json ]; then
+            echo "no state file"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/scheduler_state.json
+          if git diff --cached --quiet; then
+            echo "no state changes"
+            exit 0
+          fi
+          git commit -m "chore(scheduler): trigger state ${GITHUB_RUN_ID}"
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
+              echo "pushed on attempt ${attempt}"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "push failed after retries" >&2
+          exit 1

@@ -18,6 +18,12 @@ csv_path: config/sheet_config.csv
 scheduler:
   workflow_etl: scrape.yml
   workflow_updater: form_update.yml
+  # GitHub throttles high-frequency crons (observed runs every 2-5 hours), so a
+  # strict 5-minute window misses the 21:00/21:30 Bogota slots. Catch up on a
+  # delayed run if the occurrence is at most this many hours old; deduplicate
+  # with the committed state file.
+  catchup_hours: 8
+  state_path: config/scheduler_state.json
 
 # Bootstrap defaults used only when a setting key is missing from the book
 # (missing key still raises a warning + /fail ping; see sync_config.yml).

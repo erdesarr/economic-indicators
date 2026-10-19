@@ -7,16 +7,22 @@ import subprocess
 from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
+import httpx
 import pytest
 
 from form_updater.scheduler import (
     BOGOTA,
     ScheduleDecision,
     cron_window,
+    due_occurrence,
+    filter_pending,
     forced_decision,
     load_settings,
+    load_state,
     plan,
+    save_state,
     trigger_workflow,
+    wait_for_workflow,
 )
 
 # Monday 2026-10-12 (2026-10-12 is a Monday).
@@ -53,13 +59,29 @@ def test_cron_window_invalid_expression() -> None:
         cron_window("banana", MONDAY_2130)
 
 
-def test_plan_triggers_only_matching_workflow() -> None:
+def test_plan_at_etl_window_triggers_etl_only() -> None:
     settings = {"horario_etl": "0 21 * * *", "horario_updater": "30 21 * * *"}
-    now_utc = MONDAY_2130.astimezone(UTC)
-    outcome = plan(settings, now_utc, "scrape.yml", "form_update.yml")
-    assert [decision.workflow for decision in outcome.triggers] == ["form_update.yml"]
-    assert outcome.triggers[0].key == "updater"
+    now = datetime(2026, 10, 12, 21, 0, 5, tzinfo=BOGOTA).astimezone(UTC)
+    outcome = plan(settings, now, "scrape.yml", "form_update.yml")
+    assert [decision.workflow for decision in outcome.triggers] == ["scrape.yml"]
+    assert outcome.triggers[0].key == "etl"
     assert outcome.critical == []
+
+
+def test_plan_catchup_triggers_both_on_delayed_run() -> None:
+    # Run executed at 23:51 Bogota (GitHub delay); both occurrences are due
+    # within the 8-hour catch-up horizon, in order: ETL first, updater second.
+    settings = {"horario_etl": "0 21 * * *", "horario_updater": "30 21 * * *"}
+    now = datetime(2026, 10, 12, 23, 51, 0, tzinfo=BOGOTA).astimezone(UTC)
+    outcome = plan(settings, now, "scrape.yml", "form_update.yml", catchup_hours=8)
+    assert [decision.key for decision in outcome.triggers] == ["etl", "updater"]
+
+
+def test_plan_ignores_occurrences_outside_catchup() -> None:
+    settings = {"horario_etl": "0 21 * * *", "horario_updater": "30 21 * * *"}
+    now = datetime(2026, 10, 12, 20, 41, 0, tzinfo=BOGOTA).astimezone(UTC)
+    outcome = plan(settings, now, "scrape.yml", "form_update.yml", catchup_hours=8)
+    assert outcome.triggers == []
 
 
 def test_plan_invalid_cron_is_critical_and_ignored() -> None:
@@ -76,6 +98,120 @@ def test_plan_missing_setting_warns() -> None:
     assert any("missing" in warning for warning in outcome.warnings)
     assert outcome.triggers
     assert outcome.triggers[0].workflow == "u.yml"
+
+
+def test_due_occurrence_accepts_delayed_run() -> None:
+    # 23:51 Bogota is 2h51m after the 21:00 occurrence.
+    now = datetime(2026, 10, 12, 23, 51, 0, tzinfo=BOGOTA)
+    occurrence = due_occurrence("0 21 * * *", now, catchup_hours=8)
+    assert occurrence is not None
+    assert occurrence.hour == 21
+
+
+def test_due_occurrence_crosses_midnight() -> None:
+    # 01:56 next day is 4h56m after the previous day's 21:30 occurrence.
+    now = datetime(2026, 10, 13, 1, 56, 0, tzinfo=BOGOTA)
+    occurrence = due_occurrence("30 21 * * *", now, catchup_hours=8)
+    assert occurrence is not None
+    assert occurrence.date().isoformat() == "2026-10-12"
+    assert occurrence.hour == 21
+
+
+def test_due_occurrence_rejects_beyond_catchup() -> None:
+    now = datetime(2026, 10, 13, 7, 0, 0, tzinfo=BOGOTA)
+    assert due_occurrence("0 21 * * *", now, catchup_hours=8) is None
+
+
+def test_filter_pending_dedup_by_occurrence_date() -> None:
+    decision = ScheduleDecision(
+        key="etl",
+        workflow="scrape.yml",
+        expression="0 21 * * *",
+        occurrence=datetime(2026, 10, 12, 21, 0, 0, tzinfo=BOGOTA),
+    )
+    pending, skipped = filter_pending([decision], {"etl": "2026-10-12"})
+    assert pending == []
+    assert skipped == ["etl@2026-10-12"]
+    pending, skipped = filter_pending([decision], {"etl": "2026-10-11"})
+    assert pending == [decision]
+    assert skipped == []
+
+
+def test_state_roundtrip(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    path = tmp_path / "state.json"
+    assert load_state(path) == {}
+    save_state(path, {"etl": "2026-10-12", "updater": "2026-10-12"})
+    assert load_state(path) == {"etl": "2026-10-12", "updater": "2026-10-12"}
+
+
+def test_wait_for_workflow_polls_until_completed() -> None:
+    responses = [
+        {
+            "workflow_runs": [
+                {
+                    "created_at": "2026-10-12T21:00:05Z",
+                    "status": "in_progress",
+                    "conclusion": None,
+                }
+            ]
+        },
+        {
+            "workflow_runs": [
+                {
+                    "created_at": "2026-10-12T21:00:05Z",
+                    "status": "completed",
+                    "conclusion": "success",
+                }
+            ]
+        },
+    ]
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = responses[min(calls["n"], len(responses) - 1)]
+        calls["n"] += 1
+        return httpx.Response(200, json=payload)
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    run = wait_for_workflow(
+        "scrape.yml",
+        after_utc=datetime(2026, 10, 12, 21, 0, 0, tzinfo=UTC),
+        repo="org/repo",
+        token="token",
+        timeout_seconds=5,
+        poll_seconds=0.01,
+        client=client,
+    )
+    assert run["status"] == "completed"
+    assert run["conclusion"] == "success"
+
+
+def test_wait_for_workflow_times_out() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "workflow_runs": [
+                    {
+                        "created_at": "2026-10-12T21:00:05Z",
+                        "status": "in_progress",
+                        "conclusion": None,
+                    }
+                ]
+            },
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    with pytest.raises(TimeoutError):
+        wait_for_workflow(
+            "scrape.yml",
+            after_utc=datetime(2026, 10, 12, 21, 0, 0, tzinfo=UTC),
+            repo="org/repo",
+            token="token",
+            timeout_seconds=0.05,
+            poll_seconds=0.01,
+            client=client,
+        )
 
 
 def test_forced_decision() -> None:
