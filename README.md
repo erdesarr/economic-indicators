@@ -174,7 +174,11 @@ Key semantics:
   available as a fallback for other rows.
 - **Scheduler:** a fixed `*/5` UTC workflow reads the committed snapshot and
   runs `scrape.yml` / `form_update.yml` when the sheet-defined cron matches the
-  current America/Bogota window. Workflow YAML is never rewritten.
+  current America/Bogota window. Workflow YAML is never rewritten. GitHub
+  throttles high-frequency crons, so the scheduler catches up (8 h), dedupes
+  with `config/scheduler_state.json`, and waits for the scrape to finish before
+  triggering the updater. The hourly sync also runs a watchdog that pings
+  form-updater `/fail` if writes stop or stay at zero.
 - **Safety:** the updater never writes stale data (freshness check with
   raw.githubusercontent fallback), verifies the record `Nombre` against
   `tests/golden/webform/records.json`, and re-reads the form after the postback.

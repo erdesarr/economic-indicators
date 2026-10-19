@@ -66,6 +66,32 @@ jobs:
           echo "python scripts/run_form_updater.py $ARGS"
           python scripts/run_form_updater.py $ARGS
 
+      - name: Commit form update write state (write mode)
+        if: ${{ always() && inputs.mode == 'write' }}
+        run: |
+          set -e
+          if [ ! -f config/form_update_state.json ]; then
+            echo "no state file"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/form_update_state.json
+          if git diff --cached --quiet; then
+            echo "no state changes"
+            exit 0
+          fi
+          git commit -m "chore(webform): write state ${GITHUB_RUN_ID}"
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
+              echo "pushed on attempt ${attempt}"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "push failed after retries" >&2
+          exit 1
+
       - name: Upload form screenshots (evidence)
         if: always()
         uses: actions/upload-artifact@v4

@@ -59,3 +59,9 @@ jobs:
           done
           echo "push failed after retries" >&2
           exit 1
+
+      - name: Form updater watchdog
+        if: always()
+        run: python scripts/watchdog.py
+        env:
+          HEALTHCHECKS_URL_FORM_UPDATER: ${{ secrets.HEALTHCHECKS_URL_FORM_UPDATER }}

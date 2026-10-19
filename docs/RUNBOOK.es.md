@@ -106,3 +106,23 @@ pings success), descomenta `*/5 * * * *` y haz push.
 - **Pin TLS:** `tests/unit/test_certs.py` falla en CI cuando el intermedio
   pinneado de Banrep vence en <30 días; renuévalo desde la URL AIA y actualiza el
   comentario de cabecera.
+
+## 8. Retrasos del scheduler y watchdog del form updater (2026-10-19)
+
+- GitHub throttlea los crons de alta frecuencia: el scheduler `*/5` corrió en
+  realidad cada 2-5 h, así que la ventana de 5 min solía perder los slots
+  21:00/21:30 de Bogotá (corridas observadas a las 23:51 y 01:56 Bogotá, ambas
+  con "no window match").
+- El scheduler ahora hace catch-up: una ocurrencia de hasta `catchup_hours` (8)
+  sigue siendo debida; `config/scheduler_state.json` deduplica por fecha de
+  ocurrencia; si ambos slots caen en una corrida atrasada, dispara el ETL,
+  espera a que termine el scrape y luego dispara el updater (nunca a la vez).
+- Watchdog: el sync horario ejecuta `scripts/watchdog.py`. Si la última
+  escritura en `config/form_update_state.json` tiene más de 26 h o las últimas 2
+  corridas escribieron 0 valores, envía un `/fail` explícito al check
+  form-updater (y el job de sync queda rojo). El periodo/grace del check de
+  Healthchecks sigue siendo la alarma de "sin ping en N horas".
+- Prueba manual: Actions -> Scheduler -> Run workflow con `force=etl|updater`, o
+  `now=<ISO8601>` para simular una ventana. La pestaña `ajustes` manda.
+- No agregues un cron propio a `scrape.yml`/`form_update.yml`: el scheduler es el
+  único disparador automático (evita dobles corridas y saltarse la hoja).

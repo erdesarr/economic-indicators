@@ -157,3 +157,29 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
   the scrape run (checkout of `main` after the data commit).
 - `scheduler.yml` cron `*/5 * * * *` UTC remains active; `scrape.yml` has no own
   cron (single trigger). Manual `workflow_dispatch` remains for both.
+
+## 2026-10-19 — Form updater outage: root cause, recovery and watchdog
+
+- Owner forensics: form-updater silent; scheduler/sync appeared alive.
+- H1 ruled out: `config/sheet_config.csv` has `horario_etl=0 21 * * *` and
+  `horario_updater=30 21 * * *`; `form_update.yml` has `workflow_dispatch` and
+  the filename matches `scheduler.workflow_updater`.
+- H2 ruled out: scheduler logs show both settings read correctly.
+- Root cause (H3): GitHub throttles the scheduler `*/5` cron. Scheduled runs
+  happened every 2-5 h and never inside 21:00-21:35 (e.g. 2026-10-18T04:51Z =
+  23:51 Bogota; 2026-10-19T06:55Z = 01:56 Bogota; both "no window match;
+  nothing dispatched"). Neither the ETL nor the updater ran naturally.
+- Fix: catch-up horizon 8 h + occurrence-date dedup
+  (`config/scheduler_state.json`) + sequential ETL wait before the updater.
+- Recovery test 2026-10-19 with the sheet windows 12:45/13:15:
+  scheduler `39296529251` -> scrape `39296576711` (17 ok + 1 forward_filled
+  `dolar_oficial_manana`, smoke 18/18, scrape start/report sent=True, Pages
+  `generated_at 2026-10-19T17:45:42Z`) -> scheduler `39296958287` (ETL skipped
+  via state) -> form updater `39297019088` (data source local 2026-10-19,
+  written=18 failed=0, form-updater start/success sent=True); sync #20
+  start/success sent=True.
+- Note: 12:45 is before the ~15:00 MANANA publication, so the ETL forward-filled
+  it and the updater used the `dolar_oficial_hoy` fallback; the evening windows
+  (after 15:00) produce 18/0.
+- Hardening: `config/form_update_state.json` + `scripts/watchdog.py` (26 h stale
+  or 2 consecutive zero-write runs -> form-updater `/fail`).

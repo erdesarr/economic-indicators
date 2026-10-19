@@ -142,13 +142,17 @@ bloque de variación. `prefijo`/`sufijo` literales.
 
 `sync_config.yml` (cron `7 * * * *` UTC) lee ambas pestañas y escribe
 `config/sheet_config.csv`; si gviz falla no commitea y pingea `/fail` (el repo
-conserva la última config válida). `scheduler.yml` (cron `*/5 * * * *` UTC, **gate
-pendiente de activación**) lee el snapshot y compara cada horario con
-croniter en America/Bogota (ventana de 5 min, tolera cola):
+conserva la última config válida). `scheduler.yml` (cron `*/5 * * * *` UTC) lee
+el snapshot y compara cada horario con croniter en America/Bogota:
 - `horario_etl` → dispara `scrape.yml`.
 - `horario_updater` → dispara `form_update.yml` con `mode=write`.
-Cron inválido → warning + `/fail` del check sync e ignorado. **Nunca** se
-reescriben workflows YAML.
+
+GitHub throttlea los crons de alta frecuencia, así que el scheduler hace
+**catch-up** (ocurrencia de hasta 8 h), deduplica con
+`config/scheduler_state.json` y, si ambos slots están debidos, espera a que el
+scrape termine antes de disparar el updater. El sync horario ejecuta un watchdog
+que pingea `/fail` al check form-updater si dejan de haber escrituras o son 0.
+**Nunca** se reescriben workflows YAML.
 
 ### Gate de activación
 

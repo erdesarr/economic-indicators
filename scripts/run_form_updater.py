@@ -35,6 +35,8 @@ from form_updater.updater import (  # noqa: E402
     load_active_rows,
     resolve_variable_data,
 )
+from form_updater.watchdog import STATE_PATH as FORM_UPDATE_STATE  # noqa: E402
+from form_updater.watchdog import record_write  # noqa: E402
 from form_updater.webform import (  # noqa: E402
     RECORDS_PATH,
     WebFormClient,
@@ -185,6 +187,15 @@ def main() -> int:
         f"failed={len(write_failures)} omitted={len(plan.failures)}"
     )
     print(summary)
+    record_write(
+        FORM_UPDATE_STATE,
+        day=today.isoformat(),
+        written=len(written_ok),
+        failed=len(write_failures),
+        omitted=len(plan.failures),
+        run_id=os.environ.get("GITHUB_RUN_ID", ""),
+    )
+    print(f"write state recorded: {FORM_UPDATE_STATE}")
     if healthchecks is not None:
         if write_failures or plan.failures:
             body_lines = [summary]
