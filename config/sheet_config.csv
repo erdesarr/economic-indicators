@@ -13,11 +13,11 @@ indicators_config,ibr_overnight,,%,false,+|-,,35,true,30,,
 indicators_config,ibr_1_mes,,%,false,+|-,,36,true,30,,
 indicators_config,ibr_3_meses,,%,false,+|-,,37,true,30,,
 indicators_config,ibr_6_meses,,%,false,+|-,,38,true,30,,
-indicators_config,ibr_12_meses,,%,true,+|-,,39,true,30,,
-indicators_config,usd_brl_compra,R$ ,,true,+|-,,40,true,30,,
-indicators_config,gas_ttf_nl,EUR , /MWh,true,+|-,,42,true,30,,
-indicators_config,gas_henry_micro,US$ , /MMBtu,true,+|-,,41,true,30,,
-indicators_config,lng_jkm,US$ , /MMBtu,true,+|-,,43,true,30,,
-ajustes,,,,,,,,,,horario_etl,45 12 * * *
-ajustes,,,,,,,,,,horario_updater,15 13 * * *
+indicators_config,ibr_12_meses,,%,false,+|-,,39,true,30,,
+indicators_config,usd_brl_compra,R$ ,,false,+|-,,40,true,30,,
+indicators_config,gas_ttf_nl,EUR , /MWh,false,+|-,,42,true,30,,
+indicators_config,gas_henry_micro,US$ , /MMBtu,false,+|-,,41,true,30,,
+indicators_config,lng_jkm,US$ , /MMBtu,false,+|-,,43,true,30,,
+ajustes,,,,,,,,,,horario_etl,00 21 * * *
+ajustes,,,,,,,,,,horario_updater,30 21 * * *
 ajustes,,,,,,,,,,umbral_variacion_pct,30
