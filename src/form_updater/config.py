@@ -31,6 +31,8 @@ class FormUpdaterConfig:
     workflow_etl: str
     workflow_updater: str
     settings_defaults: dict[str, float]
+    catchup_hours: float = 8.0
+    state_path: Path = Path("config/scheduler_state.json")
 
     def gviz_url(self, tab: str) -> str:
         return (
@@ -70,4 +72,6 @@ def load_form_updater_config(
         workflow_etl=str(_require(scheduler, "workflow_etl", "scheduler")),
         workflow_updater=str(_require(scheduler, "workflow_updater", "scheduler")),
         settings_defaults={str(k): float(v) for k, v in defaults.items()},
+        catchup_hours=float(scheduler.get("catchup_hours", 8)),
+        state_path=Path(str(scheduler.get("state_path", "config/scheduler_state.json"))),
     )
