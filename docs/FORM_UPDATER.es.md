@@ -179,3 +179,8 @@ Si falta `HEALTHCHECKS_URL_*` solo se desactiva ese check (warning, sin crash).
   `generated_at` reciente. Si sigue stale, el run falla con un `/fail` explícito
   del form-updater. Opción elegida: polling (no un gap de 30 min en la hoja),
   para que el gap ETL→updater de 15 min sea seguro aunque Pages esté desplegando.
+
+Tokens de dedup: natural = fecha Bogota; forzado/prueba = timestamp exacto de
+ocurrencia. Los vetos naturales se loguean como WARNING y se incluyen en el body
+del ping del scheduler (`VETOED_NATURAL=...`); los forzados/de prueba nunca vetan
+la ventana natural.

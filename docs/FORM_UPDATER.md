@@ -178,3 +178,7 @@ Missing `HEALTHCHECKS_URL_*` disables only that check (warning, no crash).
   `generated_at`. If it is still stale, the run fails with an explicit
   form-updater `/fail`. Chosen option: polling (not a 30-minute sheet gap), so
   a 15-minute ETL→updater gap is safe even when Pages is still deploying.
+
+Dedup tokens: natural = Bogota date; forced/test = exact occurrence timestamp.
+Natural vetoes are logged as WARNING and included in the scheduler ping body
+(`VETOED_NATURAL=...`); forced/test dispatches never veto the natural window.

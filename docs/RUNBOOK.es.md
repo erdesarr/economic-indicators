@@ -136,3 +136,20 @@ pings success), descomenta `*/5 * * * *` y haz push.
 - El updater hace polling del contrato desplegado en Pages (30 s, hasta 5 min)
   antes de escribir; un gap de 15 min entre ETL y updater es seguro. Si sigue
   stale tras el polling -> `/fail` explícito del form-updater.
+
+### Detalle del token de dedup y grace de Healthchecks (2026-10-20)
+
+- Las ocurrencias NATURALES se deduplican por **fecha America/Bogota** (doble
+  natural el mismo día se veta). Las forzadas/de prueba (`--force` o `--now`) se
+  deduplican por **timestamp exacto de ocurrencia**, así que un forzado ad-hoc
+  temprano no bloquea el test de 11:35 y el test de 12:00 no re-ejecuta el ETL
+  de 11:35.
+- Cuando se veta una ocurrencia NATURAL, el scheduler imprime
+  `WARNING: natural occurrence vetoed by dedup: ...` y agrega
+  `VETOED_NATURAL=[...]` al body del ping success de Healthchecks. Un veto nunca
+  es silencioso.
+- Los periods/grace de Healthchecks deben reflejar la cadencia throttled (el
+  dueño los configura en la UI; el código no puede): `scrape` y `form-updater`
+  diarios con **~6 h de grace**, `scheduler` **~2 h**, `sync` **~2 h**. El
+  watchdog del form-updater agrega el `/fail` explícito cuando no hay write
+  natural en 26 h o dos corridas naturales seguidas escribieron 0.

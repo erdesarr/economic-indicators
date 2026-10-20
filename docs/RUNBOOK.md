@@ -135,3 +135,20 @@ pings), uncomment `*/5 * * * *` and push.
 - The updater polls the deployed Pages contract (30 s, up to 5 min) before
   writing; a 15-minute gap between the ETL and updater windows is safe. Stale
   after the polling -> explicit form-updater `/fail`.
+
+### Dedup token details and Healthchecks grace (2026-10-20)
+
+- Natural occurrences are deduplicated by **America/Bogota date** (a double
+  natural run the same day is vetoed). Forced/test occurrences (`--force` or
+  `--now`) are deduplicated by **exact occurrence timestamp**, so an ad-hoc
+  force earlier in the day does not block the 11:35 test and the 12:00 test does
+  not re-run the 11:35 ETL.
+- When a NATURAL occurrence is vetoed, the scheduler logs
+  `WARNING: natural occurrence vetoed by dedup: ...` and appends
+  `VETOED_NATURAL=[...]` to its Healthchecks success body. A veto is never
+  silent.
+- Healthchecks periods/grace must match the throttled cadence (the owner sets
+  them in the Healthchecks UI; code cannot change them): `scrape` and
+  `form-updater` daily with **~6 h grace**, `scheduler` **~2 h grace**,
+  `sync` **~2 h grace**. The form-updater watchdog adds the explicit /fail when
+  no natural write is older than 26 h or two consecutive natural runs wrote 0.
