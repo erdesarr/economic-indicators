@@ -1,4 +1,4 @@
-﻿"""Scheduler entry point used by scheduler.yml.
+"""Scheduler entry point used by scheduler.yml.
 
 Reads the committed sheet snapshot and triggers the workflows whose sheet cron
 occurrence is due. Because GitHub throttles high-frequency crons, an occurrence
