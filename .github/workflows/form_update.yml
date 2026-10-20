@@ -14,6 +14,11 @@ on:
         description: "Optional comma-separated record ids/slugs (test subset)"
         required: false
         default: ""
+      origin:
+        description: "Trigger origin: natural (scheduler) or forced (manual/test)"
+        type: choice
+        options: [forced, natural]
+        default: forced
   workflow_call:
     inputs:
       mode:
@@ -24,6 +29,10 @@ on:
         type: string
         required: false
         default: ""
+      origin:
+        type: string
+        required: false
+        default: forced
 
 concurrency:
   group: form-update
@@ -59,7 +68,7 @@ jobs:
 
       - name: Run form updater
         run: |
-          ARGS="--mode ${{ inputs.mode }}"
+          ARGS="--mode ${{ inputs.mode }} --origin ${{ inputs.origin }}"
           if [ -n "${{ inputs.slugs }}" ]; then
             ARGS="$ARGS --slugs ${{ inputs.slugs }}"
           fi

@@ -126,3 +126,13 @@ pings success), descomenta `*/5 * * * *` y haz push.
   `now=<ISO8601>` para simular una ventana. La pestaña `ajustes` manda.
 - No agregues un cron propio a `scrape.yml`/`form_update.yml`: el scheduler es el
   único disparador automático (evita dobles corridas y saltarse la hoja).
+
+### Dedup por origen y readiness de Pages (2026-10-20)
+
+- Los disparos forzados/de prueba se guardan como `origin=forced`; las ventanas
+  naturales como `origin=natural`. Solo se deduplica la repetición del mismo
+  origen+ocurrencia, así que un forzado nunca se come la ventana natural (y el
+  watchdog ignora los writes forzados).
+- El updater hace polling del contrato desplegado en Pages (30 s, hasta 5 min)
+  antes de escribir; un gap de 15 min entre ETL y updater es seguro. Si sigue
+  stale tras el polling -> `/fail` explícito del form-updater.

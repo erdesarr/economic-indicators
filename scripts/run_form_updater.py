@@ -34,6 +34,7 @@ from form_updater.updater import (  # noqa: E402
     format_plan_lines,
     load_active_rows,
     resolve_variable_data,
+    wait_for_fresh_pages,
 )
 from form_updater.watchdog import STATE_PATH as FORM_UPDATE_STATE  # noqa: E402
 from form_updater.watchdog import record_write  # noqa: E402
@@ -73,6 +74,7 @@ def main() -> int:
     parser.add_argument(
         "--mode", choices=["dry-run", "write", "capture", "probe"], default="dry-run"
     )
+    parser.add_argument("--origin", choices=["natural", "forced"], default="forced")
     parser.add_argument("--slugs", default=None, help="comma-separated record ids or slugs")
     parser.add_argument("--contract", default="artifacts/contract")
     parser.add_argument("--records", default=str(RECORDS_PATH))
@@ -150,6 +152,17 @@ def main() -> int:
     if healthchecks is not None:
         print(f"healthchecks form-updater start: sent={healthchecks.ping_start()}")
 
+    # The scheduler may fire the updater right on time, while Pages is still
+    # deploying. Poll briefly for a fresh deployed contract before writing.
+    try:
+        print("waiting for Pages latest.json to be fresh (today, recent)...")
+        wait_for_fresh_pages(today)
+        print("pages latest.json is fresh")
+    except StaleDataError as exc:
+        if healthchecks is not None:
+            print(f"healthchecks form-updater fail: sent={healthchecks.ping_fail(str(exc))}")
+        return _fail(str(exc))
+
     try:
         records = load_records(args.records)
     except Exception as exc:  # noqa: BLE001 - keep the run controlled
@@ -194,6 +207,7 @@ def main() -> int:
         failed=len(write_failures),
         omitted=len(plan.failures),
         run_id=os.environ.get("GITHUB_RUN_ID", ""),
+        origin=args.origin,
     )
     print(f"write state recorded: {FORM_UPDATE_STATE}")
     if healthchecks is not None:

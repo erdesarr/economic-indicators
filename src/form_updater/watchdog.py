@@ -54,23 +54,29 @@ def evaluate_entries(
     max_age_hours: float = DEFAULT_MAX_AGE_HOURS,
     zero_write_days: int = DEFAULT_ZERO_WRITE_DAYS,
 ) -> list[str]:
-    """Return human-readable problems (empty = healthy)."""
+    """Return human-readable problems (empty = healthy).
 
-    if not entries:
-        return ["form updater has no write state (never wrote?)"]
-    latest = max(entries, key=_recorded_at)
+    Only NATURAL writes count. A forced/test write must never reset the clock
+    or mask a silent natural updater. Legacy entries without ``origin`` are
+    treated as forced.
+    """
+
+    natural = [entry for entry in entries if entry.get("origin") == "natural"]
+    if not natural:
+        return ["form updater has no NATURAL write recorded (forced writes do not count)"]
+    latest = max(natural, key=_recorded_at)
     age = now_utc - _recorded_at(latest)
     problems: list[str] = []
     if age > timedelta(hours=max_age_hours):
         problems.append(
-            f"form updater has not written for {age.total_seconds() / 3600:.1f} h "
+            f"form updater has not written naturally for {age.total_seconds() / 3600:.1f} h "
             f"(max {max_age_hours:g} h; last run {latest.get('run_id')})"
         )
-    recent = sorted(entries, key=_recorded_at)[-zero_write_days:]
+    recent = sorted(natural, key=_recorded_at)[-zero_write_days:]
     if len(recent) >= zero_write_days and all(
         int(entry.get("written", 0)) == 0 for entry in recent
     ):
-        problems.append(f"form updater wrote 0 values in the last {zero_write_days} runs")
+        problems.append(f"form updater wrote 0 values in the last {zero_write_days} NATURAL runs")
     return problems
 
 
@@ -82,6 +88,7 @@ def record_write(
     failed: int,
     omitted: int,
     run_id: str,
+    origin: str = "forced",
     recorded_at: datetime | None = None,
 ) -> None:
     """Append/update today's write record (keeps the last 10)."""
@@ -95,8 +102,11 @@ def record_write(
         "omitted": omitted,
         "recorded_at": (recorded_at or datetime.now(UTC)).isoformat(),
         "run_id": run_id,
+        "origin": origin,
     }
-    entries = [item for item in entries if item.get("date") != day] + [entry]
+    entries = [
+        item for item in entries if not (item.get("date") == day and item.get("origin") == origin)
+    ] + [entry]
     entries = sorted(entries, key=_recorded_at)[-MAX_ENTRIES:]
     state_path.parent.mkdir(parents=True, exist_ok=True)
     state_path.write_text(

@@ -122,26 +122,74 @@ def test_due_occurrence_rejects_beyond_catchup() -> None:
     assert due_occurrence("0 21 * * *", now, catchup_hours=8) is None
 
 
-def test_filter_pending_dedup_by_occurrence_date() -> None:
+def test_filter_pending_dedup_by_origin_and_date() -> None:
     decision = ScheduleDecision(
         key="etl",
         workflow="scrape.yml",
         expression="0 21 * * *",
         occurrence=datetime(2026, 10, 12, 21, 0, 0, tzinfo=BOGOTA),
     )
-    pending, skipped = filter_pending([decision], {"etl": "2026-10-12"})
+    state = {"etl": {"natural": "2026-10-12"}}
+    pending, skipped = filter_pending([decision], state, "natural")
     assert pending == []
-    assert skipped == ["etl@2026-10-12"]
-    pending, skipped = filter_pending([decision], {"etl": "2026-10-11"})
+    assert skipped == ["etl@2026-10-12(natural)"]
+    # A natural trigger must NOT veto the forced/test run.
+    pending, skipped = filter_pending([decision], state, "forced")
     assert pending == [decision]
     assert skipped == []
 
 
-def test_state_roundtrip(tmp_path) -> None:  # type: ignore[no-untyped-def]
+def test_forced_today_does_not_block_natural_today() -> None:
+    decision = ScheduleDecision(
+        key="updater",
+        workflow="form_update.yml",
+        expression="30 21 * * *",
+        occurrence=datetime(2026, 10, 12, 21, 30, 0, tzinfo=BOGOTA),
+    )
+    state = {"updater": {"forced": "2026-10-12"}}
+    pending, _ = filter_pending([decision], state, "natural")
+    assert pending == [decision]
+
+
+def test_natural_today_does_not_block_natural_tomorrow() -> None:
+    today_decision = ScheduleDecision(
+        key="etl",
+        workflow="scrape.yml",
+        expression="0 21 * * *",
+        occurrence=datetime(2026, 10, 12, 21, 0, 0, tzinfo=BOGOTA),
+    )
+    tomorrow_decision = ScheduleDecision(
+        key="etl",
+        workflow="scrape.yml",
+        expression="0 21 * * *",
+        occurrence=datetime(2026, 10, 13, 21, 0, 0, tzinfo=BOGOTA),
+    )
+    state = {"etl": {"natural": "2026-10-12"}}
+    pending, _ = filter_pending([today_decision, tomorrow_decision], state, "natural")
+    assert pending == [tomorrow_decision]
+
+
+def test_double_natural_same_day_is_deduped() -> None:
+    decision = ScheduleDecision(
+        key="etl",
+        workflow="scrape.yml",
+        expression="0 21 * * *",
+        occurrence=datetime(2026, 10, 12, 21, 0, 0, tzinfo=BOGOTA),
+    )
+    state = {"etl": {"natural": "2026-10-12", "forced": "2026-10-12"}}
+    pending, skipped = filter_pending([decision], state, "natural")
+    assert pending == []
+    assert skipped == ["etl@2026-10-12(natural)"]
+
+
+def test_state_roundtrip_and_legacy_migration(tmp_path) -> None:  # type: ignore[no-untyped-def]
     path = tmp_path / "state.json"
     assert load_state(path) == {}
-    save_state(path, {"etl": "2026-10-12", "updater": "2026-10-12"})
-    assert load_state(path) == {"etl": "2026-10-12", "updater": "2026-10-12"}
+    save_state(path, {"etl": {"natural": "2026-10-12", "forced": "2026-10-11"}})
+    assert load_state(path) == {"etl": {"natural": "2026-10-12", "forced": "2026-10-11"}}
+    # Legacy string from the old forced/test path is treated as forced.
+    path.write_text('{"etl": "2026-10-12"}', encoding="utf-8")
+    assert load_state(path) == {"etl": {"forced": "2026-10-12"}}
 
 
 def test_wait_for_workflow_polls_until_completed() -> None:

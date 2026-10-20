@@ -125,3 +125,13 @@ pings), uncomment `*/5 * * * *` and push.
   `now=<ISO8601>` to simulate a window. The `ajustes` tab is the source of truth.
 - Do not add a separate cron to `scrape.yml`/`form_update.yml`: the scheduler is
   the single automatic trigger (avoids double runs and bypassing the sheet).
+
+### Origin-aware dedup and Pages readiness (2026-10-20)
+
+- Forced/test triggers are stored as `origin=forced`; natural windows as
+  `origin=natural`. Only a repeat of the same origin+occurrence is deduplicated,
+  so a forced run never swallows the natural window (and the watchdog ignores
+  forced writes).
+- The updater polls the deployed Pages contract (30 s, up to 5 min) before
+  writing; a 15-minute gap between the ETL and updater windows is safe. Stale
+  after the polling -> explicit form-updater `/fail`.

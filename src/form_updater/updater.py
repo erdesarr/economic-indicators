@@ -11,8 +11,10 @@ from __future__ import annotations
 
 import json
 import os
+import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import date
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +35,8 @@ class StaleDataError(RuntimeError):
 
 
 DEFAULT_REPO = "erdesarr/economic-indicators"
+DEFAULT_PAGES_LATEST_URL = "https://erdesarr.github.io/economic-indicators/api/v1/latest.json"
+PAGES_MAX_AGE_HOURS = 6.0
 
 
 def default_raw_base() -> str:
@@ -41,6 +45,89 @@ def default_raw_base() -> str:
         "CONTRACT_RAW_BASE",
         f"https://raw.githubusercontent.com/{repo}/main/docs/api/v1",
     )
+
+
+def pages_latest_url() -> str:
+    return os.environ.get("PAGES_LATEST_URL", DEFAULT_PAGES_LATEST_URL)
+
+
+def pages_fresh(
+    latest: dict[str, Any],
+    today_bogota: date,
+    max_age_hours: float = PAGES_MAX_AGE_HOURS,
+    now_utc: datetime | None = None,
+) -> bool:
+    """True when the deployed contract has today's readings and is recent.
+
+    ``generated_at`` is UTC; at 21:00 Bogota it is already the next UTC day, so
+    the check uses a max-age window plus the Bogota reading date instead of a
+    naive date equality.
+    """
+
+    dates = [
+        str(payload["date"])
+        for payload in latest.get("indicators", {}).values()
+        if isinstance(payload, dict) and payload.get("date")
+    ]
+    if not dates or max(dates) != today_bogota.isoformat():
+        return False
+    raw_generated = latest.get("generated_at")
+    if not raw_generated:
+        return False
+    generated = datetime.fromisoformat(str(raw_generated).replace("Z", "+00:00"))
+    if generated.tzinfo is None:
+        generated = generated.replace(tzinfo=UTC)
+    reference = now_utc or datetime.now(UTC)
+    return reference - generated <= timedelta(hours=max_age_hours)
+
+
+def _fetch_pages_latest() -> dict[str, Any]:
+    with httpx.Client() as http:
+        response = http.get(
+            pages_latest_url(),
+            params={"cb": str(int(time.time()))},
+            timeout=15.0,
+            follow_redirects=True,
+        )
+        response.raise_for_status()
+        payload = response.json()
+    if not isinstance(payload, dict):
+        raise StaleDataError("Pages latest.json root is not an object")
+    return payload
+
+
+def wait_for_fresh_pages(
+    today_bogota: date,
+    timeout_seconds: float = 300.0,
+    interval_seconds: float = 30.0,
+    fetcher: Callable[[], dict[str, Any]] | None = None,
+    now_utc: datetime | None = None,
+) -> dict[str, Any]:
+    """Poll the deployed contract until it is fresh (or fail).
+
+    The scheduler may trigger the updater on time (15-30 min after the ETL);
+    Pages can still be deploying. Poll every ~30 s up to ~5 min before writing;
+    if it is still stale, raise (the caller pings /fail).
+    """
+
+    load = fetcher or _fetch_pages_latest
+    deadline = time.monotonic() + timeout_seconds
+    last_error: Exception | None = None
+    while True:
+        try:
+            latest = load()
+            if pages_fresh(latest, today_bogota, now_utc=now_utc):
+                return latest
+            last_error = StaleDataError(
+                "Pages latest.json is stale (no reading for today or generated_at too old)"
+            )
+        except Exception as exc:  # noqa: BLE001 - retry until the deadline
+            last_error = exc
+        if time.monotonic() >= deadline:
+            raise StaleDataError(
+                f"Pages latest.json did not become fresh within {timeout_seconds:g}s: {last_error}"
+            ) from last_error
+        time.sleep(interval_seconds)
 
 
 @dataclass(frozen=True)

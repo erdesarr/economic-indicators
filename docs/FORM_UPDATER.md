@@ -163,3 +163,18 @@ Missing `HEALTHCHECKS_URL_*` disables only that check (warning, no crash).
 - `tests/contract/test_webform_playwright.py`: Playwright against a mock Flask
   FormView (VIEWSTATE/EVENTVALIDATION, querystring, fill, click, redirect,
   verification).
+
+## Origin-aware dedup, natural-only watchdog and Pages readiness (2026-10-20)
+
+- `config/scheduler_state.json` stores per key `{origin: occurrence-date}` with
+  `origin` = `natural` (cron window) or `forced` (manual/`--force`/`--now` test).
+  Dedup only blocks a repeat of the SAME origin+occurrence: a forced/test run
+  never vetoes the natural window, and a natural run does not block tomorrow.
+- `config/form_update_state.json` records every write with its origin. The
+  watchdog counts only `natural` writes: a forced/test write does not reset the
+  26 h clock and cannot mask a silent natural updater.
+- Before writing, the updater polls the deployed Pages `latest.json` (every
+  30 s, up to ~5 min) until it contains today's readings and a recent
+  `generated_at`. If it is still stale, the run fails with an explicit
+  form-updater `/fail`. Chosen option: polling (not a 30-minute sheet gap), so
+  a 15-minute ETL→updater gap is safe even when Pages is still deploying.

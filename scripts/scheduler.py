@@ -55,11 +55,16 @@ def _parse_now(raw: str | None) -> datetime:
     return moment
 
 
-def _pending_updater(decisions: list[ScheduleDecision], index: int, state: dict[str, str]) -> bool:
+def _pending_updater(
+    decisions: list[ScheduleDecision],
+    index: int,
+    state: dict[str, dict[str, str]],
+    origin: str,
+) -> bool:
     for later in decisions[index + 1 :]:
         if later.key != "updater":
             continue
-        if state.get("updater") != later.occurrence.date().isoformat():
+        if state.get("updater", {}).get(origin) != later.occurrence.date().isoformat():
             return True
     return False
 
@@ -81,6 +86,8 @@ def main() -> int:
 
     now = _parse_now(args.now)
     now_bogota = now.astimezone(BOGOTA)
+    # Force/now are test aids: their state must never veto the natural window.
+    origin = "forced" if (args.force or args.now) else "natural"
     try:
         settings = load_settings(config.csv_path)
         state = load_state(config.state_path)
@@ -101,9 +108,12 @@ def main() -> int:
             decisions = outcome.triggers
             warnings = outcome.warnings
             critical = outcome.critical
-            decisions, already_done = filter_pending(decisions, state)
-            if already_done:
-                print(f"scheduler: already triggered {already_done}")
+
+        # Dedup a repeat of the SAME origin+occurrence only. A forced/test run
+        # never vetoes the natural window (and vice versa).
+        decisions, already_done = filter_pending(decisions, state, origin)
+        if already_done:
+            print(f"scheduler: already triggered {already_done}")
 
         print(f"scheduler now={now_bogota.isoformat()} settings={settings}")
         print(f"scheduler state={state} catchup_hours={config.catchup_hours}")
@@ -117,25 +127,21 @@ def main() -> int:
 
         ref = os.environ.get("GITHUB_REF_NAME", "main")
         dispatched: list[str] = []
-        skipped: list[str] = []
         for index, decision in enumerate(decisions):
             occurrence_date = decision.occurrence.date().isoformat()
-            if not args.force and state.get(decision.key) == occurrence_date:
-                print(f"skip {decision.key}: already triggered for occurrence {occurrence_date}")
-                skipped.append(decision.key)
-                continue
             if args.dry_run:
                 print(
                     f"DRY-RUN would trigger {decision.workflow} "
                     f"(key={decision.key}, occurrence={decision.occurrence.isoformat()})"
                 )
                 continue
-            inputs = {"mode": "write"} if decision.key == "updater" else None
+            inputs: dict[str, str] | None = None
+            if decision.key == "updater":
+                inputs = {"mode": "write", "origin": origin}
             trigger_started = datetime.now(UTC)
             trigger_workflow(decision.workflow, ref=ref, inputs=inputs)
-            if not args.force:
-                state[decision.key] = occurrence_date
-                save_state(config.state_path, state)
+            state.setdefault(decision.key, {})[origin] = occurrence_date
+            save_state(config.state_path, state)
             dispatched.append(decision.workflow)
             print(
                 f"triggered {decision.workflow} (key={decision.key}, "
@@ -144,7 +150,7 @@ def main() -> int:
             if (
                 decision.key == "etl"
                 and decision.workflow == config.workflow_etl
-                and _pending_updater(decisions, index, state)
+                and _pending_updater(decisions, index, state, origin)
             ):
                 repo = os.environ.get("GITHUB_REPOSITORY", DEFAULT_REPO)
                 token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
@@ -163,7 +169,8 @@ def main() -> int:
         if not decisions:
             print("scheduler: no due occurrence; nothing dispatched")
         summary = (
-            f"scheduler summary: dispatched={dispatched} skipped={skipped} warnings={len(warnings)}"
+            f"scheduler summary: dispatched={dispatched} skipped={already_done} "
+            f"warnings={len(warnings)}"
         )
         print(summary)
         if scheduler_check is not None:

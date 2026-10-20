@@ -61,8 +61,8 @@ def load_settings(csv_path: Path) -> dict[str, str]:
     return read_snapshot(csv_path)[1]
 
 
-def load_state(path: Path) -> dict[str, str]:
-    """Occurrence-date (America/Bogota) already triggered per key."""
+def load_state(path: Path) -> dict[str, dict[str, str]]:
+    """Origin-aware trigger state: key -> {origin: occurrence date}."""
 
     if not path.exists():
         return {}
@@ -72,10 +72,20 @@ def load_state(path: Path) -> dict[str, str]:
         return {}
     if not isinstance(raw, dict):
         return {}
-    return {str(key): str(value) for key, value in raw.items()}
+    state: dict[str, dict[str, str]] = {}
+    for key, value in raw.items():
+        if isinstance(value, str):
+            state[str(key)] = {"forced": value}
+        elif isinstance(value, dict):
+            if "date" in value:
+                origin = str(value.get("origin", "forced"))
+                state[str(key)] = {origin: str(value["date"])}
+            else:
+                state[str(key)] = {str(origin): str(date) for origin, date in value.items()}
+    return state
 
 
-def save_state(path: Path, state: dict[str, str]) -> None:
+def save_state(path: Path, state: dict[str, dict[str, str]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(dict(sorted(state.items())), indent=2) + "\n", encoding="utf-8")
 
@@ -174,16 +184,22 @@ def forced_decision(
 
 
 def filter_pending(
-    decisions: list[ScheduleDecision], state: dict[str, str]
+    decisions: list[ScheduleDecision],
+    state: dict[str, dict[str, str]],
+    origin: str,
 ) -> tuple[list[ScheduleDecision], list[str]]:
-    """Drop decisions already triggered for their occurrence date."""
+    """Drop decisions already triggered for the SAME origin+occurrence.
+
+    A forced/test trigger must never veto the natural occurrence (and vice
+    versa); only a repeat of the same origin for the same date is deduplicated.
+    """
 
     pending: list[ScheduleDecision] = []
     skipped: list[str] = []
     for decision in decisions:
         occurrence_date = decision.occurrence.date().isoformat()
-        if state.get(decision.key) == occurrence_date:
-            skipped.append(f"{decision.key}@{occurrence_date}")
+        if state.get(decision.key, {}).get(origin) == occurrence_date:
+            skipped.append(f"{decision.key}@{occurrence_date}({origin})")
         else:
             pending.append(decision)
     return pending, skipped
