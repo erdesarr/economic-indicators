@@ -329,3 +329,27 @@ def test_schedule_decision_is_frozen() -> None:
 
 def test_bogota_zone_is_utc_minus_five() -> None:
     assert ZoneInfo("America/Bogota").utcoffset(MONDAY_2130) == timedelta(hours=-5)
+
+
+def test_forced_dedup_uses_exact_occurrence_timestamp() -> None:
+    decision = ScheduleDecision(
+        key="etl",
+        workflow="scrape.yml",
+        expression="35 11 * * *",
+        occurrence=datetime(2026, 10, 20, 11, 35, 0, tzinfo=BOGOTA),
+    )
+    state = {"etl": {"forced": decision.occurrence.isoformat()}}
+    pending, skipped = filter_pending([decision], state, "forced")
+    assert pending == []
+    assert skipped == [f"etl@{decision.occurrence.isoformat()}(forced)"]
+    # An earlier ad-hoc forced write stored as a date does not block the 11:35 test.
+    pending, _ = filter_pending([decision], {"etl": {"forced": "2026-10-20"}}, "forced")
+    assert pending == [decision]
+
+
+def test_natural_vetoes_are_explicit() -> None:
+    from form_updater.scheduler import natural_vetoes
+
+    skipped = ["etl@2026-10-20(natural)", "updater@2026-10-20(forced)"]
+    assert natural_vetoes(skipped) == ["etl@2026-10-20(natural)"]
+    assert natural_vetoes(["etl@2026-10-20(forced)"]) == []

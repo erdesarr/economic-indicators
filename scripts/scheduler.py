@@ -1,4 +1,4 @@
-"""Scheduler entry point used by scheduler.yml.
+﻿"""Scheduler entry point used by scheduler.yml.
 
 Reads the committed sheet snapshot and triggers the workflows whose sheet cron
 occurrence is due. Because GitHub throttles high-frequency crons, an occurrence
@@ -39,6 +39,8 @@ from form_updater.scheduler import (  # noqa: E402
     forced_decision,
     load_settings,
     load_state,
+    natural_vetoes,
+    occurrence_token,
     plan,
     save_state,
     trigger_workflow,
@@ -64,7 +66,7 @@ def _pending_updater(
     for later in decisions[index + 1 :]:
         if later.key != "updater":
             continue
-        if state.get("updater", {}).get(origin) != later.occurrence.date().isoformat():
+        if state.get("updater", {}).get(origin) != occurrence_token(later, origin):
             return True
     return False
 
@@ -128,7 +130,6 @@ def main() -> int:
         ref = os.environ.get("GITHUB_REF_NAME", "main")
         dispatched: list[str] = []
         for index, decision in enumerate(decisions):
-            occurrence_date = decision.occurrence.date().isoformat()
             if args.dry_run:
                 print(
                     f"DRY-RUN would trigger {decision.workflow} "
@@ -140,7 +141,7 @@ def main() -> int:
                 inputs = {"mode": "write", "origin": origin}
             trigger_started = datetime.now(UTC)
             trigger_workflow(decision.workflow, ref=ref, inputs=inputs)
-            state.setdefault(decision.key, {})[origin] = occurrence_date
+            state.setdefault(decision.key, {})[origin] = occurrence_token(decision, origin)
             save_state(config.state_path, state)
             dispatched.append(decision.workflow)
             print(
@@ -168,13 +169,16 @@ def main() -> int:
 
         if not decisions:
             print("scheduler: no due occurrence; nothing dispatched")
+        vetoes = natural_vetoes(already_done)
+        if vetoes:
+            print("WARNING: natural occurrence vetoed by dedup: " + ", ".join(vetoes))
         summary = (
             f"scheduler summary: dispatched={dispatched} skipped={already_done} "
             f"warnings={len(warnings)}"
         )
         print(summary)
         if scheduler_check is not None:
-            body = summary
+            body = summary + (f" VETOED_NATURAL={vetoes}" if vetoes else "")
             print(f"healthchecks scheduler success: sent={scheduler_check.ping_success(body)}")
         return 0
     except Exception as exc:  # noqa: BLE001 - the check must report the crash

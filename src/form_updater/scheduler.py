@@ -183,6 +183,20 @@ def forced_decision(
     )
 
 
+def occurrence_token(decision: ScheduleDecision, origin: str) -> str:
+    """Dedup token: natural -> date; forced/test -> exact occurrence timestamp.
+
+    Natural windows are deduped per America/Bogota date (double natural same
+    day). Forced/test runs are explicit test aids, so they are only deduped
+    when the exact scheduled occurrence repeats (e.g. 11:35 then 12:00 must not
+    re-run the 11:35 ETL, while an earlier ad-hoc force does not block 11:35).
+    """
+
+    if origin == "natural":
+        return decision.occurrence.date().isoformat()
+    return decision.occurrence.isoformat()
+
+
 def filter_pending(
     decisions: list[ScheduleDecision],
     state: dict[str, dict[str, str]],
@@ -190,19 +204,24 @@ def filter_pending(
 ) -> tuple[list[ScheduleDecision], list[str]]:
     """Drop decisions already triggered for the SAME origin+occurrence.
 
-    A forced/test trigger must never veto the natural occurrence (and vice
-    versa); only a repeat of the same origin for the same date is deduplicated.
+    A forced/test trigger never vetoes the natural occurrence (and vice versa).
     """
 
     pending: list[ScheduleDecision] = []
     skipped: list[str] = []
     for decision in decisions:
-        occurrence_date = decision.occurrence.date().isoformat()
-        if state.get(decision.key, {}).get(origin) == occurrence_date:
-            skipped.append(f"{decision.key}@{occurrence_date}({origin})")
+        token = occurrence_token(decision, origin)
+        if state.get(decision.key, {}).get(origin) == token:
+            skipped.append(f"{decision.key}@{token}({origin})")
         else:
             pending.append(decision)
     return pending, skipped
+
+
+def natural_vetoes(skipped: list[str]) -> list[str]:
+    """Dedup vetoes that affect the NATURAL occurrence (must not be silent)."""
+
+    return [item for item in skipped if item.endswith("(natural)")]
 
 
 def trigger_workflow(
