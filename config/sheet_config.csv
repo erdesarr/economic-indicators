@@ -18,6 +18,6 @@ indicators_config,usd_brl_compra,R$ ,,false,+|-,,40,true,30,,
 indicators_config,gas_ttf_nl,EUR , /MWh,false,+|-,,42,true,30,,
 indicators_config,gas_henry_micro,US$ , /MMBtu,false,+|-,,41,true,30,,
 indicators_config,lng_jkm,US$ , /MMBtu,false,+|-,,43,true,30,,
-ajustes,,,,,,,,,,horario_etl,00 21 * * *
-ajustes,,,,,,,,,,horario_updater,30 21 * * *
+ajustes,,,,,,,,,,horario_etl,15 11 * * *
+ajustes,,,,,,,,,,horario_updater,30 11 * * *
 ajustes,,,,,,,,,,umbral_variacion_pct,30
