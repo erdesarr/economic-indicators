@@ -210,4 +210,4 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
   `sync_config.yml` + `scheduler.yml` manually for urgent changes.
 - Healthchecks `scheduler` check: hourly period with ~2 h grace (owner action in
   the UI; documented in RUNBOOK).
-- CI #36 (docs fix) green; CLAUDE CI #35 was the pre-fix docs commit.
+- CI #36 (docs fix) green; CI #35 was the pre-fix docs commit.
