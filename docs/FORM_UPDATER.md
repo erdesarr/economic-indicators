@@ -1,6 +1,6 @@
-# Form updater — Google Sheet driven web form updates
+# Form updater â€” Google Sheet driven web form updates
 
-**English | [Español](FORM_UPDATER.es.md)**
+**English | [EspaÃ±ol](FORM_UPDATER.es.md)**
 
 The form updater reads the latest ETL data and writes formatted values to the
 public GlobalNews "Indicadores" ASP.NET FormView. Configuration is edited by 3
@@ -10,14 +10,14 @@ people in a public Google Sheet; no workflow YAML is ever rewritten.
 
 ```
 Google Sheet (indicators_config + ajustes)
-        │  sync_config.yml (hourly, gviz CSV)
-        ▼
+        â”‚  sync_config.yml (hourly, gviz CSV)
+        â–¼
 config/sheet_config.csv  (normalized snapshot, committed)
-        │  scheduler.yml (*/5, America/Bogota windows)
-        ├── horario_etl      → gh workflow run scrape.yml
-        └── horario_updater  → gh workflow run form_update.yml -f mode=write
-                                   │  Playwright + golden records
-                                   ▼
+        â”‚  scheduler.yml (0 * * * *, hourly; America/Bogota windows)
+        â”œâ”€â”€ horario_etl      â†’ gh workflow run scrape.yml
+        â””â”€â”€ horario_updater  â†’ gh workflow run form_update.yml -f mode=write
+                                   â”‚  Playwright + golden records
+                                   â–¼
                             GlobalNews indicadores form
 ```
 
@@ -31,7 +31,7 @@ config/sheet_config.csv  (normalized snapshot, committed)
 | B | `prefijo` | literal text before the value; empty = none; trailing spaces preserved (`"US$ "`) |
 | C | `sufijo` | literal text after the value; leading spaces preserved (`" /MMBtu"`) |
 | D | `mostrar_variacion` | boolean checkbox |
-| E | `simbolo_variacion` | `UP|DOWN` pair (`+|-`, `^|v`, `↑|↓`); single token = up token + `-` with warning; empty = `+|-` |
+| E | `simbolo_variacion` | `UP|DOWN` pair (`+|-`, `^|v`, `â†‘|â†“`); single token = up token + `-` with warning; empty = `+|-` |
 | F | `fallback` | slug of another catalog variable; empty = no fallback (NOT a URL) |
 | G | `id_indicador` | form record id (`IndicadorID`); legacy header `numero_control` accepted |
 | H | `activo` | FALSE pauses **writing** that row, not extraction |
@@ -39,8 +39,8 @@ config/sheet_config.csv  (normalized snapshot, committed)
 Optional column I: `umbral_variacion_pct` per-row override of the global
 threshold (empty = inherit global).
 
-Booleans are bilingual (`true/verdadero/1/si/sí/x` vs `false/falso/0/no/empty`;
-anything else → warning + False). Prefix/suffix cells may carry literal
+Booleans are bilingual (`true/verdadero/1/si/sÃ­/x` vs `false/falso/0/no/empty`;
+anything else â†’ warning + False). Prefix/suffix cells may carry literal
 backticks for visual spaces (`` `$ ` ``); the sync strips one leading and one
 trailing backtick. The symbol separator must be the ASCII pipe **U+007C**.
 
@@ -52,8 +52,8 @@ trailing backtick. The symbol separator must be the ASCII pipe **U+007C**.
 | `horario_updater` | cron for `form_update.yml`, e.g. `30 21 * * *` |
 | `umbral_variacion_pct` | global variation guard, e.g. `30` |
 
-Values are found by `clave` (order-proof). Unknown keys → warning. Missing keys
-→ last committed snapshot value, else bootstrap default from
+Values are found by `clave` (order-proof). Unknown keys â†’ warning. Missing keys
+â†’ last committed snapshot value, else bootstrap default from
 `config/form_updater.yaml`, plus a warning and a `/fail` ping on the sync check.
 Cron expressions support `m h * * *` and `m h * * dow` and are validated with
 croniter. Invalid values are ignored with a warning (the scheduler keeps the
@@ -69,7 +69,7 @@ snapshot changes. If gviz fails it does not commit and pings `/fail` on the sync
 check; the repository keeps the last valid configuration.
 
 SHEET_ID lives in `config/form_updater.yaml` (not sensitive). The book is shared
-as "Anyone with the link → Reader"; 3 people are editors by email; both tabs are
+as "Anyone with the link â†’ Reader"; 3 people are editors by email; both tabs are
 covered by the book permissions. Sheets **version history** is the safety net.
 
 ## Resolution chain (with variation guard)
@@ -77,16 +77,16 @@ covered by the book permissions. Sheets **version history** is the safety net.
 For each ACTIVE row the candidates are `[primary, fallback, forward_fill]`:
 
 1. **primary** fresh (`status=ok`) and, when a previous day exists,
-   `|variation_pct| <= threshold` → use it (`source=primary`).
-2. Otherwise **fallback** (if configured) fresh and within threshold → use it
+   `|variation_pct| <= threshold` â†’ use it (`source=primary`).
+2. Otherwise **fallback** (if configured) fresh and within threshold â†’ use it
    (`source=fallback`). The displayed variation belongs to the fallback.
-3. Otherwise **forward_fill** → the previous stored reading
+3. Otherwise **forward_fill** â†’ the previous stored reading
    (`source=forward_filled`). It is never discarded by the guard.
 4. Otherwise the row is omitted, reported and the form-updater ping goes to
    `/fail`.
 
 A fresh candidate is discarded with the reason
-`variación X% excede umbral Y%` (logged and included in the `/fail` body).
+`variaciÃ³n X% excede umbral Y%` (logged and included in the `/fail` body).
 With no previous day the guard does not apply. `activo=FALSE` pauses writing
 only; the variable remains available as a fallback for other rows (the resolver
 reads the ETL contract, not the sheet).
@@ -122,7 +122,7 @@ also stale or unreachable, the run aborts: **stale data is never written**.
 - Fields `Nombre` and `Formato` are read-only for the updater; `Formato` is the
   `.NET` placeholder `{0}` and is never modified.
 - Before writing, the visible `Nombre` must match
-  `tests/golden/webform/records.json` (id → Nombre). A mismatch skips the write
+  `tests/golden/webform/records.json` (id â†’ Nombre). A mismatch skips the write
   and reports `/fail`.
 - "Actualizar" is an `<a>` using `WebForm_DoPostBackWithOptions`; after the
   postback the site redirects to `List.aspx`. The updater re-navigates to the
@@ -139,7 +139,7 @@ also stale or unreachable, the run aborts: **stale data is never written**.
 | `probe` | no | diagnostic dump of inputs/clickables + page HTML (artifacts) |
 
 CLI: `python scripts/run_form_updater.py --mode dry-run [--slugs 40,35,41]`.
-Workflow: Actions → **Form update** → Run workflow with `mode`/`slugs`.
+Workflow: Actions â†’ **Form update** â†’ Run workflow with `mode`/`slugs`.
 
 ## Healthchecks
 
@@ -147,7 +147,7 @@ Workflow: Actions → **Form update** → Run workflow with `mode`/`slugs`.
 |---|---|---|
 | `form-updater` | write mode | every write run; `/fail` with the failure table |
 | `sync` | hourly sync | success each run; `/fail` on gviz failure or missing/invalid settings |
-| `scheduler` | every 5 min | success each run; `/fail` on crash |
+| `scheduler` | hourly (`0 * * * *`); non-hour windows run at the next hourly run (max ~59 min) | success each run; `/fail` on crash |
 
 Missing `HEALTHCHECKS_URL_*` disables only that check (warning, no crash).
 
@@ -177,7 +177,7 @@ Missing `HEALTHCHECKS_URL_*` disables only that check (warning, no crash).
   30 s, up to ~5 min) until it contains today's readings and a recent
   `generated_at`. If it is still stale, the run fails with an explicit
   form-updater `/fail`. Chosen option: polling (not a 30-minute sheet gap), so
-  a 15-minute ETL→updater gap is safe even when Pages is still deploying.
+  a 15-minute ETLâ†’updater gap is safe even when Pages is still deploying.
 
 Dedup tokens: natural = Bogota date; forced/test = exact occurrence timestamp.
 Natural vetoes are logged as WARNING and included in the scheduler ping body

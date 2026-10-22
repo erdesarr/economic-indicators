@@ -89,10 +89,11 @@ the job keeps running (graceful degradation, covered by
 
 **Check schedule rule:** the Healthchecks check period must mirror the
 success-ping frequency of its job (e.g. the sync job pings success hourly via
-cron `7 * * * *` UTC, so the `sync` check must be "hourly with ~60 min grace";
-the scrape job pings once per day at 21:00 America/Bogota, so its check is
-daily with grace). An explicit `/fail` (gviz down, invalid config) still raises
-an immediate alert regardless of the period.
+cron `7 * * * *` UTC, so the `sync` check must be "hourly with ~2 h grace";
+the scheduler pings hourly, so its check is hourly with ~2 h grace; the scrape
+job pings once per day at 21:00 America/Bogota, so its check is daily with
+grace). An explicit `/fail` (gviz down, invalid config) still raises an
+immediate alert regardless of the period.
 
 ## Alerting (Healthchecks.io)
 
@@ -172,13 +173,14 @@ Key semantics:
   belongs to the variable whose value was used.
 - **Inactive rows** (`activo=FALSE`) pause writing only; the variable remains
   available as a fallback for other rows.
-- **Scheduler:** a fixed `*/5` UTC workflow reads the committed snapshot and
-  runs `scrape.yml` / `form_update.yml` when the sheet-defined cron matches the
-  current America/Bogota window. Workflow YAML is never rewritten. GitHub
-  throttles high-frequency crons, so the scheduler catches up (8 h), dedupes
-  with `config/scheduler_state.json`, and waits for the scrape to finish before
-  triggering the updater. The hourly sync also runs a watchdog that pings
-  form-updater `/fail` if writes stop or stay at zero.
+- **Scheduler:** runs **hourly on the hour** (`0 * * * *` UTC). A sheet window
+  that is not on the hour executes at the next hourly run (max ~59 min delay);
+  the 8 h catch-up covers further delays. It reads the committed snapshot,
+  dedupes with origin-aware `config/scheduler_state.json`, and waits for the
+  scrape before triggering the updater. A sheet schedule change takes up to
+  ~1 h (hourly sync + hourly scheduler); for urgent changes dispatch
+  `sync_config.yml` and `scheduler.yml` manually. The hourly sync also runs the
+  natural-only watchdog.
 - **Safety:** the updater never writes stale data (freshness check with
   raw.githubusercontent fallback), verifies the record `Nombre` against
   `tests/golden/webform/records.json`, and re-reads the form after the postback.

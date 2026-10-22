@@ -142,16 +142,19 @@ bloque de variación. `prefijo`/`sufijo` literales.
 
 `sync_config.yml` (cron `7 * * * *` UTC) lee ambas pestañas y escribe
 `config/sheet_config.csv`; si gviz falla no commitea y pingea `/fail` (el repo
-conserva la última config válida). `scheduler.yml` (cron `*/5 * * * *` UTC) lee
-el snapshot y compara cada horario con croniter en America/Bogota:
+conserva la última config válida). `scheduler.yml` (cron **`0 * * * *` UTC,
+horario en punto**) lee el snapshot y compara cada horario con croniter en
+America/Bogota:
 - `horario_etl` → dispara `scrape.yml`.
 - `horario_updater` → dispara `form_update.yml` con `mode=write`.
 
-GitHub throttlea los crons de alta frecuencia, así que el scheduler hace
-**catch-up** (ocurrencia de hasta 8 h), deduplica con
-`config/scheduler_state.json` y, si ambos slots están debidos, espera a que el
-scrape termine antes de disparar el updater. El sync horario ejecuta un watchdog
-que pingea `/fail` al check form-updater si dejan de haber escrituras o son 0.
+Una ventana que no cae en punto se ejecuta en la siguiente corrida horaria
+(retraso máx ~59 min); el **catch-up** de 8 h cubre retrasos mayores. El estado
+`config/scheduler_state.json` es origin-aware (natural vs forzado) y, si ambos
+slots están debidos, espera a que el scrape termine antes de disparar el
+updater. Un cambio de horario en la hoja tarda hasta ~1 h en aplicarse (sync
+horario + scheduler horario); si urge, dispara `sync_config.yml` y
+`scheduler.yml` a mano. El sync horario ejecuta el watchdog natural-only.
 **Nunca** se reescriben workflows YAML.
 
 ### Gate de activación
@@ -178,8 +181,8 @@ check con warning en el log y el job continúa. Los secrets SMTP están retirado
 
 **Regla de schedules:** el periodo de cada check en Healthchecks debe reflejar
 la frecuencia de pings de éxito de su job (sync horario con grace ~60 min;
-scrape diario 21:00 Bogotá; scheduler cada 5 min; form-updater diario grace 30
-min). Un `/fail` explícito sigue alertando de inmediato.
+scrape diario 21:00 Bogotá; scheduler horario con grace ~2 h; form-updater
+diario grace 30 min). Un `/fail` explícito sigue alertando de inmediato.
 
 ## Alertas (Healthchecks)
 

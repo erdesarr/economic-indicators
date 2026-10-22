@@ -1,11 +1,11 @@
 name: Scheduler
 
 on:
-  # ACTIVE. GitHub throttles high-frequency crons (observed runs every 2-5 h),
-  # so the scheduler uses a catch-up horizon + state dedup and chains the ETL
-  # into the updater sequentially (see src/form_updater/scheduler.py).
+  # ACTIVE. Hourly cadence (0 * * * *) instead of */5: low-frequency crons are
+  # nearly punctual, while a window that is not on the hour runs at the next
+  # hourly run (max ~59 min delay). The 8 h catch-up covers further delays.
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
     inputs:
       force:

@@ -353,3 +353,41 @@ def test_natural_vetoes_are_explicit() -> None:
     skipped = ["etl@2026-10-20(natural)", "updater@2026-10-20(forced)"]
     assert natural_vetoes(skipped) == ["etl@2026-10-20(natural)"]
     assert natural_vetoes(["etl@2026-10-20(forced)"]) == []
+
+
+def test_hourly_run_at_window_dispatches() -> None:
+    settings = {"horario_etl": "0 21 * * *", "horario_updater": "30 21 * * *"}
+    now = datetime(2026, 10, 12, 21, 0, 2, tzinfo=BOGOTA).astimezone(UTC)
+    outcome = plan(settings, now, "scrape.yml", "form_update.yml")
+    assert [decision.key for decision in outcome.triggers] == ["etl"]
+
+
+def test_hourly_run_catches_non_hour_window() -> None:
+    # The 21:30 updater window is not on the hour; the 22:00 hourly run catches
+    # it (30 min late) and also the 21:00 ETL window (1 h late) via catch-up.
+    settings = {"horario_etl": "0 21 * * *", "horario_updater": "30 21 * * *"}
+    now = datetime(2026, 10, 12, 22, 0, 2, tzinfo=BOGOTA).astimezone(UTC)
+    outcome = plan(settings, now, "scrape.yml", "form_update.yml")
+    keys = [decision.key for decision in outcome.triggers]
+    assert "updater" in keys
+    updater = next(decision for decision in outcome.triggers if decision.key == "updater")
+    assert updater.occurrence.hour == 21
+    assert updater.occurrence.minute == 30
+
+
+def test_hourly_run_with_no_due_window_does_nothing() -> None:
+    settings = {"horario_etl": "0 21 * * *", "horario_updater": "30 21 * * *"}
+    now = datetime(2026, 10, 12, 20, 0, 2, tzinfo=BOGOTA).astimezone(UTC)
+    outcome = plan(settings, now, "scrape.yml", "form_update.yml")
+    assert outcome.triggers == []
+
+
+def test_consumed_non_hour_window_not_redispatched_next_hour() -> None:
+    settings = {"horario_etl": "0 21 * * *", "horario_updater": "30 21 * * *"}
+    now = datetime(2026, 10, 12, 23, 0, 2, tzinfo=BOGOTA).astimezone(UTC)
+    outcome = plan(settings, now, "scrape.yml", "form_update.yml")
+    pending, skipped = filter_pending(
+        outcome.triggers, {"updater": {"natural": "2026-10-12"}}, "natural"
+    )
+    assert all(decision.key != "updater" for decision in pending)
+    assert "updater@2026-10-12(natural)" in skipped

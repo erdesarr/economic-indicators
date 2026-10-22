@@ -35,7 +35,7 @@ def test_scheduler_cron_is_active() -> None:
     scheduler = yaml.safe_load((WORKFLOWS / "scheduler.yml").read_text(encoding="utf-8"))
     trigger = _on(scheduler)
     assert "schedule" in trigger
-    assert any(item.get("cron") == "*/5 * * * *" for item in trigger["schedule"])
+    assert any(item.get("cron") == "0 * * * *" for item in trigger["schedule"])
 
 
 def test_scheduler_reads_both_ajustes_keys_and_has_catchup() -> None:
