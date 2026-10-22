@@ -183,3 +183,31 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
   (after 15:00) produce 18/0.
 - Hardening: `config/form_update_state.json` + `scripts/watchdog.py` (26 h stale
   or 2 consecutive zero-write runs -> form-updater `/fail`).
+
+## 2026-10-22 — Scheduler cron changed to hourly (owner Option C)
+
+- Owner decision: `*/5 * * * *` -> `0 * * * *` UTC. Low-frequency crons are
+  nearly punctual; sheet schedule changes are infrequent. Catch-up (8 h),
+  origin-aware dedup, natural-only watchdog and Pages readiness polling are
+  unchanged.
+- Live sheet windows 19:00/20:00 were synced into `config/sheet_config.csv`
+  (commit `8835635`), proving sheet -> snapshot propagation.
+- Verification (deterministic `now` simulations, no wall-clock waits):
+  - scheduler `39839665004` (hourly run simulated at 20:00, `now=2026-10-23T01:00:05Z`)
+    read the 19:00/20:00 windows, triggered the 19:00 non-hour ETL via catch-up,
+    waited for the scrape, then triggered the 20:00 updater.
+  - scrape `39839741946`: 17 ok + 1 forward_filled `dolar_oficial_manana`
+    (pre-15:00), smoke 18/18, Pages `generated_at 2026-10-22T19:26:52Z`,
+    start/report sent=True.
+  - form updater `39840221210`: data source local 2026-10-22, Pages fresh,
+    written=18 failed=0, form-updater start/success sent=True.
+  - scheduler `39840731426` (hourly run simulated at 18:00, no due window):
+    `no due occurrence; nothing dispatched`.
+  - Dry-run for 2026-10-23 20:00 shows scrape + form_update would trigger
+    despite the 2026-10-22 forced entries (origin separation intact).
+- `scheduler.yml` cron is `0 * * * *` and the workflow state is `active`.
+  Sheet changes now take up to ~1 h (hourly sync + hourly scheduler); dispatch
+  `sync_config.yml` + `scheduler.yml` manually for urgent changes.
+- Healthchecks `scheduler` check: hourly period with ~2 h grace (owner action in
+  the UI; documented in RUNBOOK).
+- CI #36 (docs fix) green; CLAUDE CI #35 was the pre-fix docs commit.
