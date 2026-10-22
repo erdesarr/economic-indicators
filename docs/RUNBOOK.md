@@ -1,6 +1,6 @@
 # Runbook
 
-**English | [EspaÃ±ol](RUNBOOK.es.md)**
+**English | [Español](RUNBOOK.es.md)**
 
 Operational procedures for the daily ETL, the sheet sync and the form updater.
 
@@ -11,12 +11,12 @@ Operational procedures for the daily ETL, the sheet sync and the form updater.
    status) or `crash en paso <step>`.
 2. Open the linked GitHub Actions run (`GITHUB_RUN_URL` is in the ping body for
    ETL failures). Inspect the failing step log:
-   - `Run ETL` â†’ the per-indicator errors are printed.
-   - `Healthchecks report ping` â†’ the run report had failures.
-   - `Smoke ...` â†’ the ETL report was incomplete (missing indicators or a
+   - `Run ETL` → the per-indicator errors are printed.
+   - `Healthchecks report ping` → the run report had failures.
+   - `Smoke ...` → the ETL report was incomplete (missing indicators or a
      `failed` status).
 3. Classify and act:
-   - **Label not found** (La RepÃºblica changed its HTML): run
+   - **Label not found** (La República changed its HTML): run
      `python scripts/validate_live.py --print-only`, inspect the raw fragment,
      update `config/indicators.yaml` (`visible_label`/alternatives) or the
      source parser, add a golden test.
@@ -31,34 +31,34 @@ Operational procedures for the daily ETL, the sheet sync and the form updater.
      the setting. The scheduler ignores the invalid schedule.
 4. Forward-fill is valid data: the DB row is `status='forward_filled'` with
    `reason`; the ETL already pinged `/fail`. Do not re-run just to silence it.
-5. Re-run manually if needed: Actions â†’ **Scrape** â†’ Run workflow, or
+5. Re-run manually if needed: Actions → **Scrape** → Run workflow, or
    `python scripts/run_etl.py`. Then verify `smoke: 18/18` in the log.
 
 ## 2. Review or restore the Google Sheet version history
 
-1. Open the book, `File â†’ Version history â†’ See version history`.
+1. Open the book, `File → Version history → See version history`.
 2. Select the version before the bad edit; the right panel shows the diff.
 3. `Restore this version` (both tabs are covered; permissions apply to the whole
    book).
 4. The next `sync_config.yml` run (hourly `7 * * * *` UTC) picks it up. To act
-   immediately: Actions â†’ **Sync config** â†’ Run workflow.
+   immediately: Actions → **Sync config** → Run workflow.
 5. Confirm `sync summary` in the log and the new `config/sheet_config.csv`
    commit.
 
 ## 3. Regenerate `tests/golden/webform/records.json`
 
-1. Actions â†’ **Form update** â†’ Run workflow with `mode=capture` (optionally
+1. Actions → **Form update** → Run workflow with `mode=capture` (optionally
    `slugs` to capture a subset; empty = all active records).
 2. The workflow reads `Nombre` for each `id_indicador`, writes
    `tests/golden/webform/records.json` and commits it as the bot.
-3. Review the mapping (id â†’ visible Nombre) in the run log/commit and approve it
+3. Review the mapping (id → visible Nombre) in the run log/commit and approve it
    (record the approval in `docs/APPROVALS.md`).
 4. The real write mode refuses any record whose `Nombre` does not match this
    golden file.
 
 ## 4. Run a manual dry-run
 
-1. Actions â†’ **Form update** â†’ Run workflow with `mode=dry-run` and optional
+1. Actions → **Form update** → Run workflow with `mode=dry-run` and optional
    `slugs` (e.g. `40,35,41`). Nothing is written.
 2. Read the log table (values in `repr()` so spaces/symbols are visible):
    `id | indicador | source | value | variation | formatted | reason`.
@@ -87,7 +87,7 @@ Do not uncomment `schedule` in `scheduler.yml` until:
 4. the fallback table is approved;
 5. a dry-run with `repr()` and sources is approved;
 6. a real write of 3 records was verified live and `records.json` is approved.
-After a green scheduler dispatch (scrape 18/18 â†’ form-updater writes â†’ success
+After a green scheduler dispatch (scrape 18/18 → form-updater writes → success
 pings), uncomment `0 * * * *` and push.
 
 ## 7. Other operational notes
