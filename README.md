@@ -91,20 +91,28 @@ the job keeps running (graceful degradation, covered by
 success-ping frequency of its job (e.g. the sync job pings success hourly via
 cron `7 * * * *` UTC, so the `sync` check must be "hourly with ~2 h grace";
 the scheduler pings hourly, so its check is hourly with ~2 h grace; the scrape
-job pings once per day at 21:00 America/Bogota, so its check is daily with
-grace). An explicit `/fail` (gviz down, invalid config) still raises an
-immediate alert regardless of the period.
+job pings once per scheduled slot, currently 19:00 America/Bogota from the
+sheet, so its check is daily with grace). An explicit `/fail` (gviz down,
+invalid config) still raises an immediate alert regardless of the period.
 
 ## Alerting (Healthchecks.io)
 
 Per run, `scrape.yml` sends:
 
 - `POST /start` at the beginning;
-- `POST /fail` with a markdown table of failures when `failures > 0`
-  (forward-fill applied);
-- `POST <uuid>` (success) with the run summary otherwise. **Stale warnings
-  without failures are a success ping with the warning in the body**;
+- `POST /fail` with a markdown table **only for unexpected failures**: a
+  forward-fill/failed indicator INSIDE its `publication_window` (source down
+  when it should be published);
+- `POST <uuid>` (success) with the run summary otherwise. **A forward-fill
+  OUTSIDE the indicator's `publication_window` is expected** (source not
+  published yet) and appears as a warning in the success body, e.g.
+  `dolar_oficial_manana` before 15:00 or after 20:00. **Stale warnings without
+  unexpected failures are also a success ping with the warning in the body**;
 - `if: failure()` → `POST /fail` with `crash en paso <nombre>`.
+
+The scrape check can therefore stay green with expected forward-fills. Red
+means a real source failure (inside its window) or a crash, not the normal
+pre-publication state of `dolar_oficial_manana`.
 
 ## Runbook
 
@@ -114,11 +122,15 @@ Per run, `scrape.yml` sends:
   GitHub delays the cron and the run lands after midnight, when the site no
   longer publishes the "tomorrow" block. `make test-live` keeps the live
   re-scrape for manual checks (`scripts/test_live.py --live`).
-- **Forward-fill:** a failed indicator copies the last stored reading with
-  `status='forward_filled'`, `base_gap=1` and `reason`. If there is no previous
-  reading, **no row is invented**: the indicator is reported as `failed` with
-  "sin histórico para forward-fill" and the run exits 1 only when every source
-  failed.
+- **Forward-fill and publication windows:** a failed indicator copies the last
+  stored reading with `status='forward_filled'`, `base_gap=1` and `reason`. The
+  scrape ping is `/fail` only when the failure happens inside its
+  `publication_window` in Bogotá (default `00:00-23:59`;
+  `dolar_oficial_manana` is `15:00-20:00`). Outside the window it is an expected
+  warning in the success body. If there is no previous reading, **no row is
+  invented**: the indicator is reported as `failed` with "sin histórico para
+  forward-fill" and the run exits 1 only when every source failed. The smoke
+  still accepts `forward_filled` as presence.
 - **Stale data:** if `source_date` repeats across two consecutive `ok` runs for
   an indicator with `stale_check: true`, the alert body carries a stale warning
   (success ping).
@@ -131,16 +143,16 @@ Per run, `scrape.yml` sends:
   the PEM + the `EXTRA_CA_HOSTS` entry and drop the test.
 - **BCB SGS:** the adapter adds a bounded `dataInicial`/`dataFinal` window
   (HTTP 406 otherwise).
-- **Cron:** `scrape.yml` runs at 21:00 America/Bogota when enabled
-  (`0 2 * * *` UTC, Colombia has no DST). The `schedule` block is **commented
-  out** until the owner approves the three gate conditions in
-  `docs/APPROVALS.md`.
+- **Cron:** `scrape.yml` has no own cron; `scheduler.yml` triggers it at the
+  sheet's `horario_etl` (currently 19:00 America/Bogota). The old `schedule`
+  block stays **commented out** to avoid double runs.
 
 ## Adding an indicator
 
 Edit `config/indicators.yaml` only: `slug`, `source`, `url`, `visible_label`,
-`unit`, `plausible_range`, optional `source_series`/`stale_check`. The catalog,
-pipeline, API and Pages contract pick it up automatically. Then run
+`unit`, `plausible_range`, optional `source_series`/`stale_check` and
+`publication_window` (Bogotá `HH:MM-HH:MM`; defaults to `00:00-23:59`). The
+catalog, pipeline, API and Pages contract pick it up automatically. Then run
 `make validate` to approve the values and recalibrate the range.
 
 ## Form updater (Google Sheet → public web form)

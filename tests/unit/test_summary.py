@@ -48,8 +48,35 @@ def test_run_body_with_failures() -> None:
         }
     )
     assert "run_id=r1 date=2026-10-08" in body
-    assert "ok=17 failures=1 stale=0 pruned=2" in body
-    assert "**Fallos (forward-fill aplicado):**" in body
+    assert "ok=17 failures=1 expected=0 stale=0 pruned=2" in body
+    assert "**Fallos (forward-fill inesperado dentro de la ventana):**" in body
+
+
+def test_run_body_expected_forward_fill_is_a_warning() -> None:
+    expected = FailureItem(
+        slug="dolar_oficial_manana",
+        source="larepublica_main",
+        error="label not found in page",
+        forward_filled_value=3250.0,
+        status="forward_filled",
+        expected=True,
+        publication_window="15:00-20:00",
+    )
+    body = build_run_body(
+        {
+            "run_id": "r3",
+            "run_date": "2026-10-22",
+            "ok": 17,
+            "pruned_rows": 0,
+            "failures": [expected.__dict__],
+            "stale_warnings": [],
+        }
+    )
+    assert "failures=0 expected=1" in body
+    assert "forward-fill esperado fuera de ventana" in body
+    assert "dolar_oficial_manana" in body
+    assert "15:00-20:00" in body
+    assert "Fallos" not in body
 
 
 def test_run_body_stale_only_is_success_shaped() -> None:

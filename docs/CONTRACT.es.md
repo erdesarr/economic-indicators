@@ -103,4 +103,6 @@ lectura; si no, la lectura más reciente dentro de `max_gap_days` (7) con
   aparece ese día (nunca se inventa).
 - `status='manual'`: reservado para correcciones del dueño.
 - Valores fuera de `plausible_range` se tratan como fallo de parseo
-  (forward-fill + ping `/fail` de Healthchecks).
+  (forward-fill). El check del scrape pingea `/fail` solo si el fallo está
+  dentro del `publication_window` del indicador; fuera de la ventana el ping es
+  success con warning en el body.

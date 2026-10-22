@@ -211,3 +211,19 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
 - Healthchecks `scheduler` check: hourly period with ~2 h grace (owner action in
   the UI; documented in RUNBOOK).
 - CI #36 (docs fix) green; CI #35 was the pre-fix docs commit.
+
+## 2026-10-22 - Scrape check: expected forward-fill outside publication window
+
+- Owner decision: the scrape check must not stay red for the expected
+  `dolar_oficial_manana` forward-fill outside its publication window.
+- Added `publication_window` per indicator in `config/indicators.yaml`
+  (Bogotá `HH:MM-HH:MM`; `dolar_oficial_manana` = `15:00-20:00`, rest =
+  `00:00-23:59`).
+- Scrape ping policy: forward-fill/failure inside the window -> `/fail` with
+  table; outside the window -> `/success` with a warning in the body. All fresh
+  -> success; stale -> success warning; crash -> `/fail` via `if: failure()`.
+  The smoke still accepts `forward_filled` as presence.
+- Test aid: `workflow_dispatch` input `etl_now` for the scrape (ISO8601 with
+  offset) to exercise the policy deterministically; empty in production.
+- Catch-up/dedup/watchdog, resolution/formatter/webform and scrape pings for
+  fresh data are unchanged.

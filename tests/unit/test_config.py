@@ -37,6 +37,23 @@ def test_all_18_indicators_present(config: AppConfig) -> None:
     assert len(config.indicators) == 18
 
 
+def test_publication_windows(config: AppConfig) -> None:
+    assert config.by_slug("dolar_oficial_manana").publication_window == "15:00-20:00"
+    for indicator in config.indicators:
+        if indicator.slug == "dolar_oficial_manana":
+            continue
+        assert indicator.publication_window == "00:00-23:59"
+
+
+def test_invalid_publication_window_is_rejected(tmp_path: Path) -> None:
+    source = Path("config/indicators.yaml").read_text(encoding="utf-8")
+    broken = source.replace('publication_window: "15:00-20:00"', 'publication_window: "15:00"', 1)
+    path = tmp_path / "indicators.yaml"
+    path.write_text(broken, encoding="utf-8")
+    with pytest.raises(ConfigError, match="publication_window"):
+        load_config(path)
+
+
 def test_ibr_series_mapping(config: AppConfig) -> None:
     expected = {
         "ibr_overnight": (241, 15324),

@@ -180,14 +180,20 @@ correspondiente), no un uuid suelto. Si falta un secret, solo se desactiva ese
 check con warning en el log y el job continúa. Los secrets SMTP están retirados.
 
 **Regla de schedules:** el periodo de cada check en Healthchecks debe reflejar
-la frecuencia de pings de éxito de su job (sync horario con grace ~60 min;
-scrape diario 21:00 Bogotá; scheduler horario con grace ~2 h; form-updater
-diario grace 30 min). Un `/fail` explícito sigue alertando de inmediato.
+la frecuencia de pings de éxito de su job (sync horario con grace ~2 h;
+scrape en el slot de la hoja, actualmente 19:00 Bogotá, con grace diario;
+scheduler horario con grace ~2 h; form-updater diario grace 30 min). Un
+`/fail` explícito sigue alertando de inmediato.
 
 ## Alertas (Healthchecks)
 
-- `scrape`: `/start`, success con resumen o `/fail` con tabla si `failures>0`;
-  `if: failure()` → `/fail` con `crash en paso <nombre>`.
+- `scrape`: `/start`; `/fail` con tabla **solo para fallos inesperados**
+  (forward-fill/fallo DENTRO del `publication_window` del indicador). Un
+  forward-fill FUERA de la ventana es esperado (la fuente aún no publica) y va
+  como warning en el body del success, p. ej. `dolar_oficial_manana` antes de
+  15:00 o después de 20:00. `if: failure()` → `/fail` con
+  `crash en paso <nombre>`. Por eso el check puede quedar verde con
+  forward-fills esperados; rojo significa fuente caída en su ventana o crash.
 - `sync`: `/start` + success/fail por corrida horaria; datos stale nunca alertan
   como fallo si el ETL ya lo hizo.
 - `scheduler`: success por corrida; `/fail` si crashea; cron inválido → `/fail`
@@ -200,9 +206,14 @@ diario grace 30 min). Un `/fail` explícito sigue alertando de inmediato.
   `artifacts/run_report.json` y exige los 18 con `ok`/`forward_filled`/`manual`.
   Evita falsos negativos si GitHub retrasa el cron (el run cae después de
   medianoche y ya no existe el bloque "mañana").
-- **Forward-fill:** un indicador fallido copia la última lectura con
-  `status='forward_filled'`, `reason` y `base_gap=1`; sin histórico previo no se
-  inventa fila (warning "sin histórico para forward-fill").
+- **Forward-fill y ventanas de publicación:** un indicador fallido copia la
+  última lectura con `status='forward_filled'`, `reason` y `base_gap=1`. El ping
+  del scrape va a `/fail` solo si el fallo ocurre dentro de su
+  `publication_window` en Bogotá (por defecto `00:00-23:59`;
+  `dolar_oficial_manana` es `15:00-20:00`). Fuera de la ventana es un warning
+  esperado en el body del success. Sin histórico previo no se inventa fila
+  (warning "sin histórico para forward-fill"). El smoke sigue aceptando
+  `forward_filled` como presencia.
 - **Dato stale:** `source_date` repetida en dos runs `ok` → warning en el cuerpo
   del ping (success).
 - **investing.com 403:** reintentos con backoff; bloqueo persistente = fallo
@@ -210,8 +221,9 @@ diario grace 30 min). Un `/fail` explícito sigue alertando de inmediato.
 - **Banrep TLS:** el server omite el intermedio; está pinneado en
   `config/certs/` y `tests/unit/test_certs.py` falla si vence en <30 días.
 - **BCB SGS:** ventana acotada de fechas (HTTP 406 si no).
-- **Cron:** `scrape` corre 21:00 Bogotá (`0 2 * * *` UTC; Colombia sin DST).
-  GitHub puede retrasar los crons; el smoke basado en reporte lo tolera.
+- **Cron:** `scrape.yml` no tiene cron propio; `scheduler.yml` lo dispara en el
+  `horario_etl` de la hoja (actualmente 19:00 Bogotá). El `schedule` antiguo
+  sigue **comentado** para evitar doble corrida.
 - Procedimientos detallados: [docs/RUNBOOK.md](docs/RUNBOOK.md).
 
 ## API

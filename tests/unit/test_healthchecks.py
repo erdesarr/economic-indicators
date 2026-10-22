@@ -139,6 +139,37 @@ def test_notify_report_with_failures_pings_fail(tmp_path: Path) -> None:
     assert "ok=17 failures=1" in body
 
 
+def test_notify_report_expected_forward_fill_pings_success(tmp_path: Path) -> None:
+    report = {
+        "run_id": "r3",
+        "run_date": "2026-10-22",
+        "ok": 17,
+        "pruned_rows": 0,
+        "failures": [
+            {
+                "slug": "dolar_oficial_manana",
+                "source": "larepublica_main",
+                "error": "label not found in page",
+                "forward_filled_value": 3250.0,
+                "status": "forward_filled",
+                "stale_warning": False,
+                "expected": True,
+                "publication_window": "15:00-20:00",
+            }
+        ],
+        "stale_warnings": [],
+    }
+    path = tmp_path / "run_report.json"
+    path.write_text(json.dumps(report), encoding="utf-8")
+    recorder = Recorder()
+    assert notify_report(path, client=recorder.client()) is True
+    url, body = recorder.calls[0]
+    assert url == UUID_URL  # success ping
+    assert "failures=0 expected=1" in body
+    assert "forward-fill esperado" in body
+    assert "dolar_oficial_manana" in body
+
+
 def test_notify_report_success_with_stale_warning(tmp_path: Path) -> None:
     report = {
         "run_id": "r2",

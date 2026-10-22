@@ -14,6 +14,10 @@ from etl.models import (
     Settings,
     SourceConfig,
 )
+from etl.publication import (
+    DEFAULT_PUBLICATION_WINDOW,
+    parse_publication_window,
+)
 
 DEFAULT_CONFIG_PATH = Path("config/indicators.yaml")
 
@@ -95,6 +99,11 @@ def _parse_indicators(
         low, high = float(plausible[0]), float(plausible[1])
         if low >= high:
             raise ConfigError(f"indicator {slug}: plausible_range min >= max")
+        publication_window = str(body.get("publication_window", DEFAULT_PUBLICATION_WINDOW))
+        try:
+            parse_publication_window(publication_window)
+        except ValueError as exc:
+            raise ConfigError(f"indicator {slug}: {exc}") from exc
         indicators.append(
             IndicatorConfig(
                 slug=slug,
@@ -108,6 +117,7 @@ def _parse_indicators(
                 number_format=str(body.get("number_format", source.number_format)),
                 retries=int(body.get("retries", source.retries)),
                 stale_check=bool(body.get("stale_check", False)),
+                publication_window=publication_window,
                 source_series=_parse_series(body.get("source_series"), slug),
                 verification=body.get("verification"),
                 visible_label_alternatives=tuple(

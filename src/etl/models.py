@@ -29,6 +29,7 @@ class IndicatorConfig:
     number_format: str
     retries: int
     stale_check: bool = False
+    publication_window: str = "00:00-23:59"
     source_series: SeriesMapping | None = None
     verification: str | None = None
     visible_label_alternatives: tuple[str, ...] = ()
@@ -134,6 +135,7 @@ class IndicatorRun:
 class RunReport:
     run_id: str
     run_date: Date
+    run_at: str = ""
     results: list[IndicatorRun] = field(default_factory=list)
     failures_detail: list[FailureItem] = field(default_factory=list)
     stale_detail: list[FailureItem] = field(default_factory=list)

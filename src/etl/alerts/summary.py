@@ -14,6 +14,8 @@ class FailureItem:
     forward_filled_value: float | None
     status: str
     stale_warning: bool = False
+    expected: bool = False
+    publication_window: str = ""
 
 
 def format_value(value: float | None) -> str:
@@ -41,23 +43,38 @@ def build_failure_table_markdown(failures: list[FailureItem]) -> str:
 def build_run_body(report: dict[str, Any]) -> str:
     """Body for /success and /fail pings.
 
-    Rule: stale warnings without failures are reported in a SUCCESS ping body
-    (never as a failure).
+    Rules:
+      * forward-fill/failure INSIDE the indicator's publication window is an
+        unexpected source failure -> /fail body table;
+      * forward-fill/failure OUTSIDE its publication window is expected (source
+        not published yet) -> /success body warning;
+      * stale warnings without failures are reported in a SUCCESS body.
     """
 
     failures = [FailureItem(**item) for item in report.get("failures", [])]
     stale = [FailureItem(**item) for item in report.get("stale_warnings", [])]
+    unexpected = [item for item in failures if not item.expected]
+    expected = [item for item in failures if item.expected]
     lines = [
         f"run_id={report.get('run_id')} date={report.get('run_date')}",
         (
-            f"ok={report.get('ok', 0)} failures={len(failures)} "
-            f"stale={len(stale)} pruned={report.get('pruned_rows', 0)}"
+            f"ok={report.get('ok', 0)} failures={len(unexpected)} "
+            f"expected={len(expected)} stale={len(stale)} "
+            f"pruned={report.get('pruned_rows', 0)}"
         ),
     ]
-    if failures:
+    if unexpected:
         lines.append("")
-        lines.append("**Fallos (forward-fill aplicado):**")
-        lines.append(build_failure_table_markdown(failures))
+        lines.append("**Fallos (forward-fill inesperado dentro de la ventana):**")
+        lines.append(build_failure_table_markdown(unexpected))
+    if expected:
+        lines.append("")
+        lines.append(
+            "**Aviso: forward-fill esperado fuera de ventana de publicación (no es fallo):**"
+        )
+        for item in expected:
+            window = item.publication_window or "sin ventana"
+            lines.append(f"- {item.slug} ({item.source}, ventana {window}): {item.error}")
     if stale:
         lines.append("")
         lines.append("**Aviso: dato stale (source_date repetida, sin failures):**")

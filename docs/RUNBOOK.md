@@ -8,11 +8,13 @@ Operational procedures for the daily ETL, the sheet sync and the form updater.
 
 1. Open the Healthchecks dashboard and read the check body. It contains either
    the markdown failure table (indicator, source, error, forward-fill value,
-   status) or `crash en paso <step>`.
+   status), the expected-forward-fill warning list, or `crash en paso <step>`.
 2. Open the linked GitHub Actions run (`GITHUB_RUN_URL` is in the ping body for
    ETL failures). Inspect the failing step log:
    - `Run ETL` → the per-indicator errors are printed.
-   - `Healthchecks report ping` → the run report had failures.
+   - `Healthchecks report ping` → the run report had an unexpected failure
+     (inside the indicator's publication window). Expected forward-fills are
+     listed in the success body as warnings.
    - `Smoke ...` → the ETL report was incomplete (missing indicators or a
      `failed` status).
 3. Classify and act:
@@ -30,9 +32,37 @@ Operational procedures for the daily ETL, the sheet sync and the form updater.
    - **Scheduler cron invalid**: fix the `ajustes` value; the `/fail` body names
      the setting. The scheduler ignores the invalid schedule.
 4. Forward-fill is valid data: the DB row is `status='forward_filled'` with
-   `reason`; the ETL already pinged `/fail`. Do not re-run just to silence it.
+   `reason`. The scrape check is `/fail` only when the failure is inside its
+   `publication_window`; outside it the ping is success with a warning. Do not
+   re-run just to silence an expected (outside-window) warning; inside the
+   window treat it as a source failure.
 5. Re-run manually if needed: Actions → **Scrape** → Run workflow, or
    `python scripts/run_etl.py`. Then verify `smoke: 18/18` in the log.
+
+### Scrape check: expected vs unexpected forward-fill
+
+Every indicator has `publication_window` (Bogotá `HH:MM-HH:MM`) in
+`config/indicators.yaml`. `dolar_oficial_manana` is `15:00-20:00`; the rest
+default to `00:00-23:59`.
+
+- Failure/forward-fill **inside** the window → `/fail` with the markdown table
+  (the source is down when it should be published).
+- Failure/forward-fill **outside** the window → `/success` with
+  `Aviso: forward-fill esperado fuera de ventana de publicación` and the
+  indicator list. This is normal for `dolar_oficial_manana` before 15:00 or
+  after 20:00.
+- All fresh → `/success`; stale warning → `/success` with warning; crash →
+  `/fail` via `if: failure()`.
+- The smoke still accepts `forward_filled` as presence (it does not re-scrape).
+
+To exercise the policy without waiting for a clock window, dispatch **Scrape**
+with the test aids `etl_now` (ISO8601 with offset, e.g.
+`2026-10-22T16:00:00-05:00`) and optionally `etl_force_fail`
+(`dolar_oficial_manana`); both are empty in production. `etl_force_fail` marks
+the slug as failed so inside/outside-window decisions can be tested
+deterministically. The run report stores the classification in
+`artifacts/run_report.json` (`expected`, `publication_window`, `run_at`), and the
+`Healthchecks report ping` step prints the decision and body.
 
 ## 2. Review or restore the Google Sheet version history
 
@@ -95,7 +125,8 @@ pings), uncomment `0 * * * *` and push.
 - **Cron delays:** GitHub may delay scheduled workflows by hours. The scrape
   smoke validates `artifacts/run_report.json` (not a re-scrape), so valid
   forward-filled data does not turn the run red. The ETL's `/fail` ping is the
-  alert source.
+  alert source; expected forward-fills outside their publication window are
+  success warnings, not failures.
 - **Stale data:** `source_date` repeated across two `ok` runs triggers a warning
   in the success ping body.
 - **Pages:** `pages.yml` deploys `docs/api/v1` after every successful Scrape

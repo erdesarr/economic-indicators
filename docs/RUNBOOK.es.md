@@ -7,12 +7,14 @@ Procedimientos operativos para el ETL diario, el sync del libro y el form update
 ## 1. Diagnosticar un ping `/fail` de Healthchecks
 
 1. Abre el panel de Healthchecks y lee el cuerpo del check. Contiene la tabla
-   markdown de fallos (indicador, fuente, error, valor forward-fill, status) o
-   `crash en paso <paso>`.
+   markdown de fallos (indicador, fuente, error, valor forward-fill, status), la
+   lista de forward-fills esperados o `crash en paso <paso>`.
 2. Abre el run de GitHub Actions enlazado (el ETL incluye `GITHUB_RUN_URL` en el
    cuerpo del ping). Revisa el log del paso que falló:
    - `Run ETL` → imprime los errores por indicador.
-   - `Healthchecks report ping` → el reporte del run tenía fallos.
+   - `Healthchecks report ping` → el reporte del run tenía un fallo inesperado
+     (dentro del `publication_window` del indicador). Los forward-fills
+     esperados aparecen como warnings en el body del success.
    - `Smoke ...` → el reporte del ETL estaba incompleto (faltan indicadores o
      algún status `failed`).
 3. Clasifica y actúa:
@@ -30,9 +32,35 @@ Procedimientos operativos para el ETL diario, el sync del libro y el form update
    - **Cron del scheduler inválido**: corrige el valor en `ajustes`; el cuerpo
      del `/fail` nombra la clave. El scheduler ignora ese horario.
 4. El forward-fill es dato válido: la fila queda `status='forward_filled'` con
-   `reason`; el ETL ya pingueó `/fail`. No re-ejecutes solo para silenciarlo.
+   `reason`. El check del scrape va a `/fail` solo si el fallo está dentro de su
+   `publication_window`; fuera de la ventana el ping es success con warning. No
+   re-ejecutes solo para silenciar un warning esperado; dentro de la ventana
+   trátalo como fuente caída.
 5. Si necesitas re-ejecutar: Actions → **Scrape** → Run workflow, o
    `python scripts/run_etl.py`. Verifica `smoke: 18/18` en el log.
+
+### Check del scrape: forward-fill esperado vs inesperado
+
+Cada indicador tiene `publication_window` (Bogotá `HH:MM-HH:MM`) en
+`config/indicators.yaml`. `dolar_oficial_manana` es `15:00-20:00`; el resto usa
+`00:00-23:59` por defecto.
+
+- Fallo/forward-fill **dentro** de la ventana → `/fail` con tabla markdown (la
+  fuente está caída cuando debería estar publicada).
+- Fallo/forward-fill **fuera** de la ventana → `/success` con
+  `Aviso: forward-fill esperado fuera de ventana de publicación` y la lista.
+  Es lo normal para `dolar_oficial_manana` antes de 15:00 o después de 20:00.
+- Todo fresco → `/success`; dato stale → `/success` con warning; crash →
+  `/fail` vía `if: failure()`.
+- El smoke sigue aceptando `forward_filled` como presencia (no re-scrapea).
+
+Para probar la política sin esperar la hora, dispara **Scrape** con las test
+aids `etl_now` (ISO8601 con offset, p. ej. `2026-10-22T16:00:00-05:00`) y
+opcionalmente `etl_force_fail` (`dolar_oficial_manana`); ambas vacías en
+producción. `etl_force_fail` marca el slug como fallido para probar la decisión
+dentro/fuera de ventana de forma determinista. El run report guarda la
+clasificación en `artifacts/run_report.json` (`expected`, `publication_window`,
+`run_at`) y el paso `Healthchecks report ping` imprime la decisión y el body.
 
 ## 2. Revisar o restaurar el Historial de versiones del libro
 
@@ -95,7 +123,8 @@ pings success), descomenta `0 * * * *` y haz push.
 - **Retrasos de cron:** GitHub puede retrasar workflows programados por horas.
   El smoke del scrape valida `artifacts/run_report.json` (no re-scrapea), así que
   un forward-fill válido no pone el run rojo. El ping `/fail` del ETL es la
-  fuente de alerta.
+  fuente de alerta; los forward-fills esperados fuera de su ventana son
+  warnings en el success, no fallos.
 - **Dato stale:** `source_date` repetida en dos runs `ok` genera un warning en
   el cuerpo del ping de éxito.
 - **Pages:** `pages.yml` despliega `docs/api/v1` tras cada Scrape exitoso o

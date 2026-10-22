@@ -101,5 +101,7 @@ otherwise the most recent reading within `max_gap_days` (7) with
   copied and `reason` explains why. If there is no previous reading, the
   indicator is absent for that day (never invented).
 - `status='manual'`: reserved for owner-entered corrections.
-- Out-of-`plausible_range` values are treated as parse failures
-  (forward-fill + Healthchecks `/fail` ping).
+- Out-of-`plausible_range` values are treated as parse failures (forward-fill).
+  The scrape check pings `/fail` only when the failure is inside the
+  indicator's `publication_window`; outside it, the ping is success with a
+  warning in the body.

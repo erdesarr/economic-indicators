@@ -21,6 +21,7 @@ from etl.models import (
     Settings,
     SourceResult,
 )
+from etl.publication import is_expected_forward_fill
 from etl.sources import get_adapter
 from etl.sources.base import SourceAdapter
 from etl.storage import (
@@ -133,20 +134,34 @@ def run_etl(
     run_date: date | None = None,
     db_path: str | None = None,
     run_id: str | None = None,
+    run_at: datetime | None = None,
+    forced_failures: set[str] | None = None,
 ) -> RunReport:
-    """Execute one ETL run and return the report (exit code included)."""
+    """Execute one ETL run and return the report (exit code included).
+
+    ``forced_failures`` is a test aid (empty in production) that marks slugs as
+    failed to exercise the publication-window ping policy deterministically.
+    """
 
     deps = deps or PipelineDeps()
     settings = config.settings
-    run_day = run_date or local_run_date(settings)
-    run_identifier = run_id or make_run_id()
+    moment = run_at or datetime.now(UTC)
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=UTC)
+    run_day = run_date or local_run_date(settings, moment)
+    run_identifier = run_id or make_run_id(moment)
+    run_at_local = moment.astimezone(ZoneInfo(settings.timezone))
     client = deps.client or HttpClient(settings)
 
     conn = connect(db_path or settings.database)
     try:
         init_db(conn)
         sync_indicators(conn, config.indicators)
-        report = RunReport(run_id=run_identifier, run_date=run_day)
+        report = RunReport(
+            run_id=run_identifier,
+            run_date=run_day,
+            run_at=run_at_local.isoformat(),
+        )
         failures: list[FailureItem] = []
         stale_warnings: list[FailureItem] = []
 
@@ -156,6 +171,12 @@ def run_etl(
                 result = results.get(indicator.slug) or SourceResult(
                     slug=indicator.slug, error="no result returned by adapter"
                 )
+                if forced_failures and indicator.slug in forced_failures:
+                    logger.warning("forced test failure for %s", indicator.slug)
+                    result = SourceResult(
+                        slug=indicator.slug,
+                        error="forced test failure (test aid)",
+                    )
                 if result.ok and not indicator.in_range(result.value or 0.0):
                     low, high = indicator.plausible_range
                     result.error = (
@@ -222,6 +243,12 @@ def run_etl(
                                 error=reason,
                                 forward_filled_value=float(previous["value"]),
                                 status="forward_filled",
+                                expected=is_expected_forward_fill(
+                                    "forward_filled",
+                                    indicator.publication_window,
+                                    run_at_local,
+                                ),
+                                publication_window=indicator.publication_window,
                             )
                         )
                         report.results.append(
@@ -248,6 +275,12 @@ def run_etl(
                                 error=no_history_reason,
                                 forward_filled_value=None,
                                 status="failed",
+                                expected=is_expected_forward_fill(
+                                    "failed",
+                                    indicator.publication_window,
+                                    run_at_local,
+                                ),
+                                publication_window=indicator.publication_window,
                             )
                         )
                         report.results.append(
@@ -280,11 +313,14 @@ def report_to_dict(report: RunReport) -> dict[str, object]:
             "forward_filled_value": item.forward_filled_value,
             "status": item.status,
             "stale_warning": item.stale_warning,
+            "expected": item.expected,
+            "publication_window": item.publication_window,
         }
 
     return {
         "run_id": report.run_id,
         "run_date": report.run_date.isoformat(),
+        "run_at": report.run_at,
         "ok": report.ok_count,
         "failures": [item_to_dict(item) for item in report.failures_detail],
         "stale_warnings": [item_to_dict(item) for item in report.stale_detail],
@@ -305,9 +341,11 @@ def report_to_dict(report: RunReport) -> dict[str, object]:
 
 
 def format_report(report: RunReport) -> str:
+    expected = sum(1 for item in report.failures_detail if item.expected)
+    unexpected = len(report.failures_detail) - expected
     lines = [
         f"run_id={report.run_id} date={report.run_date.isoformat()}",
-        f"ok={report.ok_count} failures={len(report.failures)} "
+        f"ok={report.ok_count} failures={unexpected} expected={expected} "
         f"stale={len(report.stale_warnings)} pruned={report.pruned_rows}",
     ]
     for result in report.results:

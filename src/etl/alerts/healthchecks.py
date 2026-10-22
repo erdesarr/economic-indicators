@@ -141,11 +141,21 @@ def notify_start(client: HealthchecksClient | None = None) -> bool:
     return resolved.ping_start()
 
 
+def report_has_unexpected_failures(report: dict[str, Any]) -> bool:
+    """True when a failure happened inside its publication window."""
+
+    return any(not item.get("expected", False) for item in report.get("failures", []))
+
+
 def notify_report(
     report_path: Path | str = Path("artifacts/run_report.json"),
     client: HealthchecksClient | None = None,
 ) -> bool:
-    """Ping /fail when the run had failures, /success otherwise."""
+    """Ping /fail for unexpected failures, /success otherwise.
+
+    Expected forward-fills (indicator outside its publication window) do not
+    turn the check red; they are listed as warnings in the success body.
+    """
 
     path = Path(report_path)
     if not path.exists():
@@ -156,7 +166,7 @@ def notify_report(
     if resolved is None:
         return False
     body = build_run_body(report)
-    if report.get("failures"):
+    if report_has_unexpected_failures(report):
         return resolved.ping_fail(body)
     return resolved.ping_success(body)
 

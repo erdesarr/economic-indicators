@@ -13,13 +13,20 @@ the process exit code.
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from etl.alerts import notify_crash, notify_report, notify_start  # noqa: E402
+from etl.alerts import (  # noqa: E402
+    build_run_body,
+    notify_crash,
+    notify_report,
+    notify_start,
+    report_has_unexpected_failures,
+)
 
 
 def main() -> int:
@@ -37,6 +44,12 @@ def main() -> int:
     if args.command == "start":
         sent = notify_start()
     elif args.command == "report":
+        report_path = Path(args.report)
+        if report_path.exists():
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            decision = "fail" if report_has_unexpected_failures(report) else "success"
+            print(f"healthchecks report decision: {decision}")
+            print(build_run_body(report))
         sent = notify_report(args.report)
     else:
         sent = notify_crash(args.step)

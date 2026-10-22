@@ -8,6 +8,19 @@ on:
   # schedule:
   #   - cron: "0 2 * * *"
   workflow_dispatch:
+    inputs:
+      etl_now:
+        description: >-
+          Test aid: ISO8601 timestamp with offset used to classify publication
+          windows (e.g. 2026-10-22T16:00:00-05:00). Empty in production.
+        required: false
+        default: ""
+      etl_force_fail:
+        description: >-
+          Test aid: comma-separated slugs forced to fail (e.g.
+          dolar_oficial_manana). Empty in production.
+        required: false
+        default: ""
 
 concurrency:
   group: scrape
@@ -64,11 +77,24 @@ jobs:
 
       - name: Run ETL
         id: etl
-        run: python scripts/run_etl.py
+        env:
+          ETL_NOW: ${{ inputs.etl_now }}
+          ETL_FORCE_FAIL: ${{ inputs.etl_force_fail }}
+        run: |
+          args=()
+          if [ -n "$ETL_NOW" ]; then
+            args+=(--now "$ETL_NOW")
+          fi
+          if [ -n "$ETL_FORCE_FAIL" ]; then
+            args+=(--force-fail "$ETL_FORCE_FAIL")
+          fi
+          python scripts/run_etl.py "${args[@]}"
 
-      # Runs when the ETL step succeeded: /fail if failures > 0 (forward-fill
-      # applied), /success otherwise. Stale warnings without failures are a
-      # SUCCESS ping with the warning in the body.
+      # Runs when the ETL step succeeded: /fail only for unexpected failures
+      # (forward-fill inside the indicator's publication_window), /success when
+      # every forward-fill is expected (outside its window) or there are none.
+      # Expected forward-fills and stale warnings appear as warnings in the
+      # success body.
       - name: Healthchecks report ping
         run: python scripts/hc_ping.py report
 

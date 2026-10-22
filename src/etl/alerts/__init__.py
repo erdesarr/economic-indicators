@@ -5,6 +5,7 @@ from etl.alerts.healthchecks import (
     notify_crash,
     notify_report,
     notify_start,
+    report_has_unexpected_failures,
 )
 from etl.alerts.summary import (
     FailureItem,
@@ -20,4 +21,5 @@ __all__ = [
     "notify_crash",
     "notify_report",
     "notify_start",
+    "report_has_unexpected_failures",
 ]

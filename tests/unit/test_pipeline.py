@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 from collections.abc import Sequence
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import pytest
@@ -191,6 +191,88 @@ def test_manana_missing_block_forward_fills(tmp_path: Path, config: AppConfig) -
         assert row["value"] == pytest.approx(3250.0)
     finally:
         conn.close()
+
+
+def test_manana_ff_outside_window_is_expected(tmp_path: Path, config: AppConfig) -> None:
+    db = str(tmp_path / "t.db")
+    values = live_values(config)
+    values["dolar_oficial_manana"] = 3250.0
+    run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
+
+    missing = make_deps(config, values, errors={"dolar_oficial_manana": "label not found"})
+    report = run_etl(
+        config,
+        deps=missing,
+        run_date=date(2026, 10, 9),
+        db_path=db,
+        run_at=datetime.fromisoformat("2026-10-09T10:00:00-05:00"),
+    )
+    assert len(report.failures_detail) == 1
+    item = report.failures_detail[0]
+    assert item.slug == "dolar_oficial_manana"
+    assert item.expected is True
+    assert item.publication_window == "15:00-20:00"
+
+    payload = report_to_dict(report)
+    assert payload["run_at"].startswith("2026-10-09T10:00")
+    assert payload["failures"][0]["expected"] is True
+    assert payload["failures"][0]["publication_window"] == "15:00-20:00"
+
+
+def test_manana_ff_inside_window_is_unexpected(tmp_path: Path, config: AppConfig) -> None:
+    db = str(tmp_path / "t.db")
+    values = live_values(config)
+    values["dolar_oficial_manana"] = 3250.0
+    run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
+
+    missing = make_deps(config, values, errors={"dolar_oficial_manana": "label not found"})
+    report = run_etl(
+        config,
+        deps=missing,
+        run_date=date(2026, 10, 9),
+        db_path=db,
+        run_at=datetime.fromisoformat("2026-10-09T16:00:00-05:00"),
+    )
+    assert report.failures_detail[0].expected is False
+
+
+def test_forced_failure_test_aid_applies_window_policy(tmp_path: Path, config: AppConfig) -> None:
+    db = str(tmp_path / "t.db")
+    values = live_values(config)
+    values["dolar_oficial_manana"] = 3250.0
+    run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
+
+    report = run_etl(
+        config,
+        deps=make_deps(config, values),
+        run_date=date(2026, 10, 9),
+        db_path=db,
+        run_at=datetime.fromisoformat("2026-10-09T16:00:00-05:00"),
+        forced_failures={"dolar_oficial_manana"},
+    )
+    assert len(report.failures_detail) == 1
+    assert report.failures_detail[0].slug == "dolar_oficial_manana"
+    assert report.failures_detail[0].expected is False
+    assert "test aid" in (report.failures_detail[0].error or "")
+
+
+def test_source_down_inside_window_is_unexpected(tmp_path: Path, config: AppConfig) -> None:
+    db = str(tmp_path / "t.db")
+    values = live_values(config)
+    values["dolar_oficial_manana"] = 3250.0
+    run_etl(config, deps=make_deps(config, values), run_date=date(2026, 10, 8), db_path=db)
+
+    failing = make_deps(config, values, errors={"euro": "timeout"})
+    report = run_etl(
+        config,
+        deps=failing,
+        run_date=date(2026, 10, 9),
+        db_path=db,
+        run_at=datetime.fromisoformat("2026-10-09T16:00:00-05:00"),
+    )
+    assert len(report.failures_detail) == 1
+    assert report.failures_detail[0].slug == "euro"
+    assert report.failures_detail[0].expected is False
 
 
 def test_prune_runs_on_successful_run(tmp_path: Path, config: AppConfig) -> None:
