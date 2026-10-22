@@ -223,7 +223,19 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
   table; outside the window -> `/success` with a warning in the body. All fresh
   -> success; stale -> success warning; crash -> `/fail` via `if: failure()`.
   The smoke still accepts `forward_filled` as presence.
-- Test aid: `workflow_dispatch` input `etl_now` for the scrape (ISO8601 with
-  offset) to exercise the policy deterministically; empty in production.
+- Test aids: `workflow_dispatch` inputs `etl_now` (ISO8601 with offset) and
+  `etl_force_fail` (comma-separated slugs) for the scrape; both empty in
+  production.
+- Verification (forced scrapes, no wall-clock waits):
+  - scrape #25 `39844154423`, `etl_now=2026-10-22T16:00:00-05:00`,
+    `etl_force_fail=dolar_oficial_manana` (inside the 15:00-20:00 window):
+    `ok=17 failures=1 expected=0`, failure table for
+    `dolar_oficial_manana`, `healthchecks report decision: fail`, `sent=True`,
+    smoke 18/18.
+  - scrape #26 `39844659258`, `etl_now=2026-10-22T21:00:00-05:00`,
+    same forced failure (outside the window): `ok=17 failures=0 expected=1`,
+    success body with `Aviso: forward-fill esperado fuera de ventana`, decision
+    success, `sent=True`; check restored green.
+- CI #40 (`15db5f4`) green.
 - Catch-up/dedup/watchdog, resolution/formatter/webform and scrape pings for
   fresh data are unchanged.
