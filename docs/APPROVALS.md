@@ -263,7 +263,24 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
 - Docs EN/ES: README scheduling paths/quota; RUNBOOK Apps Script install,
   authorization, failure modes, PAT rotation, re-paste warning and backup
   coverage; FORM_UPDATER pipeline/check tables.
-- Verification: GitHub-side forced dispatches (scheduler windows, dedup,
-  `config_refresh`) are run after CI. The Apps Script tick/onChange evidence
-  requires the owner to paste/authorize the script; it is recorded after
-  installation.
+- CI #42 (`fa7c808`) green.
+- GitHub-side verification (test-aid dispatches; no wall-clock wait):
+  - scheduler #60 `39987995109` (`now=2026-10-23T19:00:05-05:00`) triggered
+    `scrape.yml`; scrape #28 `39988049130` succeeded (18/18 smoke, mañana
+    forward-filled outside its window -> success warning). Duplicate scheduler
+    #61 `39988047351` logged `already triggered` and dispatched nothing.
+  - `config_refresh` #1 `39988528222` (simulated onChange): sync success
+    `changed=False`, form-updater `written=18 failed=0`, sync and form-updater
+    success pings; duration 3.18 min (<5 min).
+  - scheduler #62 `39988973509` (`now=20:00`) triggered form_update #20
+    `39989036166`; form-updater `written=18 failed=0`, success ping.
+  - scheduler #63 `39989480932` (`now=23:00` backup): `already triggered` both
+    forced occurrences, `nothing dispatched`; success ping.
+  - The natural-origin dedup between the Apps Script clock and the 6 h backup
+    is covered by
+    `test_punctual_clock_consumes_occurrence_and_backup_skips` (same date
+    occurrence consumed at 19:00/20:00, backup at 23:00 skips).
+- Apps Script-side evidence (tick within ±2 min, onChange dispatch,
+  `appscript-clock` every 5 min) is **pending the owner pasting/authorizing
+  `apps_script/Code.gs`** (no access to the owner's Google account from this
+  environment). The GitHub-side paths it calls are verified above.
