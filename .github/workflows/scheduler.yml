@@ -1,11 +1,14 @@
 name: Scheduler
 
 on:
-  # ACTIVE. Hourly cadence (0 * * * *) instead of */5: low-frequency crons are
-  # nearly punctual, while a window that is not on the hour runs at the next
-  # hourly run (max ~59 min delay). The 8 h catch-up covers further delays.
+  # BACKUP ONLY. The primary punctual path is the container-bound Apps Script
+  # clock (apps_script/Code.gs), which dispatches this workflow at the live
+  # sheet windows. GitHub scheduled events are unreliable in this account
+  # (observed 2-5 h delays), so this 6 h cadence is only the safety net. The
+  # 8 h catch-up covers a missed window; occurrence dedup avoids double
+  # dispatches between the clock and this backup.
   schedule:
-    - cron: "0 * * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
     inputs:
       force:

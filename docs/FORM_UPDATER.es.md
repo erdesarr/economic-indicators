@@ -11,10 +11,11 @@ workflows YAML.
 
 ```
 Google Sheet (indicators_config + ajustes)
-        │  sync_config.yml (horario, gviz CSV)
+        │  config_refresh.yml (onChange de Apps Script: sync + write)
+        │  sync_config.yml   (respaldo 6 h, gviz CSV)
         ▼
 config/sheet_config.csv  (snapshot normalizado, commiteado)
-        │  scheduler.yml (0 * * * *, horario; ventanas America/Bogota)
+        │  scheduler.yml (reloj Apps Script primario; respaldo 6 h)
         ├── horario_etl      → gh workflow run scrape.yml
         └── horario_updater  → gh workflow run form_update.yml -f mode=write
                                    │  Playwright + golden records
@@ -61,12 +62,15 @@ inválidos se ignoran con warning (el scheduler conserva el último válido).
 
 ## Sync
 
-`sync_config.yml` corre cada hora (`7 * * * *` UTC) y on-demand. Lee ambas
-pestañas vía gviz (`.../gviz/tq?tqx=out:csv&sheet=...`) con httpx (10 s, 3
-reintentos), normaliza, valida y escribe `config/sheet_config.csv` (una fila por
-indicador + filas de settings con `clave`/`valor`). Solo commitea si el snapshot
-cambia. Si gviz falla no commitea y pingea `/fail` del check sync; el repo
-conserva la última configuración válida.
+`sync_config.yml` corre cada **6 h** (`0 */6 * * *` UTC) como respaldo del
+snapshot y on-demand. El camino primario es `config_refresh.yml`, despachado por
+el `onChange` de Apps Script: ejecuta el mismo sync y luego el form updater en
+write. El sync lee ambas pestañas vía gviz (`.../gviz/tq?tqx=out:csv&sheet=...`)
+con httpx (10 s, 3 reintentos), normaliza, valida y escribe
+`config/sheet_config.csv` (una fila por indicador + filas de settings con
+`clave`/`valor`). Solo commitea si el snapshot cambia. Si gviz falla no commitea
+y pingea `/fail` del check sync; el repo conserva la última configuración
+válida.
 
 `SHEET_ID` vive en `config/form_updater.yaml` (no es sensible). El libro se
 comparte como "Cualquiera con el vínculo → Lector"; 3 personas son editoras por
@@ -146,8 +150,9 @@ Workflow: Actions → **Form update** → Run workflow con `mode`/`slugs`.
 | Check | Disparo | Éxito |
 |---|---|---|
 | `form-updater` | modo write | cada run; `/fail` con tabla de fallos |
-| `sync` | sync horario | success por corrida; `/fail` si gviz falla o falta/está inválido un ajuste |
-| `scheduler` | horario (`0 * * * *`); ventanas no-en-punto en la siguiente corrida (máx ~59 min) | success por corrida; `/fail` si crashea |
+| `sync` | respaldo 6 h + `config_refresh` | success por corrida; `/fail` si gviz falla o falta/está inválido un ajuste |
+| `scheduler` | reloj Apps Script (primario) + respaldo 6 h | success por corrida; `/fail` si crashea |
+| `appscript-clock` | cada tick de 5 min | success; `/fail` ante error de lectura/auth/dispatch; trigger muerto = sin ping |
 
 Si falta `HEALTHCHECKS_URL_*` solo se desactiva ese check (warning, sin crash).
 

@@ -88,12 +88,11 @@ the job keeps running (graceful degradation, covered by
 `tests/contract/test_healthchecks_contract.py`).
 
 **Check schedule rule:** the Healthchecks check period must mirror the
-success-ping frequency of its job (e.g. the sync job pings success hourly via
-cron `7 * * * *` UTC, so the `sync` check must be "hourly with ~2 h grace";
-the scheduler pings hourly, so its check is hourly with ~2 h grace; the scrape
-job pings once per scheduled slot, currently 19:00 America/Bogota from the
-sheet, so its check is daily with grace). An explicit `/fail` (gviz down,
-invalid config) still raises an immediate alert regardless of the period.
+success-ping frequency of its job: `appscript-clock` **5 min / 30 min grace**;
+`scheduler` **6 h / 2 h grace**; `sync` **6 h / 2 h grace**; `scrape` once per
+scheduled slot (currently 19:00 America/Bogota from the sheet, daily grace);
+`form-updater` daily with 30 min grace. An explicit `/fail` (gviz down, invalid
+config) still raises an immediate alert regardless of the period.
 
 ## Alerting (Healthchecks.io)
 
@@ -109,6 +108,8 @@ Per run, `scrape.yml` sends:
   `dolar_oficial_manana` before 15:00 or after 20:00. **Stale warnings without
   unexpected failures are also a success ping with the warning in the body**;
 - `if: failure()` → `POST /fail` with `crash en paso <nombre>`.
+- Apps Script clock: `appscript-clock` receives a ping every 5 min tick; a
+  `/fail` body reports auth/dispatch errors, and a dead trigger means no ping.
 
 The scrape check can therefore stay green with expected forward-fills. Red
 means a real source failure (inside its window) or a crash, not the normal
@@ -144,8 +145,10 @@ pre-publication state of `dolar_oficial_manana`.
 - **BCB SGS:** the adapter adds a bounded `dataInicial`/`dataFinal` window
   (HTTP 406 otherwise).
 - **Cron:** `scrape.yml` has no own cron; `scheduler.yml` triggers it at the
-  sheet's `horario_etl` (currently 19:00 America/Bogota). The old `schedule`
-  block stays **commented out** to avoid double runs.
+  sheet's `horario_etl` (currently 19:00 America/Bogota). The scheduler is
+  dispatched primarily by the Apps Script clock; the GitHub schedule is the
+  6 h backup. The old `schedule` block in `scrape.yml` stays **commented out**
+  to avoid double runs.
 
 ## Adding an indicator
 
@@ -185,24 +188,53 @@ Key semantics:
   belongs to the variable whose value was used.
 - **Inactive rows** (`activo=FALSE`) pause writing only; the variable remains
   available as a fallback for other rows.
-- **Scheduler:** runs **hourly on the hour** (`0 * * * *` UTC). A sheet window
-  that is not on the hour executes at the next hourly run (max ~59 min delay);
-  the 8 h catch-up covers further delays. It reads the committed snapshot,
-  dedupes with origin-aware `config/scheduler_state.json`, and waits for the
-  scrape before triggering the updater. A sheet schedule change takes up to
-  ~1 h (hourly sync + hourly scheduler); for urgent changes dispatch
-  `sync_config.yml` and `scheduler.yml` manually. The hourly sync also runs the
-  natural-only watchdog.
+- **Scheduling:** the primary punctual path is the container-bound Apps Script
+  clock (`apps_script/Code.gs`). Every 5 min it reads the **live** `ajustes`
+  tab and, inside `[window, window+15 min)`, dispatches `scheduler.yml` (max one
+  dispatch per tick) and always pings `appscript-clock`. An installable
+  `onChange` (EDIT, 5 min throttle) dispatches `config_refresh.yml`, which
+  syncs the sheet and refreshes the form immediately. GitHub's schedule
+  (`scheduler.yml` and `sync_config.yml` every **6 h**) is only the backup; the
+  8 h catch-up covers a missed window and origin-aware dedup avoids double
+  dispatches. The scheduler remains the only brain: it reads the committed
+  snapshot, dedupes with `config/scheduler_state.json`, and waits for the
+  scrape before triggering the updater. The 6 h sync also runs the natural-only
+  watchdog.
 - **Safety:** the updater never writes stale data (freshness check with
   raw.githubusercontent fallback), verifies the record `Nombre` against
   `tests/golden/webform/records.json`, and re-reads the form after the postback.
-- **Activation gate:** scheduler/form_update crons stay disabled until the owner
-  approves the live 3-record write, the golden records and the dry-run (see
-  `docs/APPROVALS.md`).
+- **Activation:** the scheduler/form-updater live gates are approved (see
+  `docs/APPROVALS.md`); the Apps Script clock is the primary path and the 6 h
+  GitHub schedule is the automatic fallback.
 
 Full details: [docs/FORM_UPDATER.md](docs/FORM_UPDATER.md) ·
 Operations: [docs/RUNBOOK.md](docs/RUNBOOK.md) ·
 Contract: [docs/CONTRACT.md](docs/CONTRACT.md).
+
+## Scheduling paths (Apps Script primary + 6 h backup)
+
+```
+Apps Script clock (5 min, LIVE ajustes)
+  └─ window due ──> scheduler.yml ──> scrape.yml ──> form_update.yml
+  └─ onChange EDIT (5 min throttle) ──> config_refresh.yml
+                                          └─ sync sheet + form write
+
+GitHub schedule 0 */6 * * * ──> scheduler.yml   (backup, catch-up 8 h)
+GitHub schedule 0 */6 * * * ──> sync_config.yml (backup + watchdog)
+```
+
+- The Apps Script is a **thin dispatcher**: the scheduler still owns windows,
+  catch-up, dedup, freshness and the ETL→updater ordering. Apps Script only
+  reads the live `ajustes` to know when to dispatch and forwards sheet edits.
+- Install/authorize: see [RUNBOOK §9](docs/RUNBOOK.md). The PAT is a fine-grained
+  token for this repo with **Actions: write**; it lives in ScriptProperties
+  (visible to script editors — rotate it when collaborators change).
+- **Quota:** the two daily windows + occasional edits + four 6 h backups keep
+  Actions well under ~30 runs/day (ETL ~4 min, updater ~3 min), far below the
+  free plan's 2,000 min/month. The clock ticks 288 times/day but only reads the
+  sheet and pings; its runtime stays well below the Apps Script daily quota.
+- **Healthchecks:** `appscript-clock` 5 min / 30 min grace; `scheduler` and
+  `sync` 6 h / 2 h grace; `scrape` and `form-updater` unchanged.
 
 ## API
 

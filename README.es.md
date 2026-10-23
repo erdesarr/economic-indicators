@@ -138,32 +138,48 @@ Miles con punto, decimales con coma. Valor: hasta 4 decimales (sin ceros
 sobrantes). Variación: exactamente 2 decimales. Siempre un espacio antes del
 bloque de variación. `prefijo`/`sufijo` literales.
 
-### Scheduler dinámico
+### Caminos de scheduling (reloj Apps Script + respaldo 6 h)
 
-`sync_config.yml` (cron `7 * * * *` UTC) lee ambas pestañas y escribe
-`config/sheet_config.csv`; si gviz falla no commitea y pingea `/fail` (el repo
-conserva la última config válida). `scheduler.yml` (cron **`0 * * * *` UTC,
-horario en punto**) lee el snapshot y compara cada horario con croniter en
-America/Bogota:
-- `horario_etl` → dispara `scrape.yml`.
-- `horario_updater` → dispara `form_update.yml` con `mode=write`.
+```
+Reloj Apps Script (5 min, ajustes EN VIVO)
+  └─ ventana debida ──> scheduler.yml ──> scrape.yml ──> form_update.yml
+  └─ onChange EDIT (throttle 5 min) ──> config_refresh.yml
+                                          └─ sync de la hoja + write del form
 
-Una ventana que no cae en punto se ejecuta en la siguiente corrida horaria
-(retraso máx ~59 min); el **catch-up** de 8 h cubre retrasos mayores. El estado
-`config/scheduler_state.json` es origin-aware (natural vs forzado) y, si ambos
-slots están debidos, espera a que el scrape termine antes de disparar el
-updater. Un cambio de horario en la hoja tarda hasta ~1 h en aplicarse (sync
-horario + scheduler horario); si urge, dispara `sync_config.yml` y
-`scheduler.yml` a mano. El sync horario ejecuta el watchdog natural-only.
-**Nunca** se reescriben workflows YAML.
+GitHub schedule 0 */6 * * * ──> scheduler.yml   (respaldo, catch-up 8 h)
+GitHub schedule 0 */6 * * * ──> sync_config.yml (respaldo + watchdog)
+```
+
+El Apps Script es un **dispatcher fino**: el scheduler sigue siendo el único
+cerebro (ventanas, catch-up, dedup, frescura y orden ETL→updater). El reloj solo
+lee `ajustes` en vivo para saber cuándo despachar y reenvía las ediciones.
+
+- `scheduler.yml` y `sync_config.yml` corren cada **6 h** como respaldo
+  automático; el catch-up de 8 h cubre una ventana perdida y el dedup por
+  ocurrencia evita dobles disparos entre el reloj y el respaldo.
+- `config_refresh.yml` = sync inmediato + form updater en `write` (con todas las
+  salvaguardas: golden records, frescura, guard de umbral, verificación
+  post-write y pings). Es el camino de "alguien editó la hoja, refresca ya".
+- El sync de 6 h ejecuta el watchdog natural-only. Los cambios de horario en la
+  hoja se reflejan en el siguiente tick (el reloj lee la hoja en vivo); la
+  edición del formulario se refresca vía `config_refresh`.
+- **Cuota:** 2 ventanas/día + ediciones ocasionales + 4 respaldos de 6 h dejan
+  Actions en <~30 runs/día (ETL ~4 min, updater ~3 min), muy por debajo de los
+  2,000 min/mes del plan gratis. El reloj hace 288 ticks/día pero solo lee la
+  hoja y pingea; su runtime queda bajo la cuota diaria de Apps Script.
+- **Healthchecks:** `appscript-clock` 5 min / 30 min grace; `scheduler` y `sync`
+  6 h / 2 h grace; `scrape` y `form-updater` sin cambio.
+
+Instalación/autorización: [RUNBOOK §9](docs/RUNBOOK.es.md). El PAT es
+fine-grained, solo este repo, **Actions: write**, y vive en ScriptProperties
+(visible para quien edite el script; rota al cambiar integrantes). Si
+`apps_script/Code.gs` cambia en el repo, hay que re-pegarlo en el editor.
 
 ### Gate de activación
 
-El cron del scheduler y el de `form_update` permanecen **desactivados** hasta:
-(1) libro público como Lector; (2) `FORM_URL` y `HEALTHCHECKS_URL` confirmados;
-(3) `SHEET_ID` en `config/form_updater.yaml`; (4) fallbacks aprobados;
-(5) dry-run con `repr()` revisado; (6) dispatch real con 3 indicadores
-verificado en vivo y `tests/golden/webform/records.json` aprobado.
+Los gates del scheduler/form updater están aprobados (ver
+`docs/APPROVALS.md`); el reloj Apps Script es el camino primario y el schedule
+de GitHub cada 6 h es el respaldo. **Nunca** se reescriben workflows YAML.
 
 ## Secretos
 
@@ -180,10 +196,10 @@ correspondiente), no un uuid suelto. Si falta un secret, solo se desactiva ese
 check con warning en el log y el job continúa. Los secrets SMTP están retirados.
 
 **Regla de schedules:** el periodo de cada check en Healthchecks debe reflejar
-la frecuencia de pings de éxito de su job (sync horario con grace ~2 h;
-scrape en el slot de la hoja, actualmente 19:00 Bogotá, con grace diario;
-scheduler horario con grace ~2 h; form-updater diario grace 30 min). Un
-`/fail` explícito sigue alertando de inmediato.
+la frecuencia de pings de éxito de su job: `appscript-clock` **5 min / 30 min
+grace**; `scheduler` **6 h / 2 h grace**; `sync` **6 h / 2 h grace**; `scrape`
+en el slot de la hoja (actualmente 19:00 Bogotá, grace diario); `form-updater`
+diario grace 30 min. Un `/fail` explícito sigue alertando de inmediato.
 
 ## Alertas (Healthchecks)
 
@@ -194,8 +210,10 @@ scheduler horario con grace ~2 h; form-updater diario grace 30 min). Un
   15:00 o después de 20:00. `if: failure()` → `/fail` con
   `crash en paso <nombre>`. Por eso el check puede quedar verde con
   forward-fills esperados; rojo significa fuente caída en su ventana o crash.
-- `sync`: `/start` + success/fail por corrida horaria; datos stale nunca alertan
-  como fallo si el ETL ya lo hizo.
+- `appscript-clock`: ping cada tick de 5 min; `/fail` si el reloj no puede leer
+  la hoja o despachar (trigger muerto = sin ping).
+- `sync`: `/start` + success/fail por corrida (respaldo 6 h y config_refresh);
+  datos stale nunca alertan como fallo si el ETL ya lo hizo.
 - `scheduler`: success por corrida; `/fail` si crashea; cron inválido → `/fail`
   del check sync.
 - `form-updater`: `/start`, success con resumen o `/fail` con tabla.
@@ -222,8 +240,10 @@ scheduler horario con grace ~2 h; form-updater diario grace 30 min). Un
   `config/certs/` y `tests/unit/test_certs.py` falla si vence en <30 días.
 - **BCB SGS:** ventana acotada de fechas (HTTP 406 si no).
 - **Cron:** `scrape.yml` no tiene cron propio; `scheduler.yml` lo dispara en el
-  `horario_etl` de la hoja (actualmente 19:00 Bogotá). El `schedule` antiguo
-  sigue **comentado** para evitar doble corrida.
+  `horario_etl` de la hoja (actualmente 19:00 Bogotá). El scheduler se dispara
+  principalmente por el reloj Apps Script; el schedule de GitHub es el respaldo
+  de 6 h. El `schedule` antiguo de `scrape.yml` sigue **comentado** para evitar
+  doble corrida.
 - Procedimientos detallados: [docs/RUNBOOK.md](docs/RUNBOOK.md).
 
 ## API

@@ -10,10 +10,11 @@ people in a public Google Sheet; no workflow YAML is ever rewritten.
 
 ```
 Google Sheet (indicators_config + ajustes)
-        │  sync_config.yml (hourly, gviz CSV)
+        │  config_refresh.yml (Apps Script onChange: sync + write)
+        │  sync_config.yml   (6 h backup, gviz CSV)
         ▼
 config/sheet_config.csv  (normalized snapshot, committed)
-        │  scheduler.yml (0 * * * *, hourly; America/Bogota windows)
+        │  scheduler.yml (Apps Script clock primary; 6 h backup)
         ├── horario_etl      → gh workflow run scrape.yml
         └── horario_updater  → gh workflow run form_update.yml -f mode=write
                                    │  Playwright + golden records
@@ -61,12 +62,15 @@ last valid committed value).
 
 ## Sync
 
-`sync_config.yml` runs hourly (`7 * * * *` UTC) and on demand. It fetches both
-tabs through gviz (`.../gviz/tq?tqx=out:csv&sheet=...`) with httpx (10 s, 3
-retries), normalizes, validates and writes `config/sheet_config.csv` (one row
-per indicator + settings rows with `clave`/`valor`). It commits only when the
-snapshot changes. If gviz fails it does not commit and pings `/fail` on the sync
-check; the repository keeps the last valid configuration.
+`sync_config.yml` runs every **6 h** (`0 */6 * * *` UTC) as the snapshot
+backup and on demand. The primary path is `config_refresh.yml`, dispatched by
+the Apps Script `onChange`: it runs the same sync and then the form updater in
+write mode. The sync fetches both tabs through gviz
+(`.../gviz/tq?tqx=out:csv&sheet=...`) with httpx (10 s, 3 retries), normalizes,
+validates and writes `config/sheet_config.csv` (one row per indicator + settings
+rows with `clave`/`valor`). It commits only when the snapshot changes. If gviz
+fails it does not commit and pings `/fail` on the sync check; the repository
+keeps the last valid configuration.
 
 SHEET_ID lives in `config/form_updater.yaml` (not sensitive). The book is shared
 as "Anyone with the link → Reader"; 3 people are editors by email; both tabs are
@@ -146,8 +150,9 @@ Workflow: Actions → **Form update** → Run workflow with `mode`/`slugs`.
 | Check | Trigger | Success |
 |---|---|---|
 | `form-updater` | write mode | every write run; `/fail` with the failure table |
-| `sync` | hourly sync | success each run; `/fail` on gviz failure or missing/invalid settings |
-| `scheduler` | hourly (`0 * * * *`); non-hour windows run at the next hourly run (max ~59 min) | success each run; `/fail` on crash |
+| `sync` | 6 h backup + `config_refresh` | success each run; `/fail` on gviz failure or missing/invalid settings |
+| `scheduler` | Apps Script clock (primary) + 6 h backup | success each run; `/fail` on crash |
+| `appscript-clock` | every 5 min tick | success; `/fail` on sheet-read/auth/dispatch errors; a dead trigger means no ping |
 
 Missing `HEALTHCHECKS_URL_*` disables only that check (warning, no crash).
 

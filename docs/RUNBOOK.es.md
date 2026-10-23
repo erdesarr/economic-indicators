@@ -69,8 +69,9 @@ clasificación en `artifacts/run_report.json` (`expected`, `publication_window`,
    el diff.
 3. `Restaurar esta versión` (cubre ambas pestañas; los permisos aplican a todo
    el libro).
-4. El siguiente `sync_config.yml` (cada hora, `7 * * * *` UTC) lo recoge. Para
-   actuar de inmediato: Actions → **Sync config** → Run workflow.
+4. El `onChange` de Apps Script (o el siguiente respaldo de `sync_config.yml`
+   cada 6 h) lo recoge. Para actuar de inmediato: Actions → **Sync config** →
+   Run workflow.
 5. Confirma `sync summary` en el log y el nuevo commit de
    `config/sheet_config.csv`.
 
@@ -101,22 +102,23 @@ clasificación en `artifacts/run_report.json` (`expected`, `publication_window`,
 ## 5. Pausar un indicador (`activo=FALSE`)
 
 1. En `indicators_config`, marca `activo=FALSE` en la fila. No borres la fila.
-2. Espera el sync horario o dispara **Sync config**.
+2. El `onChange` de Apps Script despacha `config_refresh.yml` (sync + write); si
+   el reloj no está disponible, espera el respaldo de `sync_config.yml` (6 h) o
+   dispara **Sync config** a mano.
 3. El updater deja de escribir ese registro, pero la variable sigue disponible
    como fallback de otras filas (el resolvedor lee el contrato del ETL).
 4. Para reanudar, vuelve a `activo=TRUE`.
 
-## 6. Activar el scheduler dinámico (gate)
+## 6. Activación del scheduler (gate histórico, ya activo)
 
-No descomentes `schedule` en `scheduler.yml` hasta:
-1. libro público como Lector (ambas pestañas);
-2. `FORM_URL` y todos los secrets `HEALTHCHECKS_URL*` creados;
-3. `SHEET_ID` en `config/form_updater.yaml`;
-4. tabla de fallbacks aprobada;
-5. dry-run con `repr()` y sources aprobado;
-6. write real de 3 registros verificado en vivo y `records.json` aprobado.
-Tras un dispatch del scheduler verde (scrape 18/18 → form-updater escribe →
-pings success), descomenta `0 * * * *` y haz push.
+El gate está cerrado: libro público como Lector, `FORM_URL` y todos los secrets
+`HEALTHCHECKS_URL*` creados, `SHEET_ID` configurado, fallbacks/dry-run
+aprobados y write real de 3 registros + `tests/golden/webform/records.json`
+aprobados. El scheduler está activo.
+
+El schedule de GitHub es ahora solo el **respaldo de 6 h** (`0 */6 * * *`); el
+camino primario puntual es el reloj Apps Script (sección 9). No agregues un cron
+a `scrape.yml` ni a `form_update.yml`.
 
 ## 7. Otras notas operativas
 
@@ -136,31 +138,34 @@ pings success), descomenta `0 * * * *` y haz push.
   pinneado de Banrep vence en <30 días; renuévalo desde la URL AIA y actualiza el
   comentario de cabecera.
 
-## 8. Retrasos del scheduler y watchdog del form updater (2026-10-19)
+## 8. Scheduler, reloj Apps Script y watchdog del form updater
 
-- GitHub throttlea los crons de alta frecuencia: el scheduler `*/5` corrió en
-  realidad cada 2-5 h, así que la ventana de 5 min solía perder los slots
-  21:00/21:30 de Bogotá (corridas observadas a las 23:51 y 01:56 Bogotá, ambas
-  con "no window match").
-- El scheduler ahora hace catch-up: una ocurrencia de hasta `catchup_hours` (8)
+- Historia: GitHub throttleó los crons `*/5` y horarios (corridas cada 2-5 h),
+  así que el scheduler horario de 2026-10-20 seguía sin ser puntual. Desde
+  2026-10-22 el **camino primario es el reloj Apps Script** (sección 9).
+- El scheduler conserva el cerebro: una ocurrencia de hasta `catchup_hours` (8)
   sigue siendo debida; `config/scheduler_state.json` deduplica con token
   origin-aware; si ambos slots caen en una corrida, dispara el ETL, espera a que
   termine el scrape y luego dispara el updater (nunca a la vez).
-- Desde 2026-10-20 el cron es **horario en punto** (`0 * * * *` UTC): una
-  ventana que no cae en punto se ejecuta en la siguiente corrida horaria
-  (máx ~59 min). Un cambio de horario en la hoja tarda hasta ~1 h (sync horario
-  + scheduler horario); si urge, dispara `sync_config.yml` y `scheduler.yml` a
-  mano. Check `scheduler` de Healthchecks: periodo horario con **~2 h de grace**
-  (lo configura el dueño en la UI; el código no puede).
-- Watchdog: el sync horario ejecuta `scripts/watchdog.py`. Si la última
-  escritura en `config/form_update_state.json` tiene más de 26 h o las últimas 2
-  corridas escribieron 0 valores, envía un `/fail` explícito al check
-  form-updater (y el job de sync queda rojo). El periodo/grace del check de
-  Healthchecks sigue siendo la alarma de "sin ping en N horas".
+- Respaldo: `scheduler.yml` y `sync_config.yml` corren cada **6 h**
+  (`0 */6 * * *` UTC = 00/06/12/18 UTC; el respaldo de 19:00 Bogotá coincide
+  con la ventana del ETL). El catch-up de 8 h cubre una ventana perdida. El
+  respaldo y el reloj se deduplican por ocurrencia, así que ambos pueden
+  dispararse sin duplicar ETL/updater.
+- Ediciones de la hoja: el `onChange` instalable (EDIT, throttle 5 min) despacha
+  `config_refresh.yml`, que sincroniza la hoja y refresca el formulario de
+  inmediato. El `sync_config.yml` de 6 h es el respaldo de snapshot/watchdog.
+- Watchdog: el sync de 6 h ejecuta `scripts/watchdog.py`. Si la última escritura
+  natural en `config/form_update_state.json` tiene más de 26 h o las últimas 2
+  corridas naturales escribieron 0 valores, envía un `/fail` explícito al check
+  form-updater (y el job de sync queda rojo). Los writes forzados
+  (manual/test/onChange) no resetean el reloj.
 - Prueba manual: Actions -> Scheduler -> Run workflow con `force=etl|updater`, o
-  `now=<ISO8601>` para simular una ventana. La pestaña `ajustes` manda.
+  `now=<ISO8601>` para simular una ventana. La pestaña `ajustes` manda. Apps
+  Script tiene su propio `testDispatch()` manual.
 - No agregues un cron propio a `scrape.yml`/`form_update.yml`: el scheduler es el
-  único disparador automático (evita dobles corridas y saltarse la hoja).
+  único disparador automático de ETL/updater (evita dobles corridas y saltarse
+  la hoja).
 
 ### Dedup por origen y readiness de Pages (2026-10-20)
 
@@ -183,8 +188,81 @@ pings success), descomenta `0 * * * *` y haz push.
   `WARNING: natural occurrence vetoed by dedup: ...` y agrega
   `VETOED_NATURAL=[...]` al body del ping success de Healthchecks. Un veto nunca
   es silencioso.
-- Los periods/grace de Healthchecks deben reflejar la cadencia throttled (el
-  dueño los configura en la UI; el código no puede): `scrape` y `form-updater`
-  diarios con **~6 h de grace**, `scheduler` **~2 h**, `sync` **~2 h**. El
-  watchdog del form-updater agrega el `/fail` explícito cuando no hay write
-  natural en 26 h o dos corridas naturales seguidas escribieron 0.
+- Periods/grace de Healthchecks (el dueño los configura en la UI; el código no
+  puede): `appscript-clock` **5 min / 30 min grace**; `scheduler`
+  **6 h / 2 h grace**; `sync` **6 h / 2 h grace**; `scrape` y `form-updater`
+  sin cambio. Un trigger de Apps Script muerto = sin ping del reloj; el respaldo
+  de 6 h cubre el lado de Actions mientras alerta. El watchdog del form-updater
+  agrega el `/fail` explícito cuando no hay write natural en 26 h o dos corridas
+  naturales seguidas escribieron 0.
+
+## 9. Reloj Apps Script (camino primario puntual, instalado por el dueño)
+
+El script container-bound está versionado en [`apps_script/Code.gs`](../apps_script/Code.gs).
+Es un dispatcher fino: lee la pestaña `ajustes` en vivo solo para decidir
+**cuándo** llamar a GitHub; el scheduler sigue decidiendo ventanas, catch-up,
+dedup, frescura y el orden ETL→updater.
+
+### Instalación / reinstalación
+
+1. Abre el libro → **Extensiones → Apps Script**.
+2. Reemplaza el contenido del editor con `apps_script/Code.gs` (o pega el archivo
+   actualizado tras un cambio) y guarda.
+3. En **Configuración del proyecto → Propiedades del script**, define:
+   - `GH_PAT`: PAT fine-grained, **solo este repo**, **Actions: write** (lo
+     necesita el endpoint de dispatch).
+   - `APPSCRIPT_HEALTHCHECKS_URL`: URL completa de ping del check
+     `appscript-clock`.
+   - Opcional: `SCHEDULER_DISPATCH_URL`, `CONFIG_REFRESH_DISPATCH_URL`,
+     `SHEET_ID`. `setupTriggers()` completa las dos URLs y `SHEET_ID` con los
+     valores por defecto si faltan.
+4. Ejecuta `setupTriggers()` una vez y autoriza los scopes (hoja de cálculo,
+   requests externos, triggers). Borra los triggers previos
+   `clockTick`/`onSheetChange` y crea:
+   - `clockTick` time-driven cada 5 min;
+   - `onSheetChange` instalable (`EDIT`) sobre este libro.
+5. Ejecuta `clockTick()` a mano para probar la lectura de la hoja + ping de
+   liveness, y `testDispatch()` para probar el PAT/URL (esto despacha un
+   scheduler real; el scheduler decide si hay ventana).
+6. Confirma que `appscript-clock` recibe el ping en Healthchecks.
+
+`setupTriggers()` es idempotente. Si `Code.gs` cambia en el repo, **vuelve a
+pegarlo** en el editor; el repo es la fuente de verdad, pero Apps Script no lee
+el repo.
+
+### Comportamiento
+
+- `clockTick`: lee `ajustes` en vivo; soporta el formato diario `m h * * *` (el
+  actual). Si la hora de Bogotá cae en `[ventana, ventana+15 min)` y
+  `${fecha}|${HH:mm}` no se despachó hoy, envía un `workflow_dispatch` a
+  `scheduler.yml` (máx 1 por tick; ese run cubre las ventanas debidas) y marca
+  la clave. Fuera de ventana no despacha nada. **Siempre** pingea
+  `appscript-clock` (success, o `/fail` con errores de auth/lectura/dispatch).
+- `onSheetChange`: solo `EDIT`, con throttle a un dispatch de
+  `config_refresh.yml` cada 5 min. `config_refresh` sincroniza las pestañas en
+  vivo y ejecuta el form updater en write (todas las salvaguardas existentes).
+- Otros formatos de cron (semanal, etc.) no los despacha el reloj; el respaldo
+  de 6 h usa croniter y catch-up (8 h), así que igual corren.
+- El scheduler lee el **snapshot commiteado**, no la hoja viva. Una edición
+  refresca el snapshot vía `config_refresh`; un cambio de horario se refleja en
+  el siguiente tick del reloj tras ese sync.
+
+### Modos de fallo y cobertura del respaldo
+
+- **Trigger muerto / Apps Script deshabilitado:** sin ping de
+  `appscript-clock`; Healthchecks alerta a los 30 min. El respaldo de 6 h de
+  scheduler/sync mantiene el ETL y el formulario (catch-up 8 h).
+- **Autorización vencida o scope revocado:** el trigger loguea el error y el
+  reloj pingea `/fail` (si aún puede hacer fetch); vuelve a ejecutar
+  `setupTriggers()` y reautoriza.
+- **PAT rotado/revocado o sin Actions:write:** el dispatch devuelve 401/403; el
+  reloj pingea `/fail` (o lo deja en el body del tick). Actualiza `GH_PAT` en
+  ScriptProperties; el respaldo de 6 h cubre mientras tanto.
+- **Libro/pestaña renombrados o `SHEET_ID` incorrecto:** la lectura falla; el
+  reloj pingea `/fail`. Corrige la propiedad/pestaña; el respaldo de 6 h sigue.
+- **Acceso a ScriptProperties:** el PAT es visible para quien pueda editar el
+  proyecto de Apps Script. Rótalo al cambiar integrantes. Nunca pongas el PAT
+  en el repo ni en la hoja.
+- **Cuota de Actions:** 2 ventanas/día + ediciones + cuatro respaldos de 6 h;
+  esperado <~30 runs/día, muy por debajo de 2,000 min/mes. Los 288 ticks/día
+  del reloj solo leen la hoja y pingean.

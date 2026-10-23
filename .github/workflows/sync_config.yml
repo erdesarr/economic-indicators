@@ -1,10 +1,12 @@
 name: Sync config
 
 on:
-  # Hourly fixed cron; the actual schedules (horario_etl / horario_updater) live
-  # in the public Google Sheet and are executed by scheduler.yml.
+  # BACKUP ONLY. The primary path is config_refresh.yml, dispatched by the
+  # container-bound Apps Script onChange immediately after an edit (the sync is
+  # followed by the form updater write). This 6 h run is the safety net for the
+  # snapshot and the watchdog; the sheet schedules remain the source of truth.
   schedule:
-    - cron: "7 * * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 concurrency:

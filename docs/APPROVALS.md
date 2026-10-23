@@ -239,3 +239,31 @@ Con las tres condiciones cumplidas y la aprobación explícita del dueño, el
 - CI #40 (`15db5f4`) green.
 - Catch-up/dedup/watchdog, resolution/formatter/webform and scrape pings for
   fresh data are unchanged.
+
+## 2026-10-22 - Apps Script clock primary; GitHub schedule 6 h backup
+
+- Owner decision: GitHub scheduled events are unreliable in this account
+  (2-5 h delays). The primary punctual path is a container-bound Apps Script,
+  versioned at `apps_script/Code.gs`:
+  - `clockTick` every 5 min reads the LIVE `ajustes` tab; inside
+    `[window, window+15 min)` it dispatches `scheduler.yml` (max one per tick)
+    and marks `${fecha}|${HH:MM}`; it always pings `appscript-clock`.
+  - installable `onChange` (`EDIT`, 5 min throttle) dispatches
+    `config_refresh.yml` (sync + form write).
+  - The scheduler remains the only brain (windows, catch-up, dedup, freshness,
+    ETL→updater order); Apps Script only dispatches.
+- New `config_refresh.yml` (workflow_dispatch, single job): sync ->
+  form updater write with all existing safeguards.
+- GitHub schedules reduced to backup: `scheduler.yml` and `sync_config.yml`
+  now `0 */6 * * *`; workflow_dispatch and test aids retained. Dedup by
+  occurrence prevents double dispatches between clock and backup.
+- Healthchecks (owner UI): new `appscript-clock` 5 min / 30 min grace;
+  `scheduler` 6 h / 2 h grace; `sync` 6 h / 2 h grace; `scrape` and
+  `form-updater` unchanged.
+- Docs EN/ES: README scheduling paths/quota; RUNBOOK Apps Script install,
+  authorization, failure modes, PAT rotation, re-paste warning and backup
+  coverage; FORM_UPDATER pipeline/check tables.
+- Verification: GitHub-side forced dispatches (scheduler windows, dedup,
+  `config_refresh`) are run after CI. The Apps Script tick/onChange evidence
+  requires the owner to paste/authorize the script; it is recorded after
+  installation.

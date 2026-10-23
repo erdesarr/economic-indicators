@@ -182,6 +182,35 @@ def test_double_natural_same_day_is_deduped() -> None:
     assert skipped == ["etl@2026-10-12(natural)"]
 
 
+def test_punctual_clock_consumes_occurrence_and_backup_skips() -> None:
+    settings = {"horario_etl": "0 19 * * *", "horario_updater": "0 20 * * *"}
+    state: dict[str, dict[str, str]] = {}
+
+    at_1900 = datetime(2026, 10, 22, 19, 0, 5, tzinfo=BOGOTA).astimezone(UTC)
+    etl_outcome = plan(settings, at_1900, "scrape.yml", "form_update.yml")
+    assert [decision.key for decision in etl_outcome.triggers] == ["etl"]
+    pending, _ = filter_pending(etl_outcome.triggers, state, "natural")
+    assert [decision.key for decision in pending] == ["etl"]
+    state["etl"] = {"natural": "2026-10-22"}
+
+    at_2000 = datetime(2026, 10, 22, 20, 0, 5, tzinfo=BOGOTA).astimezone(UTC)
+    updater_outcome = plan(settings, at_2000, "scrape.yml", "form_update.yml")
+    assert [decision.key for decision in updater_outcome.triggers] == ["etl", "updater"]
+    pending, skipped = filter_pending(updater_outcome.triggers, state, "natural")
+    assert [decision.key for decision in pending] == ["updater"]
+    assert skipped == ["etl@2026-10-22(natural)"]
+    state["updater"] = {"natural": "2026-10-22"}
+
+    # The 6 h backup at 23:00 is still inside the 8 h catch-up, but both
+    # natural occurrences were already consumed by the punctual clock.
+    at_2300 = datetime(2026, 10, 22, 23, 0, 5, tzinfo=BOGOTA).astimezone(UTC)
+    backup = plan(settings, at_2300, "scrape.yml", "form_update.yml", catchup_hours=8)
+    assert [decision.key for decision in backup.triggers] == ["etl", "updater"]
+    pending, skipped = filter_pending(backup.triggers, state, "natural")
+    assert pending == []
+    assert skipped == ["etl@2026-10-22(natural)", "updater@2026-10-22(natural)"]
+
+
 def test_state_roundtrip_and_legacy_migration(tmp_path) -> None:  # type: ignore[no-untyped-def]
     path = tmp_path / "state.json"
     assert load_state(path) == {}
