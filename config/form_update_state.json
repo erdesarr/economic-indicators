@@ -43,5 +43,14 @@
     "recorded_at": "2026-10-23T04:09:38.582085+00:00",
     "run_id": "39898545206",
     "origin": "natural"
+  },
+  {
+    "date": "2026-10-23",
+    "written": 18,
+    "failed": 0,
+    "omitted": 0,
+    "recorded_at": "2026-10-23T16:42:03.451119+00:00",
+    "run_id": "39988528222",
+    "origin": "forced"
   }
 ]
