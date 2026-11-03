@@ -1,14 +1,5 @@
 [
   {
-    "date": "2026-10-23",
-    "written": 18,
-    "failed": 0,
-    "omitted": 0,
-    "recorded_at": "2026-10-24T00:37:03.353267+00:00",
-    "run_id": "40045629267",
-    "origin": "natural"
-  },
-  {
     "date": "2026-10-24",
     "written": 18,
     "failed": 0,
@@ -87,6 +78,15 @@
     "omitted": 0,
     "recorded_at": "2026-11-02T01:27:15.826620+00:00",
     "run_id": "41372320148",
+    "origin": "natural"
+  },
+  {
+    "date": "2026-11-02",
+    "written": 18,
+    "failed": 0,
+    "omitted": 0,
+    "recorded_at": "2026-11-03T01:27:17.430141+00:00",
+    "run_id": "41559522450",
     "origin": "natural"
   }
 ]
